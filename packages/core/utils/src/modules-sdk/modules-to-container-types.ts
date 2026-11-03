@@ -40,7 +40,6 @@ const SERVICES_INTERFACES = {
   [Modules.SETTINGS]: "ISettingsModuleService",
   [Modules.CACHING]: "ICachingModuleService",
   [Modules.TRANSLATION]: "ITranslationModuleService",
-  [Modules.RBAC]: "IRbacModuleService",
 }
 
 /**

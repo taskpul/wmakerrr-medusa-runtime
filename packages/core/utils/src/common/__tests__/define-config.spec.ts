@@ -6,7 +6,8 @@ const FIXTURES_ROOT = path.resolve(__dirname, "../__fixtures__")
 
 expect.addSnapshotSerializer({
   test: (val) => typeof val === "string" && val.startsWith(FIXTURES_ROOT),
-  serialize: (val: string) => `"<fixtures>${val.slice(FIXTURES_ROOT.length)}"`,
+  serialize: (val: string) =>
+    `"<fixtures>${val.slice(FIXTURES_ROOT.length).replaceAll("\\", "/")}"`,
 })
 
 describe("defineConfig", function () {
@@ -146,10 +147,6 @@ describe("defineConfig", function () {
           },
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
-          },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
           },
           "region": {
             "resolve": "@medusajs/medusa/region",
@@ -502,10 +499,6 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
-          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -710,10 +703,6 @@ describe("defineConfig", function () {
           },
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
-          },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
           },
           "region": {
             "resolve": "@medusajs/medusa/region",
@@ -921,10 +910,6 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
-          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1120,10 +1105,6 @@ describe("defineConfig", function () {
           },
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
-          },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
           },
           "region": {
             "resolve": "@medusajs/medusa/region",
@@ -1323,10 +1304,6 @@ describe("defineConfig", function () {
           },
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
-          },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
           },
           "region": {
             "resolve": "@medusajs/medusa/region",
@@ -1574,10 +1551,6 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
-          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -1793,10 +1766,6 @@ describe("defineConfig", function () {
           },
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
-          },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
           },
           "region": {
             "resolve": "@medusajs/medusa/region",
@@ -2045,10 +2014,6 @@ describe("defineConfig", function () {
           },
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
-          },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
           },
           "region": {
             "resolve": "@medusajs/medusa/region",
@@ -2318,10 +2283,6 @@ describe("defineConfig", function () {
           },
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
-          },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
           },
           "region": {
             "resolve": "@medusajs/medusa/region",
@@ -2627,10 +2588,6 @@ describe("defineConfig", function () {
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
           },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
-          },
           "region": {
             "resolve": "@medusajs/medusa/region",
           },
@@ -2872,10 +2829,6 @@ describe("defineConfig", function () {
           },
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
-          },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
           },
           "region": {
             "resolve": "@medusajs/medusa/region",
@@ -3129,10 +3082,6 @@ describe("defineConfig", function () {
           },
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
-          },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
           },
           "region": {
             "resolve": "@medusajs/medusa/region",
@@ -3392,10 +3341,6 @@ describe("defineConfig", function () {
           },
           "promotion": {
             "resolve": "@medusajs/medusa/promotion",
-          },
-          "rbac": {
-            "disable": true,
-            "resolve": "@medusajs/medusa/rbac",
           },
           "region": {
             "resolve": "@medusajs/medusa/region",

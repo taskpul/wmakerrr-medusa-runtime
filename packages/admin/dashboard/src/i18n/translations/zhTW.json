@@ -2779,7 +2779,6 @@
     "editUser": "編輯使用者",
     "inviteUser": "邀請使用者",
     "inviteUserHint": "邀請新使用者加入您的商店。",
-    "inviteRolesTooltip": "若未選擇角色，使用者將以超級使用者角色受邀。",
     "sendInvite": "傳送邀請",
     "pendingInvites": "待處理邀請",
     "deleteInviteWarning": "您即將刪除 {{email}} 的邀請。此操作無法復原。",
@@ -2796,11 +2795,6 @@
       "pending": "待處理",
       "expired": "已過期"
     },
-    "roles": {
-      "admin": "管理員",
-      "developer": "開發人員",
-      "member": "成員"
-    },
     "list": {
       "empty": {
         "heading": "找不到使用者",
@@ -2814,124 +2808,6 @@
     "deleteUserWarning": "您即將刪除使用者 {{name}}。此操作無法復原。",
     "deleteUserSuccess": "使用者 {{name}} 已成功刪除",
     "invite": "邀請"
-  },
-  "roles": {
-    "domain": "角色",
-    "subtitle": "管理存取角色和權限。",
-    "create": {
-      "header": "建立角色",
-      "hint": "建立角色以管理管理後台的存取權限。",
-      "successToast": "角色 {{name}} 已建立",
-      "tabs": {
-        "details": "詳情",
-        "permissions": "權限"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "沒有權限",
-          "description": "沒有可選擇的權限。"
-        },
-        "filtered": {
-          "heading": "沒有結果",
-          "description": "沒有權限符合目前的篩選條件。"
-        }
-      }
-    },
-    "edit": {
-      "header": "編輯角色",
-      "successToast": "角色 {{name}} 已更新"
-    },
-    "delete": {
-      "title": "刪除角色",
-      "description": "您即將刪除角色 {{name}}。此操作無法復原。",
-      "successToast": "角色 {{name}} 已刪除"
-    },
-    "fields": {
-      "permissions": "權限"
-    },
-    "actions": {
-      "managePermissions": "管理權限"
-    },
-    "users": {
-      "alreadyAddedTooltip": "使用者已擁有此角色。",
-      "unassignableRoleTooltip": "您無權指派此角色，您的權限未涵蓋其所有政策。",
-      "add": {
-        "successToast_other": "使用者已成功新增至角色。",
-        "list": {
-          "noRecordsMessage": "請先建立使用者。"
-        }
-      },
-      "remove": {
-        "title_other": "移除使用者",
-        "description_other": "您即將從角色中移除 {{count}} 位使用者。此操作無法復原。"
-      },
-      "list": {
-        "noRecordsMessage": "此角色沒有使用者。"
-      }
-    },
-    "permissions": {
-      "header": "管理權限",
-      "hint": "選擇此角色應包含的權限。",
-      "empty": {
-        "heading": "沒有權限",
-        "description": "沒有可選擇的權限。"
-      },
-      "filtered": {
-        "heading": "沒有結果",
-        "description": "沒有權限符合目前的篩選條件。"
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "找不到角色",
-        "description": "建立角色以管理管理後台的存取權限。"
-      },
-      "filtered": {
-        "heading": "沒有結果",
-        "description": "沒有角色符合目前的篩選條件。"
-      }
-    }
-  },
-  "policies": {
-    "domain": "政策",
-    "subtitle": "定義角色可授予的權限。",
-    "create": {
-      "header": "建立政策",
-      "hint": "定義可附加至角色的新權限。",
-      "successToast": "政策 {{key}} 已建立"
-    },
-    "edit": {
-      "header": "編輯政策",
-      "successToast": "政策 {{key}} 已更新"
-    },
-    "delete": {
-      "title": "刪除政策",
-      "description": "您即將刪除政策 {{key}}。此操作無法復原。",
-      "successToast": "政策 {{key}} 已刪除"
-    },
-    "fields": {
-      "roles": "角色",
-      "users": "使用者"
-    },
-    "list": {
-      "empty": {
-        "heading": "找不到政策",
-        "description": "建立政策以管理角色可授予的權限。"
-      },
-      "filtered": {
-        "heading": "沒有結果",
-        "description": "沒有政策符合目前的篩選條件。"
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "目前沒有角色包含此政策。"
-      },
-      "empty": {
-        "heading": "沒有角色",
-        "description": "目前沒有角色包含此政策。"
-      }
-    }
   },
   "translations": {
     "domain": "翻譯",
@@ -3786,57 +3662,6 @@
       "continueWithProvider": "使用 {{provider}} 繼續",
       "or": "或",
       "provisioningFailed": "我們無法完成您的登入。請聯絡管理員。"
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "存取被拒",
-      "description": "您沒有權限存取此頁面。",
-      "requiredPermission": "所需權限：{{permission}}",
-      "action": "您沒有權限執行此操作。"
-    },
-    "requiredPermissions": {
-      "title": "所需權限",
-      "none": "此視圖未宣告任何權限。",
-      "anyOf": "任一",
-      "allOf": "全部",
-      "source": "來源：{{source}}"
-    },
-    "resources": {
-      "customer": "顧客",
-      "customer_group": "顧客群組",
-      "order": "訂單",
-      "product": "商品",
-      "product_category": "商品分類",
-      "product_collection": "商品系列",
-      "product_tag": "商品標籤",
-      "product_type": "商品類型",
-      "inventory": "庫存",
-      "reservation": "預留",
-      "promotion": "促銷活動",
-      "campaign": "行銷活動",
-      "price_list": "價格清單",
-      "region": "區域",
-      "store": "商店",
-      "user": "使用者",
-      "role": "角色",
-      "permission": "權限",
-      "sales_channel": "銷售管道",
-      "stock_location": "庫存地點",
-      "shipping_profile": "運送配置檔",
-      "shipping_option": "運送選項",
-      "tax_region": "稅務地區",
-      "api_key": "API 金鑰",
-      "return_reason": "退貨原因",
-      "refund_reason": "退款原因",
-      "workflow": "工作流程",
-      "translation": "翻譯"
-    },
-    "actions": {
-      "read": "檢視",
-      "create": "建立",
-      "update": "編輯",
-      "delete": "刪除"
     }
   }
 }

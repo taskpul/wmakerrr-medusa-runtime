@@ -1,11 +1,9 @@
 import * as QueryConfig from "./query-config"
-import { Entities } from "./query-config"
 
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
-import { PolicyOperation } from "@medusajs/framework/utils"
 import {
   AdminCreateTaxRate,
   AdminCreateTaxRateRule,
@@ -18,15 +16,6 @@ import { MiddlewareRoute } from "@medusajs/framework/http"
 
 export const adminTaxRateRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    matcher: "/admin/tax-rates/*",
-    policies: [
-      {
-        resource: Entities.tax_rate,
-        operation: PolicyOperation.read,
-      },
-    ],
-  },
-  {
     method: "POST",
     matcher: "/admin/tax-rates",
     middlewares: [
@@ -35,12 +24,6 @@ export const adminTaxRateRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetTaxRateParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.tax_rate,
-        operation: PolicyOperation.create,
-      },
     ],
   },
   {
@@ -52,12 +35,6 @@ export const adminTaxRateRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetTaxRateParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.tax_rate,
-        operation: PolicyOperation.update,
-      },
     ],
   },
   {
@@ -79,12 +56,6 @@ export const adminTaxRateRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.tax_rate,
-        operation: PolicyOperation.read,
-      },
-    ],
   },
   {
     method: "POST",
@@ -96,12 +67,6 @@ export const adminTaxRateRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.tax_rate,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: "DELETE",
@@ -111,12 +76,6 @@ export const adminTaxRateRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetTaxRateParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.tax_rate,
-        operation: PolicyOperation.update,
-      },
     ],
   },
 ]

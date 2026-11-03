@@ -52,5 +52,5 @@ module.exports = defineConfig({
 
 - `entity_id` is the GitHub numeric user ID (as a string), not the email. `user_metadata` holds `email`, `name`, `avatar`, `profile_url`, `company`, `two_factor_authentication`, copied from the GitHub `/user` response.
 - Tokens (`access_token`, `refresh_token`, expiry timestamps) are saved in `provider_metadata` and overwritten on every login.
-- A request body `callback_url` overrides the configured `callbackUrl` for that flow; it's stored in state and reused in the token exchange. There is no allowlist (unlike `auth-oidc`).
+- A request body `callback_url` overrides the configured `callbackUrl` for that flow; it's stored in state and reused in the token exchange. There is no built-in callback allowlist.
 - The callback must carry the `state` query param issued by `authenticate`; if it's missing or no longer stored, it returns `"No state provided, or session expired"`.

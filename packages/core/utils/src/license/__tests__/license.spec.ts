@@ -26,7 +26,7 @@ function signToken(
 
 const validClaims = {
   sub: "org_01",
-  features: ["auth-oidc", "rbac"],
+  features: ["feature-a", "feature-b"],
 }
 
 afterEach(() => {
@@ -69,7 +69,10 @@ describe("loadLicense", () => {
       signToken(validClaims).split(".")
     const tampered = [
       headerSegment,
-      toSegment({ ...validClaims, features: ["rbac", "auth-oidc", "extra"] }),
+      toSegment({
+        ...validClaims,
+        features: ["feature-b", "feature-a", "extra"],
+      }),
       signatureSegment,
     ].join(".")
 
@@ -101,11 +104,11 @@ describe("loadLicense", () => {
 
   it("returns null when the claims are missing or malformed", () => {
     const malformedClaims = [
-      { features: ["rbac"] },
+      { features: ["feature-a"] },
       { sub: "org_1" },
-      { sub: 1, features: ["rbac"] },
-      { sub: "org_1", features: "rbac" },
-      { sub: "org_1", features: ["rbac", 1] },
+      { sub: 1, features: ["feature-a"] },
+      { sub: "org_1", features: "feature-a" },
+      { sub: "org_1", features: ["feature-a", 1] },
     ]
 
     for (const claims of malformedClaims) {
@@ -116,25 +119,25 @@ describe("loadLicense", () => {
 
 describe("assertLicensed", () => {
   it("throws when there is no license", () => {
-    expect(() => assertLicensed(null, "rbac")).toThrow(
+    expect(() => assertLicensed(null, "feature-a")).toThrow(
       /missing or could not be verified\. Set MEDUSA_LICENSE_KEY/
     )
-    expect(() => assertLicensed(undefined, "rbac")).toThrow(
+    expect(() => assertLicensed(undefined, "feature-a")).toThrow(
       /missing or could not be verified/
     )
   })
 
   it("throws when the license does not cover the feature", () => {
-    const license = { token: "token", sub: "org_01", features: ["auth-oidc"] }
+    const license = { token: "token", sub: "org_01", features: ["feature-b"] }
 
-    expect(() => assertLicensed(license, "rbac")).toThrow(
-      /does not cover the "rbac" feature\. It covers: auth-oidc\./
+    expect(() => assertLicensed(license, "feature-a")).toThrow(
+      /does not cover the "feature-a" feature\. It covers: feature-b\./
     )
   })
 
   it("passes when the license covers the feature", () => {
     const license = { token: "token", ...validClaims }
 
-    expect(() => assertLicensed(license, "rbac")).not.toThrow()
+    expect(() => assertLicensed(license, "feature-a")).not.toThrow()
   })
 })

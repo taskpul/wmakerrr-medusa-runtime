@@ -12,7 +12,6 @@ import {
   RequestQueryFields,
 } from "@medusajs/types"
 import { MedusaContainer } from "../container"
-import { PolicyAction } from "./middlewares/check-permissions"
 import { RestrictedFields } from "./utils/restricted-fields"
 
 /**
@@ -67,10 +66,6 @@ export type MiddlewareRoute = {
   bodyParser?: ParserConfig
   additionalDataValidator?: ZodRawShape
   middlewares?: MiddlewareFunction[]
-  /** @ignore */
-  policies?:
-    | { resource: string; operation: string }
-    | Array<{ resource: string; operation: string | string[] }>
 }
 
 export type MiddlewaresConfig = {
@@ -104,9 +99,6 @@ export type MiddlewareDescriptor = {
   matcher: string | RegExp
   methods?: MiddlewareVerb | MiddlewareVerb[]
   handler: MiddlewareFunction
-  policies?:
-    | { resource: string; operation: string }
-    | Array<{ resource: string; operation: string | string[] }>
 }
 
 export type BodyParserConfigRoute = {
@@ -267,7 +259,6 @@ export interface AuthenticatedMedusaRequest<
   auth_context: AuthContext
   publishable_key_context?: PublishableKeyContext
   secret_key_context?: SecretKeyContext
-  policies?: PolicyAction[]
 }
 
 export interface MedusaStoreRequest<
@@ -276,7 +267,6 @@ export interface MedusaStoreRequest<
 > extends MedusaRequest<Body, QueryFields> {
   auth_context?: AuthContext
   publishable_key_context: PublishableKeyContext
-  policies?: PolicyAction | PolicyAction[]
 }
 
 export type MedusaResponse<Body = unknown> = Response<Body>

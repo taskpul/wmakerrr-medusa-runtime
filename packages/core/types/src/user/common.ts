@@ -38,13 +38,6 @@ export interface UserDTO {
   metadata: Record<string, unknown> | null
 
   /**
-   * The RBAC roles assigned to the user.
-   *
-   * @ignore
-   */
-  roles?: string[] | null
-
-  /**
    * The creation date of the user.
    */
   created_at: Date
@@ -125,13 +118,6 @@ export interface InviteDTO {
    * Holds custom data in key-value pairs.
    */
   metadata: Record<string, unknown> | null
-
-  /**
-   * The RBAC roles to assign to the user when the invite is accepted.
-   *
-   * @ignore
-   */
-  roles?: string[] | null
 
   /**
    * The invite's creation date.

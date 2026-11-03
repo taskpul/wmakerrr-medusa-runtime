@@ -6,7 +6,10 @@ import { UserGeneralSection } from "./components/user-general-section"
 import { userLoader } from "./loader"
 
 import { SingleColumnPageSkeleton } from "../../../components/common/skeleton"
-import { LayoutComposer, detailPageDefaultEntries } from "../../../components/layout-composer"
+import {
+  LayoutComposer,
+  detailPageDefaultEntries,
+} from "../../../components/layout-composer"
 
 export const UserDetail = () => {
   const initialData = useLoaderData() as Awaited<ReturnType<typeof userLoader>>
@@ -40,7 +43,7 @@ export const UserDetail = () => {
             <LayoutComposer.Entry id="UserGeneralSection">
               <UserGeneralSection user={user} />
             </LayoutComposer.Entry>
-            {detailPageDefaultEntries(user, { permissions: false })}
+            {detailPageDefaultEntries(user)}
           </>
         ),
       }}

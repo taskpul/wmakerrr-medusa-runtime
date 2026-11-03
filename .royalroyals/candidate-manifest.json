@@ -8,16 +8,52 @@
   "sourceRevision": null,
   "artifactDigest": null,
   "packages": [],
+  "baselineEvidence": {
+    "status": "local-reproducible",
+    "publicPackageGraph": {
+      "path": ".royalroyals/public-package-graph.json",
+      "sha256": "d7d3e41d3bfb69a99cf8fcbb32c8a8ce9e56e1ca5ffcab3933920154fb013683"
+    },
+    "verifier": {
+      "path": ".royalroyals/verify-baseline.mjs",
+      "sha256": "5ce313950ea3035284e667b4d88cdffd90f7ee294b2f569b06a7e464d91ea8d0"
+    },
+    "commands": [
+      "yarn install --immutable",
+      "yarn build",
+      "node .royalroyals/verify-bootstrap.mjs",
+      "node .royalroyals/verify-baseline.mjs"
+    ],
+    "admissionNote": "Local reproducibility evidence only. Protected CI and review evidence are still required before any admission gate can pass."
+  },
   "gates": {
     "source-provenance": { "status": "pending", "evidenceDigest": null },
     "public-api-compatibility": { "status": "pending", "evidenceDigest": null },
     "tenant-schema-ownership": { "status": "pending", "evidenceDigest": null },
-    "cross-store-relationships": { "status": "pending", "evidenceDigest": null },
-    "request-role-database-isolation": { "status": "pending", "evidenceDigest": null },
-    "service-workflow-isolation": { "status": "pending", "evidenceDigest": null },
-    "background-context-isolation": { "status": "pending", "evidenceDigest": null },
-    "shared-service-namespacing": { "status": "pending", "evidenceDigest": null },
-    "shared-dedicated-dual-mode": { "status": "pending", "evidenceDigest": null },
+    "cross-store-relationships": {
+      "status": "pending",
+      "evidenceDigest": null
+    },
+    "request-role-database-isolation": {
+      "status": "pending",
+      "evidenceDigest": null
+    },
+    "service-workflow-isolation": {
+      "status": "pending",
+      "evidenceDigest": null
+    },
+    "background-context-isolation": {
+      "status": "pending",
+      "evidenceDigest": null
+    },
+    "shared-service-namespacing": {
+      "status": "pending",
+      "evidenceDigest": null
+    },
+    "shared-dedicated-dual-mode": {
+      "status": "pending",
+      "evidenceDigest": null
+    },
     "upgrade-rehearsal": { "status": "pending", "evidenceDigest": null },
     "rollback-forward-repair": { "status": "pending", "evidenceDigest": null },
     "phase-2-attack-matrix": { "status": "pending", "evidenceDigest": null }

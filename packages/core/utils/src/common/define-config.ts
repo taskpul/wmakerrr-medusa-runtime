@@ -302,11 +302,6 @@ function resolveModules(
       disable: !FeatureFlag.isFeatureEnabled("translation"),
     },
     {
-      resolve: MODULE_PACKAGE_NAMES[Modules.RBAC],
-      disable: !FeatureFlag.isFeatureEnabled("rbac"),
-    },
-
-    {
       resolve: MODULE_PACKAGE_NAMES[Modules.AUTH],
       options: authModuleOptions,
     },

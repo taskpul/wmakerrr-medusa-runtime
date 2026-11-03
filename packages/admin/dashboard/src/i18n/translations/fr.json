@@ -2787,7 +2787,6 @@
     "editUser": "Modifier l'utilisateur",
     "inviteUser": "Inviter un utilisateur",
     "inviteUserHint": "Inviter un nouvel utilisateur à votre boutique.",
-    "inviteRolesTooltip": "Si aucun rôle n'est sélectionné, l'utilisateur sera invité avec un rôle de super-utilisateur.",
     "sendInvite": "Envoyer l'invitation",
     "pendingInvites": "Invitations en attente",
     "deleteInviteWarning": "Vous êtes sur le point de supprimer l'invitation pour {{email}}. Cette action ne peut être annulée.",
@@ -2804,11 +2803,6 @@
       "pending": "En attente",
       "expired": "Expiré"
     },
-    "roles": {
-      "admin": "Admin",
-      "developer": "Développeur",
-      "member": "Membre"
-    },
     "list": {
       "empty": {
         "heading": "Aucun utilisateur trouvé",
@@ -2822,127 +2816,6 @@
     "deleteUserWarning": "Vous êtes sur le point de supprimer l'utilisateur {{name}}. Cette action ne peut être annulée.",
     "deleteUserSuccess": "L'utilisateur {{name}} a été supprimé avec succès",
     "invite": "Inviter"
-  },
-  "roles": {
-    "domain": "Rôles",
-    "subtitle": "Gérer les rôles d'accès et les permissions.",
-    "create": {
-      "header": "Créer un rôle",
-      "hint": "Créer un rôle pour gérer les accès dans votre administration.",
-      "successToast": "Rôle {{name}} créé",
-      "tabs": {
-        "details": "Détails",
-        "permissions": "Permissions"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Aucune permission",
-          "description": "Il n'y a aucune permission à sélectionner."
-        },
-        "filtered": {
-          "heading": "Aucun résultat",
-          "description": "Aucune permission ne correspond aux critères de filtrage."
-        }
-      }
-    },
-    "edit": {
-      "header": "Modifier le rôle",
-      "successToast": "Rôle {{name}} mis à jour"
-    },
-    "delete": {
-      "title": "Supprimer le rôle",
-      "description": "Vous êtes sur le point de supprimer le rôle {{name}}. Cette action ne peut être annulée.",
-      "successToast": "Rôle {{name}} supprimé"
-    },
-    "fields": {
-      "permissions": "Permissions"
-    },
-    "actions": {
-      "managePermissions": "Gérer les permissions"
-    },
-    "users": {
-      "alreadyAddedTooltip": "L'utilisateur a déjà ce rôle.",
-      "unassignableRoleTooltip": "Vous n'avez pas accès à l'attribution de ce rôle — vos permissions ne couvrent pas toutes ses politiques.",
-      "add": {
-        "successToast_one": "L'utilisateur a été ajouté au rôle avec succès.",
-        "successToast_other": "Les utilisateurs ont été ajoutés au rôle avec succès.",
-        "list": {
-          "noRecordsMessage": "Créez d'abord un utilisateur."
-        }
-      },
-      "remove": {
-        "title_one": "Supprimer l'utilisateur",
-        "title_other": "Supprimer les utilisateurs",
-        "description_one": "Vous êtes sur le point de retirer {{count}} utilisateur du rôle. Cette action ne peut être annulée.",
-        "description_other": "Vous êtes sur le point de retirer {{count}} utilisateurs du rôle. Cette action ne peut être annulée."
-      },
-      "list": {
-        "noRecordsMessage": "Ce rôle n'a pas d'utilisateurs."
-      }
-    },
-    "permissions": {
-      "header": "Gérer les permissions",
-      "hint": "Sélectionnez les permissions que ce rôle doit inclure.",
-      "empty": {
-        "heading": "Aucune permission",
-        "description": "Il n'y a aucune permission à sélectionner."
-      },
-      "filtered": {
-        "heading": "Aucun résultat",
-        "description": "Aucune permission ne correspond aux critères de filtrage."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Aucun rôle trouvé",
-        "description": "Créez des rôles pour gérer les accès dans votre administration."
-      },
-      "filtered": {
-        "heading": "Aucun résultat",
-        "description": "Aucun rôle ne correspond aux critères de filtrage."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Politiques",
-    "subtitle": "Définir les permissions que les rôles peuvent accorder.",
-    "create": {
-      "header": "Créer une politique",
-      "hint": "Définir une nouvelle permission pouvant être attachée aux rôles.",
-      "successToast": "Politique {{key}} créée"
-    },
-    "edit": {
-      "header": "Modifier la politique",
-      "successToast": "Politique {{key}} mise à jour"
-    },
-    "delete": {
-      "title": "Supprimer la politique",
-      "description": "Vous êtes sur le point de supprimer la politique {{key}}. Cette action ne peut être annulée.",
-      "successToast": "Politique {{key}} supprimée"
-    },
-    "fields": {
-      "roles": "Rôles",
-      "users": "Utilisateurs"
-    },
-    "list": {
-      "empty": {
-        "heading": "Aucune politique trouvée",
-        "description": "Créez des politiques pour gérer les permissions que les rôles peuvent accorder."
-      },
-      "filtered": {
-        "heading": "Aucun résultat",
-        "description": "Aucune politique ne correspond aux critères de filtrage."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Aucun rôle n'inclut encore cette politique."
-      },
-      "empty": {
-        "heading": "Aucun rôle",
-        "description": "Aucun rôle n'inclut encore cette politique."
-      }
-    }
   },
   "translations": {
     "domain": "Traductions",
@@ -3798,57 +3671,6 @@
       "continueWithProvider": "Continuer avec {{provider}}",
       "or": "ou",
       "provisioningFailed": "Nous n'avons pas pu finaliser votre connexion. Veuillez contacter un administrateur."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Accès refusé",
-      "description": "Vous n'avez pas la permission d'accéder à cette page.",
-      "requiredPermission": "Permission requise : {{permission}}",
-      "action": "Vous n'avez pas la permission d'effectuer cette action."
-    },
-    "requiredPermissions": {
-      "title": "Permissions requises",
-      "none": "Aucune permission déclarée dans cette vue.",
-      "anyOf": "L'une de",
-      "allOf": "Toutes les",
-      "source": "Source : {{source}}"
-    },
-    "resources": {
-      "customer": "Client",
-      "customer_group": "Groupe de clients",
-      "order": "Commande",
-      "product": "Produit",
-      "product_category": "Catégorie de produit",
-      "product_collection": "Collection de produits",
-      "product_tag": "Étiquette de produit",
-      "product_type": "Type de produit",
-      "inventory": "Inventaire",
-      "reservation": "Réservation",
-      "promotion": "Promotion",
-      "campaign": "Campagne",
-      "price_list": "Liste de prix",
-      "region": "Région",
-      "store": "Boutique",
-      "user": "Utilisateur",
-      "role": "Rôle",
-      "permission": "Permission",
-      "sales_channel": "Canal de vente",
-      "stock_location": "Emplacement de stock",
-      "shipping_profile": "Profil de livraison",
-      "shipping_option": "Option de livraison",
-      "tax_region": "Région fiscale",
-      "api_key": "Clé API",
-      "return_reason": "Motif de retour",
-      "refund_reason": "Motif de remboursement",
-      "workflow": "Workflow",
-      "translation": "Traduction"
-    },
-    "actions": {
-      "read": "Voir",
-      "create": "Créer",
-      "update": "Modifier",
-      "delete": "Supprimer"
     }
   }
 }

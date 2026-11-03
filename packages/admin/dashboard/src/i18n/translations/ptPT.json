@@ -2781,7 +2781,6 @@
     "editUser": "Editar utilizador",
     "inviteUser": "Convidar utilizador",
     "inviteUserHint": "Convida um novo utilizador para a tua loja.",
-    "inviteRolesTooltip": "Se não for selecionada nenhuma função, o utilizador será convidado com a função de superutilizador.",
     "sendInvite": "Enviar convite",
     "pendingInvites": "Convites pendentes",
     "deleteInviteWarning": "Estás prestes a eliminar o convite de {{email}}. Esta ação não pode ser anulada.",
@@ -2798,11 +2797,6 @@
       "pending": "Pendente",
       "expired": "Expirado"
     },
-    "roles": {
-      "admin": "Admin",
-      "developer": "Programador",
-      "member": "Membro"
-    },
     "list": {
       "empty": {
         "heading": "Nenhum utilizador encontrado",
@@ -2816,127 +2810,6 @@
     "deleteUserWarning": "Estás prestes a eliminar o utilizador {{name}}. Esta ação não pode ser anulada.",
     "deleteUserSuccess": "Utilizador {{name}} eliminado com sucesso",
     "invite": "Convidar"
-  },
-  "roles": {
-    "domain": "Funções",
-    "subtitle": "Gerir funções de acesso e permissões.",
-    "create": {
-      "header": "Criar função",
-      "hint": "Cria uma função para gerir o acesso no teu painel.",
-      "successToast": "Função {{name}} criada",
-      "tabs": {
-        "details": "Detalhes",
-        "permissions": "Permissões"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Sem permissões",
-          "description": "Não há permissões para selecionar."
-        },
-        "filtered": {
-          "heading": "Sem resultados",
-          "description": "Nenhuma permissão corresponde aos critérios de filtro atuais."
-        }
-      }
-    },
-    "edit": {
-      "header": "Editar função",
-      "successToast": "Função {{name}} atualizada"
-    },
-    "delete": {
-      "title": "Eliminar função",
-      "description": "Estás prestes a eliminar a função {{name}}. Esta ação não pode ser anulada.",
-      "successToast": "Função {{name}} eliminada"
-    },
-    "fields": {
-      "permissions": "Permissões"
-    },
-    "actions": {
-      "managePermissions": "Gerir permissões"
-    },
-    "users": {
-      "alreadyAddedTooltip": "O utilizador já tem esta função.",
-      "unassignableRoleTooltip": "Não tens acesso para atribuir esta função — as tuas permissões não abrangem todas as suas políticas.",
-      "add": {
-        "successToast_one": "O utilizador foi adicionado à função com sucesso.",
-        "successToast_other": "Os utilizadores foram adicionados à função com sucesso.",
-        "list": {
-          "noRecordsMessage": "Cria primeiro um utilizador."
-        }
-      },
-      "remove": {
-        "title_one": "Remover utilizador",
-        "title_other": "Remover utilizadores",
-        "description_one": "Estás prestes a remover {{count}} utilizador da função. Esta ação não pode ser anulada.",
-        "description_other": "Estás prestes a remover {{count}} utilizadores da função. Esta ação não pode ser anulada."
-      },
-      "list": {
-        "noRecordsMessage": "Esta função não tem utilizadores."
-      }
-    },
-    "permissions": {
-      "header": "Gerir permissões",
-      "hint": "Seleciona as permissões que esta função deve incluir.",
-      "empty": {
-        "heading": "Sem permissões",
-        "description": "Não há permissões para selecionar."
-      },
-      "filtered": {
-        "heading": "Sem resultados",
-        "description": "Nenhuma permissão corresponde aos critérios de filtro atuais."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Nenhuma função encontrada",
-        "description": "Cria funções para gerir o acesso no teu painel."
-      },
-      "filtered": {
-        "heading": "Sem resultados",
-        "description": "Nenhuma função corresponde aos critérios de filtro atuais."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Políticas",
-    "subtitle": "Define as permissões que as funções podem conceder.",
-    "create": {
-      "header": "Criar política",
-      "hint": "Define uma nova permissão que pode ser associada a funções.",
-      "successToast": "Política {{key}} criada"
-    },
-    "edit": {
-      "header": "Editar política",
-      "successToast": "Política {{key}} atualizada"
-    },
-    "delete": {
-      "title": "Eliminar política",
-      "description": "Estás prestes a eliminar a política {{key}}. Esta ação não pode ser anulada.",
-      "successToast": "Política {{key}} eliminada"
-    },
-    "fields": {
-      "roles": "Funções",
-      "users": "Utilizadores"
-    },
-    "list": {
-      "empty": {
-        "heading": "Nenhuma política encontrada",
-        "description": "Cria políticas para gerir as permissões que as funções podem conceder."
-      },
-      "filtered": {
-        "heading": "Sem resultados",
-        "description": "Nenhuma política corresponde aos critérios de filtro atuais."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Nenhuma função inclui esta política ainda."
-      },
-      "empty": {
-        "heading": "Sem funções",
-        "description": "Nenhuma função inclui esta política ainda."
-      }
-    }
   },
   "translations": {
     "domain": "Traduções",
@@ -3791,57 +3664,6 @@
       "continueWithProvider": "Continuar com {{provider}}",
       "or": "ou",
       "provisioningFailed": "Não foi possível concluir o teu início de sessão. Contacta um administrador."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Acesso Negado",
-      "description": "Não tens permissão para aceder a esta página.",
-      "requiredPermission": "Permissão necessária: {{permission}}",
-      "action": "Não tens permissão para realizar esta ação."
-    },
-    "requiredPermissions": {
-      "title": "Permissões necessárias",
-      "none": "Nenhuma permissão declarada nesta vista.",
-      "anyOf": "Qualquer uma de",
-      "allOf": "Todas de",
-      "source": "Origem: {{source}}"
-    },
-    "resources": {
-      "customer": "Cliente",
-      "customer_group": "Grupo de Clientes",
-      "order": "Encomenda",
-      "product": "Produto",
-      "product_category": "Categoria de Produto",
-      "product_collection": "Coleção de Produto",
-      "product_tag": "Etiqueta de Produto",
-      "product_type": "Tipo de Produto",
-      "inventory": "Stock",
-      "reservation": "Reserva",
-      "promotion": "Promoção",
-      "campaign": "Campanha",
-      "price_list": "Lista de Preços",
-      "region": "Região",
-      "store": "Loja",
-      "user": "Utilizador",
-      "role": "Função",
-      "permission": "Permissão",
-      "sales_channel": "Canal de Venda",
-      "stock_location": "Localização de Stock",
-      "shipping_profile": "Perfil de Envio",
-      "shipping_option": "Opção de Envio",
-      "tax_region": "Região Fiscal",
-      "api_key": "Chave API",
-      "return_reason": "Motivo de Devolução",
-      "refund_reason": "Motivo de Reembolso",
-      "workflow": "Fluxo de Trabalho",
-      "translation": "Tradução"
-    },
-    "actions": {
-      "read": "Ver",
-      "create": "Criar",
-      "update": "Editar",
-      "delete": "Eliminar"
     }
   }
 }

@@ -21,7 +21,7 @@ module.exports = defineConfig({
 ```
 
 - Options read by the service constructor: `jwt_secret` (required, the module throws `INVALID_DATA` without it), `jwt_public_key`, `jwt_options` (jsonwebtoken `SignOptions`), `jwt_verify_options`, `valid_duration` (seconds; falls back to `jwt_options.expiresIn`, then 24 hours).
-- In apps, prefer the core-flows workflows: `createUsersWorkflow`, `updateUsersWorkflow`, `deleteUsersWorkflow`, `createUserAccountWorkflow`, `removeUserAccountWorkflow`, `createInvitesWorkflow`, `acceptInviteWorkflow`, `refreshInviteTokensWorkflow`, `deleteInvitesWorkflow`, and RBAC ones (`assignUserRolesWorkflow`, `removeUserRolesWorkflow`).
+- In apps, prefer the core-flows workflows: `createUsersWorkflow`, `updateUsersWorkflow`, `deleteUsersWorkflow`, `createUserAccountWorkflow`, `removeUserAccountWorkflow`, `createInvitesWorkflow`, `acceptInviteWorkflow`, `refreshInviteTokensWorkflow`, and `deleteInvitesWorkflow`.
 
 ```ts
 import { Modules } from "@medusajs/framework/utils"
@@ -48,7 +48,6 @@ Generated CRUD for both models, plus:
 
 - Internal CRUD events plus `user.user.invite.token_generated` (`UserEvents.INVITE_TOKEN_GENERATED` from `@medusajs/framework/utils`), emitted by `createInvites`, `updateInvites`, and `refreshInviteTokens`.
 - Workflow events: `user.created|updated|deleted` (`UserWorkflowEvents`) and `invite.created|accepted|deleted|resent` (`InviteWorkflowEvents`).
-- Module links: `user-rbac-role` (`user_rbac_role`) and `invite-rbac-role` (`invite_rbac_role`) to the RBAC Module.
 
 Docs: https://docs.medusajs.com/resources/commerce-modules/user.md, https://docs.medusajs.com/resources/commerce-modules/user/module-options.md, https://docs.medusajs.com/resources/commerce-modules/user/user-creation-flows.md, https://docs.medusajs.com/resources/commerce-modules/user/invite-user-subscriber.md
 

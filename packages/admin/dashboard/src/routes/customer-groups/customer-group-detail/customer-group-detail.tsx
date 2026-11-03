@@ -57,7 +57,7 @@ export const CustomerGroupDetail = () => {
                 <CustomerGroupCustomerSection group={customer_group} />
               )}
             </LayoutComposer.Entry>
-            {detailPageDefaultEntries(customer_group, { permissions: false })}
+            {detailPageDefaultEntries(customer_group)}
           </>
         ),
       }}

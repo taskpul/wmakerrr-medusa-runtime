@@ -7,7 +7,6 @@ import { Link, useLocation } from "react-router-dom"
 
 import { useSearchIndexes } from "../../../hooks/api/search-indexes"
 import { useFeatureFlag } from "../../../providers/feature-flag-provider"
-import { usePermissions } from "../../../providers/permissions-provider"
 import { useExtension } from "../../../providers/extension-provider"
 import { LayoutComposer } from "../../layout-composer"
 import { CUSTOMIZE_IDS } from "../../layout-composer/constants"
@@ -25,13 +24,8 @@ export const SettingsLayout = () => {
 
 const useSettingRoutes = (): INavItem[] => {
   const isTranslationsEnabled = useFeatureFlag("translation")
-  const isRbacEnabled = useFeatureFlag("rbac")
   const isViewConfigEnabled = useFeatureFlag("view_configurations")
-  const { hasPermission } = usePermissions()
   const { t } = useTranslation()
-
-  const canReadRoles = isRbacEnabled && hasPermission("rbac_role:read")
-  const canReadPolicies = isRbacEnabled && hasPermission("rbac_policy:read")
 
   return useMemo(
     () => [
@@ -43,22 +37,6 @@ const useSettingRoutes = (): INavItem[] => {
         label: t("users.domain"),
         to: "/settings/users",
       },
-      ...(canReadRoles
-        ? [
-            {
-              label: t("roles.domain"),
-              to: "/settings/roles",
-            },
-          ]
-        : []),
-      ...(canReadPolicies
-        ? [
-            {
-              label: t("policies.domain"),
-              to: "/settings/policies",
-            },
-          ]
-        : []),
       {
         label: t("regions.domain"),
         to: "/settings/regions",
@@ -108,13 +86,7 @@ const useSettingRoutes = (): INavItem[] => {
           ]
         : []),
     ],
-    [
-      t,
-      isTranslationsEnabled,
-      isViewConfigEnabled,
-      canReadRoles,
-      canReadPolicies,
-    ]
+    [t, isTranslationsEnabled, isViewConfigEnabled]
   )
 }
 

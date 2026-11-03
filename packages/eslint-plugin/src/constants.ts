@@ -80,5 +80,4 @@ export const MODULES_BY_VALUE: Record<string, string> = {
   settings: "SETTINGS",
   caching: "CACHING",
   translation: "TRANSLATION",
-  rbac: "RBAC",
 }

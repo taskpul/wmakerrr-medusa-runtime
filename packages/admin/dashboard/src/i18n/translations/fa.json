@@ -2766,7 +2766,6 @@
     "editUser": "ویرایش کاربر",
     "inviteUser": "دعوت کاربر",
     "inviteUserHint": "یک کاربر جدید به فروشگاه خود دعوت کنید.",
-    "inviteRolesTooltip": "اگر هیچ نقشی انتخاب نشود، کاربر با نقش ابرکاربر دعوت می‌شود.",
     "sendInvite": "ارسال دعوت",
     "pendingInvites": "دعوت‌های در انتظار",
     "deleteInviteWarning": "شما در حال حذف دعوت برای {{email}} هستید. این عمل قابل بازگشت نیست.",
@@ -2783,11 +2782,6 @@
       "pending": "در انتظار",
       "expired": "منقضی شده"
     },
-    "roles": {
-      "admin": "ادمین",
-      "developer": "توسعه‌دهنده",
-      "member": "عضو"
-    },
     "list": {
       "empty": {
         "heading": "کاربری یافت نشد",
@@ -2801,127 +2795,6 @@
     "deleteUserWarning": "شما در حال حذف کاربر {{name}} هستید. این عمل قابل بازگشت نیست.",
     "deleteUserSuccess": "کاربر {{name}} با موفقیت حذف شد",
     "invite": "دعوت"
-  },
-  "roles": {
-    "domain": "نقش‌ها",
-    "subtitle": "مدیریت نقش‌های دسترسی و مجوزها.",
-    "create": {
-      "header": "ایجاد نقش",
-      "hint": "یک نقش برای مدیریت دسترسی در پنل ادمین ایجاد کنید.",
-      "successToast": "نقش {{name}} ایجاد شد",
-      "tabs": {
-        "details": "جزئیات",
-        "permissions": "مجوزها"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "هیچ مجوزی",
-          "description": "هیچ مجوزی برای انتخاب وجود ندارد."
-        },
-        "filtered": {
-          "heading": "نتیجه‌ای یافت نشد",
-          "description": "هیچ مجوزی با معیارهای فیلتر فعلی مطابقت ندارد."
-        }
-      }
-    },
-    "edit": {
-      "header": "ویرایش نقش",
-      "successToast": "نقش {{name}} به‌روزرسانی شد"
-    },
-    "delete": {
-      "title": "حذف نقش",
-      "description": "شما در حال حذف نقش {{name}} هستید. این عمل قابل بازگشت نیست.",
-      "successToast": "نقش {{name}} حذف شد"
-    },
-    "fields": {
-      "permissions": "مجوزها"
-    },
-    "actions": {
-      "managePermissions": "مدیریت مجوزها"
-    },
-    "users": {
-      "alreadyAddedTooltip": "کاربر از قبل این نقش را دارد.",
-      "unassignableRoleTooltip": "شما دسترسی اختصاص این نقش را ندارید — مجوزهای شما تمام سیاست‌های آن را پوشش نمی‌دهد.",
-      "add": {
-        "successToast_one": "کاربر با موفقیت به نقش اضافه شد.",
-        "successToast_other": "کاربران با موفقیت به نقش اضافه شدند.",
-        "list": {
-          "noRecordsMessage": "ابتدا یک کاربر ایجاد کنید."
-        }
-      },
-      "remove": {
-        "title_one": "حذف کاربر",
-        "title_other": "حذف کاربران",
-        "description_one": "شما در حال حذف {{count}} کاربر از نقش هستید. این عمل قابل بازگشت نیست.",
-        "description_other": "شما در حال حذف {{count}} کاربر از نقش هستید. این عمل قابل بازگشت نیست."
-      },
-      "list": {
-        "noRecordsMessage": "این نقش کاربری ندارد."
-      }
-    },
-    "permissions": {
-      "header": "مدیریت مجوزها",
-      "hint": "مجوزهایی که این نقش باید شامل شود را انتخاب کنید.",
-      "empty": {
-        "heading": "هیچ مجوزی",
-        "description": "هیچ مجوزی برای انتخاب وجود ندارد."
-      },
-      "filtered": {
-        "heading": "نتیجه‌ای یافت نشد",
-        "description": "هیچ مجوزی با معیارهای فیلتر فعلی مطابقت ندارد."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "هیچ نقشی یافت نشد",
-        "description": "نقش‌هایی برای مدیریت دسترسی در پنل ادمین ایجاد کنید."
-      },
-      "filtered": {
-        "heading": "نتیجه‌ای یافت نشد",
-        "description": "هیچ نقشی با معیارهای فیلتر فعلی مطابقت ندارد."
-      }
-    }
-  },
-  "policies": {
-    "domain": "سیاست‌ها",
-    "subtitle": "تعریف مجوزهایی که نقش‌ها می‌توانند اعطا کنند.",
-    "create": {
-      "header": "ایجاد سیاست",
-      "hint": "یک مجوز جدید تعریف کنید که بتوان به نقش‌ها متصل کرد.",
-      "successToast": "سیاست {{key}} ایجاد شد"
-    },
-    "edit": {
-      "header": "ویرایش سیاست",
-      "successToast": "سیاست {{key}} به‌روزرسانی شد"
-    },
-    "delete": {
-      "title": "حذف سیاست",
-      "description": "شما در حال حذف سیاست {{key}} هستید. این عمل قابل بازگشت نیست.",
-      "successToast": "سیاست {{key}} حذف شد"
-    },
-    "fields": {
-      "roles": "نقش‌ها",
-      "users": "کاربران"
-    },
-    "list": {
-      "empty": {
-        "heading": "هیچ سیاستی یافت نشد",
-        "description": "سیاست‌هایی برای مدیریت مجوزهایی که نقش‌ها می‌توانند اعطا کنند ایجاد کنید."
-      },
-      "filtered": {
-        "heading": "نتیجه‌ای یافت نشد",
-        "description": "هیچ سیاستی با معیارهای فیلتر فعلی مطابقت ندارد."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "هنوز هیچ نقشی شامل این سیاست نیست."
-      },
-      "empty": {
-        "heading": "هیچ نقشی",
-        "description": "هنوز هیچ نقشی شامل این سیاست نیست."
-      }
-    }
   },
   "translations": {
     "domain": "ترجمه‌ها",
@@ -3776,57 +3649,6 @@
       "continueWithProvider": "ادامه با {{provider}}",
       "or": "یا",
       "provisioningFailed": "ورود شما امکان‌پذیر نشد. لطفاً با مدیر سیستم تماس بگیرید."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "دسترسی رد شد",
-      "description": "شما اجازه دسترسی به این صفحه را ندارید.",
-      "requiredPermission": "مجوز مورد نیاز: {{permission}}",
-      "action": "شما اجازه انجام این عمل را ندارید."
-    },
-    "requiredPermissions": {
-      "title": "مجوزهای مورد نیاز",
-      "none": "هیچ مجوزی در این نما اعلام نشده است.",
-      "anyOf": "یکی از",
-      "allOf": "همه ی",
-      "source": "منبع: {{source}}"
-    },
-    "resources": {
-      "customer": "مشتری",
-      "customer_group": "گروه مشتری",
-      "order": "سفارش",
-      "product": "محصول",
-      "product_category": "دسته‌بندی محصول",
-      "product_collection": "مجموعه محصول",
-      "product_tag": "برچسب محصول",
-      "product_type": "نوع محصول",
-      "inventory": "موجودی",
-      "reservation": "رزرو",
-      "promotion": "تبلیغات",
-      "campaign": "کمپین",
-      "price_list": "لیست قیمت",
-      "region": "منطقه",
-      "store": "فروشگاه",
-      "user": "کاربر",
-      "role": "نقش",
-      "permission": "مجوز",
-      "sales_channel": "کانال فروش",
-      "stock_location": "مکان موجودی",
-      "shipping_profile": "پروفایل حمل و نقل",
-      "shipping_option": "گزینه حمل و نقل",
-      "tax_region": "منطقه مالیاتی",
-      "api_key": "کلید API",
-      "return_reason": "دلیل بازگشت",
-      "refund_reason": "دلیل بازپرداخت",
-      "workflow": "گردش کار",
-      "translation": "ترجمه"
-    },
-    "actions": {
-      "read": "مشاهده",
-      "create": "ایجاد",
-      "update": "ویرایش",
-      "delete": "حذف"
     }
   }
 }

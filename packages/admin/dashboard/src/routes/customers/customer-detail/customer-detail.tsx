@@ -8,7 +8,6 @@ import {
 } from "../../../components/layout-composer"
 import { useCustomer } from "../../../hooks/api/customers"
 import { useFeatureFlag } from "../../../providers/feature-flag-provider"
-import { PermissionsRequirementsProvider } from "../../../providers/permissions-provider"
 import { CustomerAddressSection } from "./components/customer-address-section/customer-address-section"
 import { CustomerGeneralSection } from "./components/customer-general-section"
 import { CustomerGroupSection } from "./components/customer-group-section"
@@ -39,43 +38,41 @@ export const CustomerDetail = () => {
   }
 
   return (
-    <PermissionsRequirementsProvider>
-      <LayoutComposer
-        widgetsZonePrefix="customer.details"
-        preferredLayoutId={CORE_LAYOUT_IDS.TWO_COLUMN}
-        data={customer}
-        sections={{
-          main: (
-            <>
-              <LayoutComposer.Entry id="CustomerGeneralSection">
-                <CustomerGeneralSection customer={customer} />
-              </LayoutComposer.Entry>
-              <LayoutComposer.Entry id="CustomerOrderSection">
-                {isViewConfigEnabled ? (
-                  <ConfigurableCustomerOrderSection customer={customer} />
-                ) : (
-                  <CustomerOrderSection customer={customer} />
-                )}
-              </LayoutComposer.Entry>
-              <LayoutComposer.Entry id="CustomerGroupSection">
-                {isViewConfigEnabled ? (
-                  <ConfigurableCustomerGroupSection customer={customer} />
-                ) : (
-                  <CustomerGroupSection customer={customer} />
-                )}
-              </LayoutComposer.Entry>
-              {detailPageDefaultEntries(customer)}
-            </>
-          ),
-          side: (
-            <>
-              <LayoutComposer.Entry id="CustomerAddressSection">
-                <CustomerAddressSection customer={customer} />
-              </LayoutComposer.Entry>
-            </>
-          ),
-        }}
-      />
-    </PermissionsRequirementsProvider>
+    <LayoutComposer
+      widgetsZonePrefix="customer.details"
+      preferredLayoutId={CORE_LAYOUT_IDS.TWO_COLUMN}
+      data={customer}
+      sections={{
+        main: (
+          <>
+            <LayoutComposer.Entry id="CustomerGeneralSection">
+              <CustomerGeneralSection customer={customer} />
+            </LayoutComposer.Entry>
+            <LayoutComposer.Entry id="CustomerOrderSection">
+              {isViewConfigEnabled ? (
+                <ConfigurableCustomerOrderSection customer={customer} />
+              ) : (
+                <CustomerOrderSection customer={customer} />
+              )}
+            </LayoutComposer.Entry>
+            <LayoutComposer.Entry id="CustomerGroupSection">
+              {isViewConfigEnabled ? (
+                <ConfigurableCustomerGroupSection customer={customer} />
+              ) : (
+                <CustomerGroupSection customer={customer} />
+              )}
+            </LayoutComposer.Entry>
+            {detailPageDefaultEntries(customer)}
+          </>
+        ),
+        side: (
+          <>
+            <LayoutComposer.Entry id="CustomerAddressSection">
+              <CustomerAddressSection customer={customer} />
+            </LayoutComposer.Entry>
+          </>
+        ),
+      }}
+    />
   )
 }

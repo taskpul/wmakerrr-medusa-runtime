@@ -1,12 +1,10 @@
 import * as QueryConfig from "./query-config"
-import { Entities } from "./query-config"
 
 import {
   validateAndTransformBody,
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
-import { PolicyOperation } from "@medusajs/framework/utils"
 import { createLinkBody } from "../../utils/validators"
 import {
   AdminCreateApiKey,
@@ -18,15 +16,6 @@ import {
 
 export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    matcher: "/admin/api-keys/*",
-    policies: [
-      {
-        resource: Entities.api_key,
-        operation: PolicyOperation.read,
-      },
-    ],
-  },
-  {
     method: ["GET"],
     matcher: "/admin/api-keys",
     middlewares: [
@@ -34,12 +23,6 @@ export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetApiKeysParams,
         QueryConfig.listTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.api_key,
-        operation: PolicyOperation.read,
-      },
     ],
   },
   {
@@ -62,12 +45,6 @@ export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.api_key,
-        operation: PolicyOperation.create,
-      },
-    ],
   },
   {
     method: ["POST"],
@@ -78,23 +55,6 @@ export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetApiKeyParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.api_key,
-        operation: PolicyOperation.update,
-      },
-    ],
-  },
-  {
-    method: ["DELETE"],
-    matcher: "/admin/api-keys/:id",
-    middlewares: [],
-    policies: [
-      {
-        resource: Entities.api_key,
-        operation: PolicyOperation.delete,
-      },
     ],
   },
   {
@@ -107,12 +67,6 @@ export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.api_key,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: ["POST"],
@@ -123,12 +77,6 @@ export const adminApiKeyRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetApiKeyParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.api_key,
-        operation: PolicyOperation.update,
-      },
     ],
   },
 ]

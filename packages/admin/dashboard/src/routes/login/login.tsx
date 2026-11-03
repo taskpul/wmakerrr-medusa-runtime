@@ -11,7 +11,6 @@ import { useExtension } from "../../providers/extension-provider"
 import { CloudAuthLogin } from "./components/cloud-auth-login"
 import { EmailPassLogin } from "./components/email-pass-login"
 import { MfaChallengeCard } from "./components/mfa-challenge-card"
-import { SsoLogin } from "./components/sso-login"
 import { hasEmailPassProvider } from "./utils"
 
 export const Login = () => {
@@ -97,10 +96,6 @@ export const Login = () => {
             return <Component key={i} />
           })}
           <CloudAuthLogin onMfaChallenge={handleMfaChallenge} />
-          <SsoLogin
-            providers={providerList}
-            onMfaChallenge={handleMfaChallenge}
-          />
         </div>
         {isEmailPassInstalled && (
           <span className="txt-small my-6 text-ui-fg-muted">

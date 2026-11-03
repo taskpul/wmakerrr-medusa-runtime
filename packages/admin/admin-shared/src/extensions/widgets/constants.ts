@@ -347,24 +347,6 @@ const INVENTORY_ITEM_INJECTION_ZONES = [
   "inventory_item.list",
 ] as const
 
-const LEGACY_ROLE_INJECTION_ZONES = [
-  "role.details.before",
-  "role.details.after",
-  "role.list.before",
-  "role.list.after",
-] as const
-
-const ROLE_INJECTION_ZONES = ["role.details", "role.list"] as const
-
-const LEGACY_POLICY_INJECTION_ZONES = [
-  "policy.details.before",
-  "policy.details.after",
-  "policy.list.before",
-  "policy.list.after",
-] as const
-
-const POLICY_INJECTION_ZONES = ["policy.details", "policy.list"] as const
-
 const LEGACY_DRAFT_ORDER_INJECTION_ZONES = [
   "draft_order.details.before",
   "draft_order.details.after",
@@ -497,10 +479,6 @@ export const INJECTION_ZONES = [
   ...REFUND_REASON_INJECTION_ZONES,
   ...LEGACY_INVENTORY_ITEM_INJECTION_ZONES,
   ...INVENTORY_ITEM_INJECTION_ZONES,
-  ...LEGACY_ROLE_INJECTION_ZONES,
-  ...ROLE_INJECTION_ZONES,
-  ...LEGACY_POLICY_INJECTION_ZONES,
-  ...POLICY_INJECTION_ZONES,
   ...LEGACY_DRAFT_ORDER_INJECTION_ZONES,
   ...DRAFT_ORDER_INJECTION_ZONES,
   ...LEGACY_STORE_CREDIT_ACCOUNT_INJECTION_ZONES,

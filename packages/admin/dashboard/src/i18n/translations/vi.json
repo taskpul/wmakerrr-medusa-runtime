@@ -2728,11 +2728,6 @@
       "pending": "Đang chờ",
       "expired": "Hết hạn"
     },
-    "roles": {
-      "admin": "Quản trị viên",
-      "developer": "Nhà phát triển",
-      "member": "Thành viên"
-    },
     "list": {
       "empty": {
         "heading": "Không tìm thấy người dùng",
@@ -2748,8 +2743,7 @@
     "invite": "Mời",
     "copyResetPasswordLink": "Sao chép liên kết đặt lại mật khẩu",
     "copyResetPasswordLinkHint": "Liên kết hết hạn trong thời gian ngắn và vô hiệu hóa mọi liên kết đặt lại mật khẩu đã gửi trước đó cho người dùng này.",
-    "copyResetPasswordLinkSuccess": "Liên kết đặt lại mật khẩu đã được sao chép vào bộ nhớ tạm",
-    "inviteRolesTooltip": "Nếu không có vai trò nào được chọn, người dùng sẽ được mời với vai trò siêu người dùng."
+    "copyResetPasswordLinkSuccess": "Liên kết đặt lại mật khẩu đã được sao chép vào bộ nhớ tạm"
   },
   "store": {
     "domain": "Cửa hàng",
@@ -3470,98 +3464,6 @@
     "viewingPersonalLayout": "Bạn đang xem bố cục cá nhân",
     "viewingSystemLayout": "Bạn đang xem bố cục hệ thống"
   },
-  "permissions": {
-    "accessDenied": {
-      "action": "Bạn không có quyền thực hiện thao tác này.",
-      "description": "Bạn không có quyền truy cập trang này.",
-      "requiredPermission": "Quyền bắt buộc: {{permission}}",
-      "title": "Từ chối truy cập"
-    },
-    "actions": {
-      "create": "Tạo",
-      "delete": "Xóa",
-      "read": "Xem",
-      "update": "Chỉnh sửa"
-    },
-    "requiredPermissions": {
-      "allOf": "Tất cả",
-      "anyOf": "Bất kỳ",
-      "none": "Không có quyền nào được khai báo trong chế độ xem này.",
-      "source": "Nguồn: {{source}}",
-      "title": "Quyền bắt buộc"
-    },
-    "resources": {
-      "api_key": "API Key",
-      "campaign": "Chiến dịch",
-      "customer": "Khách hàng",
-      "customer_group": "Nhóm khách hàng",
-      "inventory": "Kho hàng",
-      "order": "Đơn hàng",
-      "permission": "Quyền",
-      "price_list": "Bảng giá",
-      "product": "Sản phẩm",
-      "product_category": "Danh mục sản phẩm",
-      "product_collection": "Bộ sưu tập sản phẩm",
-      "product_tag": "Thẻ sản phẩm",
-      "product_type": "Loại sản phẩm",
-      "promotion": "Khuyến mãi",
-      "refund_reason": "Lý do hoàn tiền",
-      "region": "Khu vực",
-      "reservation": "Đặt trước",
-      "return_reason": "Lý do trả hàng",
-      "role": "Vai trò",
-      "sales_channel": "Kênh bán hàng",
-      "shipping_option": "Tùy chọn vận chuyển",
-      "shipping_profile": "Hồ sơ vận chuyển",
-      "stock_location": "Vị trí kho",
-      "store": "Cửa hàng",
-      "tax_region": "Khu vực thuế",
-      "translation": "Bản dịch",
-      "user": "Người dùng",
-      "workflow": "Luồng công việc"
-    }
-  },
-  "policies": {
-    "create": {
-      "header": "Tạo chính sách",
-      "hint": "Xác định quyền mới có thể gắn vào các vai trò.",
-      "successToast": "Chính sách {{key}} đã được tạo"
-    },
-    "delete": {
-      "description": "Bạn sắp xóa chính sách {{key}}. Hành động này không thể hoàn tác.",
-      "successToast": "Chính sách {{key}} đã được xóa",
-      "title": "Xóa chính sách"
-    },
-    "domain": "Chính sách",
-    "edit": {
-      "header": "Chỉnh sửa chính sách",
-      "successToast": "Chính sách {{key}} đã được cập nhật"
-    },
-    "fields": {
-      "roles": "Vai trò",
-      "users": "Người dùng"
-    },
-    "list": {
-      "empty": {
-        "description": "Tạo chính sách để quản lý các quyền mà vai trò có thể cấp.",
-        "heading": "Không tìm thấy chính sách nào"
-      },
-      "filtered": {
-        "description": "Không có chính sách nào khớp với tiêu chí lọc hiện tại.",
-        "heading": "Không có kết quả"
-      }
-    },
-    "roles": {
-      "empty": {
-        "description": "Chưa có vai trò nào bao gồm chính sách này.",
-        "heading": "Không có vai trò"
-      },
-      "list": {
-        "noRecordsMessage": "Chưa có vai trò nào bao gồm chính sách này."
-      }
-    },
-    "subtitle": "Xác định các quyền mà vai trò có thể cấp."
-  },
   "productOptions": {
     "create": {
       "header": "Tạo tùy chọn sản phẩm",
@@ -3657,86 +3559,6 @@
       }
     },
     "subtitle": "Quản lý các lý do để phát hành hoàn tiền."
-  },
-  "roles": {
-    "actions": {
-      "managePermissions": "Quản lý quyền"
-    },
-    "create": {
-      "header": "Tạo vai trò",
-      "hint": "Tạo vai trò để quản lý quyền truy cập trong trang quản trị của bạn.",
-      "permissions": {
-        "empty": {
-          "description": "Không có quyền nào để chọn.",
-          "heading": "Không có quyền"
-        },
-        "filtered": {
-          "description": "Không có quyền nào khớp với tiêu chí bộ lọc hiện tại.",
-          "heading": "Không có kết quả"
-        }
-      },
-      "successToast": "Vai trò {{name}} đã được tạo",
-      "tabs": {
-        "details": "Chi tiết",
-        "permissions": "Quyền"
-      }
-    },
-    "delete": {
-      "description": "Bạn sắp xóa vai trò {{name}}. Hành động này không thể hoàn tác.",
-      "successToast": "Vai trò {{name}} đã được xóa",
-      "title": "Xóa vai trò"
-    },
-    "domain": "Vai trò",
-    "edit": {
-      "header": "Chỉnh sửa vai trò",
-      "successToast": "Vai trò {{name}} đã được cập nhật"
-    },
-    "fields": {
-      "permissions": "Quyền"
-    },
-    "list": {
-      "empty": {
-        "description": "Tạo vai trò để quản lý quyền truy cập trong trang quản trị của bạn.",
-        "heading": "Không tìm thấy vai trò nào"
-      },
-      "filtered": {
-        "description": "Không có vai trò nào khớp với tiêu chí bộ lọc hiện tại.",
-        "heading": "Không có kết quả"
-      }
-    },
-    "permissions": {
-      "empty": {
-        "description": "Không có quyền nào để chọn.",
-        "heading": "Không có quyền"
-      },
-      "filtered": {
-        "description": "Không có quyền nào khớp với tiêu chí bộ lọc hiện tại.",
-        "heading": "Không có kết quả"
-      },
-      "header": "Quản lý quyền",
-      "hint": "Chọn các quyền mà vai trò này nên bao gồm."
-    },
-    "subtitle": "Quản lý vai trò truy cập và quyền.",
-    "users": {
-      "add": {
-        "list": {
-          "noRecordsMessage": "Tạo người dùng trước."
-        },
-        "successToast_one": "Người dùng đã được thêm vào vai trò thành công.",
-        "successToast_other": "Các người dùng đã được thêm vào vai trò thành công."
-      },
-      "alreadyAddedTooltip": "Người dùng đã có vai trò này.",
-      "list": {
-        "noRecordsMessage": "Vai trò này không có người dùng."
-      },
-      "remove": {
-        "description_one": "Bạn sắp xóa {{count}} người dùng khỏi vai trò. Hành động này không thể hoàn tác.",
-        "description_other": "Bạn sắp xóa {{count}} người dùng khỏi vai trò. Hành động này không thể hoàn tác.",
-        "title_one": "Xóa người dùng",
-        "title_other": "Xóa người dùng"
-      },
-      "unassignableRoleTooltip": "Bạn không có quyền gán vai trò này — quyền của bạn không bao phủ tất cả các chính sách của nó."
-    }
   },
   "searchIndexes": {
     "delete": "Xóa chỉ mục",

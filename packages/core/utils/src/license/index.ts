@@ -1,14 +1,6 @@
 import { createPublicKey, KeyObject, verify } from "crypto"
 import { MedusaError } from "../common/errors"
 
-export const LicenseFeature = {
-  RBAC: "rbac",
-  AUTH_OIDC: "auth-oidc",
-} as const
-
-export type LicenseFeature =
-  (typeof LicenseFeature)[keyof typeof LicenseFeature]
-
 export const LICENSE_KEY_ENV_VAR = "MEDUSA_LICENSE_KEY"
 export const LICENSE_PUBLIC_KEY_ENV_VAR = "MEDUSA_LICENSE_PUBLIC_KEY"
 

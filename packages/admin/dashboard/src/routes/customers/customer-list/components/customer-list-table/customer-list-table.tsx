@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next"
 import { Link, useLocation } from "react-router-dom"
 
 import { HttpTypes } from "@medusajs/types"
-import { PermissionGuard } from "../../../../../components/common/permission-guard"
 import { _DataTable } from "../../../../../components/table/data-table"
 import { useCustomers } from "../../../../../hooks/api/customers"
 import { useCustomerTableColumns } from "../../../../../hooks/table/columns/use-customer-table-columns"
@@ -55,13 +54,11 @@ export const CustomerListTable = () => {
           <Button size="small" variant="secondary" asChild>
             <Link to={`export${location.search}`}>{t("actions.export")}</Link>
           </Button>
-          <PermissionGuard resource="customer" operation="create">
-            <Link to="/customers/create">
-              <Button size="small" variant="secondary">
-                {t("actions.create")}
-              </Button>
-            </Link>
-          </PermissionGuard>
+          <Link to="/customers/create">
+            <Button size="small" variant="secondary">
+              {t("actions.create")}
+            </Button>
+          </Link>
         </div>
       </div>
       <_DataTable

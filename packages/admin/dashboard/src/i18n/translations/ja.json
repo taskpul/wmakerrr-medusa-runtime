@@ -2787,7 +2787,6 @@
     "editUser": "ユーザーを編集",
     "inviteUser": "ユーザーを招待",
     "inviteUserHint": "新しいユーザーをストアに招待します。",
-    "inviteRolesTooltip": "ロールが選択されていない場合、ユーザーはスーパーユーザーロールで招待されます。",
     "sendInvite": "招待を送信",
     "pendingInvites": "保留中の招待",
     "deleteInviteWarning": "{{email}}への招待を削除しようとしています 。この操作は取り消せません。",
@@ -2804,11 +2803,6 @@
       "pending": "保留中",
       "expired": "期限切れ"
     },
-    "roles": {
-      "admin": "管理者",
-      "developer": "開発者",
-      "member": "メンバー"
-    },
     "list": {
       "empty": {
         "heading": "ユーザーが見つかりません",
@@ -2822,127 +2816,6 @@
     "deleteUserWarning": "{{name}}を削除しようとしています。この操作は取り消せません。",
     "deleteUserSuccess": "ユーザー{{name}}が正常に削除されました",
     "invite": "招待"
-  },
-  "roles": {
-    "domain": "ロール",
-    "subtitle": "アクセスロールと権限を管理します。",
-    "create": {
-      "header": "ロールを作成",
-      "hint": "管理画面のアクセスを管理するためのロールを作成します。",
-      "successToast": "ロール{{name}}が作成されました",
-      "tabs": {
-        "details": "詳細",
-        "permissions": "権限"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "権限がありません",
-          "description": "選択できる権限がありません。"
-        },
-        "filtered": {
-          "heading": "結果がありません",
-          "description": "現在のフィルター条件に一致する権限はありません。"
-        }
-      }
-    },
-    "edit": {
-      "header": "ロールを編集",
-      "successToast": "ロール{{name}}が更新されました"
-    },
-    "delete": {
-      "title": "ロールを削除",
-      "description": "ロール{{name}}を削除しようとしています。この操作は元に戻せません。",
-      "successToast": "ロール{{name}}が削除されました"
-    },
-    "fields": {
-      "permissions": "権限"
-    },
-    "actions": {
-      "managePermissions": "権限を管理"
-    },
-    "users": {
-      "alreadyAddedTooltip": "ユーザーはすでにこのロールを持っています。",
-      "unassignableRoleTooltip": "このロールを割り当てるアクセス権がありません。あなたの権限では、このロールのすべてのポリシーをカバーできません。",
-      "add": {
-        "successToast_one": "ユーザーが正常にロールに追加されました。",
-        "successToast_other": "ユーザーが正常にロールに追加されました。",
-        "list": {
-          "noRecordsMessage": "先にユーザーを作成してください。"
-        }
-      },
-      "remove": {
-        "title_one": "ユーザーを削除",
-        "title_other": "ユーザーを削除",
-        "description_one": "ロールから{{count}}人のユーザーを削除しようとしています。この操作は元に戻せません。",
-        "description_other": "ロールから{{count}}人のユーザーを削除しようとしています。この操作は元に戻せません。"
-      },
-      "list": {
-        "noRecordsMessage": "このロールにはユーザーがいません。"
-      }
-    },
-    "permissions": {
-      "header": "権限を管理",
-      "hint": "このロールに含めるべき権限を選択してください。",
-      "empty": {
-        "heading": "権限がありません",
-        "description": "選択できる権限がありません。"
-      },
-      "filtered": {
-        "heading": "結果がありません",
-        "description": "現在のフィルター条件に一致する権限はありません。"
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "ロールが見つかりません",
-        "description": "管理画面のアクセスを管理するためのロールを作成してください。"
-      },
-      "filtered": {
-        "heading": "結果がありません",
-        "description": "現在のフィルター条件に一致するロールはありません。"
-      }
-    }
-  },
-  "policies": {
-    "domain": "ポリシー",
-    "subtitle": "ロールが付与できる権限を定義します。",
-    "create": {
-      "header": "ポリシーを作成",
-      "hint": "ロールに紐付けられる新しい権限を定義します。",
-      "successToast": "ポリシー{{key}}が作成されました"
-    },
-    "edit": {
-      "header": "ポリシーを編集",
-      "successToast": "ポリシー{{key}}が更新されました"
-    },
-    "delete": {
-      "title": "ポリシーを削除",
-      "description": "ポリシー{{key}}を削除しようとしています。この操作は元に戻せません。",
-      "successToast": "ポリシー{{key}}が削除されました"
-    },
-    "fields": {
-      "roles": "ロール",
-      "users": "ユーザー"
-    },
-    "list": {
-      "empty": {
-        "heading": "ポリシーが見つかりません",
-        "description": "ロールが付与できる権限を管理するためのポリシーを作成してください。"
-      },
-      "filtered": {
-        "heading": "結果がありません",
-        "description": "現在のフィルター条件に一致するポリシーはありません。"
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "このポリシーを含むロールはまだありません。"
-      },
-      "empty": {
-        "heading": "ロールがありません",
-        "description": "このポリシーを含むロールはまだありません。"
-      }
-    }
   },
   "translations": {
     "domain": "翻訳",
@@ -3798,57 +3671,6 @@
       "continueWithProvider": "{{provider}}で続ける",
       "or": "または",
       "provisioningFailed": "サインインを完了できませんでした。管理者にお問い合わせください。"
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "アクセスが拒否されました",
-      "description": "このページにアクセスする権限がありません。",
-      "requiredPermission": "必要な権限: {{permission}}",
-      "action": "この操作を実行する権限がありません。"
-    },
-    "requiredPermissions": {
-      "title": "必要な権限",
-      "none": "このビューには権限が宣言されていません。",
-      "anyOf": "いずれか",
-      "allOf": "すべて",
-      "source": "ソース: {{source}}"
-    },
-    "resources": {
-      "customer": "顧客",
-      "customer_group": "顧客グループ",
-      "order": "注文",
-      "product": "商品",
-      "product_category": "商品カテゴリー",
-      "product_collection": "商品コレクション",
-      "product_tag": "商品タグ",
-      "product_type": "商品タイプ",
-      "inventory": "在庫",
-      "reservation": "予約",
-      "promotion": "プロモーション",
-      "campaign": "キャンペーン",
-      "price_list": "価格リスト",
-      "region": "地域",
-      "store": "ストア",
-      "user": "ユーザー",
-      "role": "ロール",
-      "permission": "権限",
-      "sales_channel": "販売チャネル",
-      "stock_location": "在庫場所",
-      "shipping_profile": "配送プロファイル",
-      "shipping_option": "配送オプション",
-      "tax_region": "税地域",
-      "api_key": "APIキー",
-      "return_reason": "返品理由",
-      "refund_reason": "返金理由",
-      "workflow": "ワークフロー",
-      "translation": "翻訳"
-    },
-    "actions": {
-      "read": "表示",
-      "create": "作成",
-      "update": "編集",
-      "delete": "削除"
     }
   }
 }

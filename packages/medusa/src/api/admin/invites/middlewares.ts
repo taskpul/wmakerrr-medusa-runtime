@@ -1,5 +1,4 @@
 import * as QueryConfig from "./query-config"
-import { Entities } from "./query-config"
 
 import {
   AdminCreateInvite,
@@ -14,7 +13,6 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
-import { PolicyOperation } from "@medusajs/framework/utils"
 import { authenticate } from "../../../utils/middlewares/authenticate-middleware"
 
 export const adminInviteRoutesMiddlewares: MiddlewareRoute[] = [
@@ -27,12 +25,6 @@ export const adminInviteRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.invite,
-        operation: PolicyOperation.read,
-      },
-    ],
   },
   {
     method: ["POST"],
@@ -43,12 +35,6 @@ export const adminInviteRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetInviteParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.invite,
-        operation: PolicyOperation.create,
-      },
     ],
   },
   {
@@ -74,22 +60,6 @@ export const adminInviteRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.invite,
-        operation: PolicyOperation.read,
-      },
-    ],
-  },
-  {
-    method: ["DELETE"],
-    matcher: "/admin/invites/:id",
-    policies: [
-      {
-        resource: Entities.invite,
-        operation: PolicyOperation.delete,
-      },
-    ],
   },
   {
     method: "POST",
@@ -99,12 +69,6 @@ export const adminInviteRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetInviteParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.invite,
-        operation: PolicyOperation.update,
-      },
     ],
   },
 ]

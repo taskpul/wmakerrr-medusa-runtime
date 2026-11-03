@@ -2845,7 +2845,6 @@
     "editUser": "Upravit uživatele",
     "inviteUser": "Pozvat uživatele",
     "inviteUserHint": "Pozvěte nového uživatele do vašeho obchodu.",
-    "inviteRolesTooltip": "Pokud není vybrána žádná role, uživatel bude pozván s rolí superuživatele.",
     "sendInvite": "Odeslat pozvánku",
     "pendingInvites": "Čekající pozvánky",
     "deleteInviteWarning": "Chystáte se smazat pozvánku pro {{email}}. Tuto akci nelze vrátit zpět.",
@@ -2862,11 +2861,6 @@
       "pending": "Čeká se",
       "expired": "Vypršelo"
     },
-    "roles": {
-      "admin": "Admin",
-      "developer": "Vývojář",
-      "member": "Člen"
-    },
     "list": {
       "empty": {
         "heading": "Žádní uživatelé nenalezeni",
@@ -2880,133 +2874,6 @@
     "deleteUserWarning": "Chystáte se smazat uživatele {{name}}. Tuto akci nelze vrátit zpět.",
     "deleteUserSuccess": "Uživatel {{name}} byl úspěšně smazán",
     "invite": "Pozvat"
-  },
-  "roles": {
-    "domain": "Role",
-    "subtitle": "Spravujte přístupové role a oprávnění.",
-    "create": {
-      "header": "Vytvořit roli",
-      "hint": "Vytvořte roli pro správu přístupu v administraci.",
-      "successToast": "Role {{name}} vytvořena",
-      "tabs": {
-        "details": "Detaily",
-        "permissions": "Oprávnění"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Žádná oprávnění",
-          "description": "Nejsou žádná oprávnění k výběru."
-        },
-        "filtered": {
-          "heading": "Žádné výsledky",
-          "description": "Žádná oprávnění neodpovídají aktuálním kritériím filtru."
-        }
-      }
-    },
-    "edit": {
-      "header": "Upravit roli",
-      "successToast": "Role {{name}} aktualizována"
-    },
-    "delete": {
-      "title": "Smazat roli",
-      "description": "Chystáte se smazat roli {{name}}. Tuto akci nelze vrátit zpět.",
-      "successToast": "Role {{name}} smazána"
-    },
-    "fields": {
-      "permissions": "Oprávnění"
-    },
-    "actions": {
-      "managePermissions": "Spravovat oprávnění"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Uživatel již má tuto roli.",
-      "unassignableRoleTooltip": "Nemáte přístup k přiřazení této role — vaše oprávnění nepokrývají všechny její zásady.",
-      "add": {
-        "successToast_one": "Uživatel byl úspěšně přidán do role.",
-        "successToast_few": "Uživatelé byli úspěšně přidáni do role.",
-        "successToast_many": "Uživatelé byli úspěšně přidáni do role.",
-        "successToast_other": "Uživatelé byli úspěšně přidáni do role.",
-        "list": {
-          "noRecordsMessage": "Nejprve vytvořte uživatele."
-        }
-      },
-      "remove": {
-        "title_one": "Odebrat uživatele",
-        "title_few": "Odebrat uživatele",
-        "title_many": "Odebrat uživatele",
-        "title_other": "Odebrat uživatele",
-        "description_one": "Chystáte se odebrat {{count}} uživatele z role. Tuto akci nelze vrátit zpět.",
-        "description_few": "Chystáte se odebrat {{count}} uživatele z role. Tuto akci nelze vrátit zpět.",
-        "description_many": "Chystáte se odebrat {{count}} uživatelů z role. Tuto akci nelze vrátit zpět.",
-        "description_other": "Chystáte se odebrat {{count}} uživatelů z role. Tuto akci nelze vrátit zpět."
-      },
-      "list": {
-        "noRecordsMessage": "Tato role nemá žádné uživatele."
-      }
-    },
-    "permissions": {
-      "header": "Spravovat oprávnění",
-      "hint": "Vyberte oprávnění, která by tato role měla zahrnovat.",
-      "empty": {
-        "heading": "Žádná oprávnění",
-        "description": "Nejsou žádná oprávnění k výběru."
-      },
-      "filtered": {
-        "heading": "Žádné výsledky",
-        "description": "Žádná oprávnění neodpovídají aktuálním kritériím filtru."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Žádné role nenalezeny",
-        "description": "Vytvořte role pro správu přístupu v administraci."
-      },
-      "filtered": {
-        "heading": "Žádné výsledky",
-        "description": "Žádné role neodpovídají aktuálním kritériím filtru."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Zásady",
-    "subtitle": "Definujte oprávnění, která mohou role udělovat.",
-    "create": {
-      "header": "Vytvořit zásadu",
-      "hint": "Definujte nové oprávnění, které lze přiřadit k rolím.",
-      "successToast": "Zásada {{key}} vytvořena"
-    },
-    "edit": {
-      "header": "Upravit zásadu",
-      "successToast": "Zásada {{key}} aktualizována"
-    },
-    "delete": {
-      "title": "Smazat zásadu",
-      "description": "Chystáte se smazat zásadu {{key}}. Tuto akci nelze vrátit zpět.",
-      "successToast": "Zásada {{key}} smazána"
-    },
-    "fields": {
-      "roles": "Role",
-      "users": "Uživatelé"
-    },
-    "list": {
-      "empty": {
-        "heading": "Žádné zásady nenalezeny",
-        "description": "Vytvořte zásady pro správu oprávnění, která mohou role udělovat."
-      },
-      "filtered": {
-        "heading": "Žádné výsledky",
-        "description": "Žádné zásady neodpovídají aktuálním kritériím filtru."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Žádné role zatím tuto zásadu neobsahují."
-      },
-      "empty": {
-        "heading": "Žádné role",
-        "description": "Žádné role zatím tuto zásadu neobsahují."
-      }
-    }
   },
   "store": {
     "domain": "Obchod",
@@ -3893,57 +3760,6 @@
       "continueWithProvider": "Pokračovat s {{provider}}",
       "or": "nebo",
       "provisioningFailed": "Přihlášení se nepodařilo dokončit. Kontaktujte prosím správce."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Přístup odepřen",
-      "description": "Nemáte oprávnění k přístupu na tuto stránku.",
-      "requiredPermission": "Požadované oprávnění: {{permission}}",
-      "action": "Nemáte oprávnění k provedení této akce."
-    },
-    "requiredPermissions": {
-      "title": "Požadovaná oprávnění",
-      "none": "V tomto zobrazení nejsou deklarována žádná oprávnění.",
-      "anyOf": "Jakékoli z",
-      "allOf": "Všechna z",
-      "source": "Zdroj: {{source}}"
-    },
-    "resources": {
-      "customer": "Zákazník",
-      "customer_group": "Skupina zákazníků",
-      "order": "Objednávka",
-      "product": "Produkt",
-      "product_category": "Kategorie produktu",
-      "product_collection": "Kolekce produktů",
-      "product_tag": "Štítek produktu",
-      "product_type": "Typ produktu",
-      "inventory": "Inventář",
-      "reservation": "Rezervace",
-      "promotion": "Propagace",
-      "campaign": "Kampaň",
-      "price_list": "Ceník",
-      "region": "Region",
-      "store": "Obchod",
-      "user": "Uživatel",
-      "role": "Role",
-      "permission": "Oprávnění",
-      "sales_channel": "Prodejní kanál",
-      "stock_location": "Skladové místo",
-      "shipping_profile": "Profil dopravy",
-      "shipping_option": "Možnost dopravy",
-      "tax_region": "Daňový region",
-      "api_key": "Klíč API",
-      "return_reason": "Důvod vrácení",
-      "refund_reason": "Důvod vrácení platby",
-      "workflow": "Pracovní postup",
-      "translation": "Překlad"
-    },
-    "actions": {
-      "read": "Zobrazit",
-      "create": "Vytvořit",
-      "update": "Upravit",
-      "delete": "Smazat"
     }
   }
 }

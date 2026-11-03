@@ -1,5 +1,4 @@
 import * as QueryConfig from "./query-config"
-import { Entities } from "./query-config"
 
 import {
   AdminCreateTaxRegion,
@@ -13,18 +12,8 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
-import { PolicyOperation } from "@medusajs/framework/utils"
 
 export const adminTaxRegionRoutesMiddlewares: MiddlewareRoute[] = [
-  {
-    matcher: "/admin/tax-regions/*",
-    policies: [
-      {
-        resource: Entities.tax_region,
-        operation: PolicyOperation.read,
-      },
-    ],
-  },
   {
     method: "POST",
     matcher: "/admin/tax-regions",
@@ -34,12 +23,6 @@ export const adminTaxRegionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetTaxRegionsParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.tax_region,
-        operation: PolicyOperation.create,
-      },
     ],
   },
   {
@@ -52,12 +35,6 @@ export const adminTaxRegionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.tax_region,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: "GET",
@@ -67,12 +44,6 @@ export const adminTaxRegionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetTaxRegionsParams,
         QueryConfig.listTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.tax_region,
-        operation: PolicyOperation.read,
-      },
     ],
   },
   {
@@ -89,11 +60,5 @@ export const adminTaxRegionRoutesMiddlewares: MiddlewareRoute[] = [
     method: "DELETE",
     matcher: "/admin/tax-regions/:id",
     middlewares: [],
-    policies: [
-      {
-        resource: Entities.tax_region,
-        operation: PolicyOperation.delete,
-      },
-    ],
   },
 ]

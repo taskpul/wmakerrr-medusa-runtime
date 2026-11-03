@@ -2781,7 +2781,6 @@
     "editUser": "Editar Usuário",
     "inviteUser": "Convidar Usuário",
     "inviteUserHint": "Convide um novo usuário para sua loja.",
-    "inviteRolesTooltip": "Se nenhuma função for selecionada, o usuário será convidado com função de superusuário.",
     "sendInvite": "Enviar convite",
     "pendingInvites": "Convites Pendentes",
     "deleteInviteWarning": "Você está prestes a excluir o convite para {{email}}. Esta ação não pode ser desfeita.",
@@ -2798,11 +2797,6 @@
       "pending": "Pendente",
       "expired": "Expirado"
     },
-    "roles": {
-      "admin": "Administrador",
-      "developer": "Desenvolvedor",
-      "member": "Membro"
-    },
     "list": {
       "empty": {
         "heading": "Nenhum usuário encontrado",
@@ -2816,127 +2810,6 @@
     "deleteUserWarning": "Você está prestes a excluir o usuário {{name}}. Esta ação não pode ser desfeita.",
     "deleteUserSuccess": "Usuário {{name}} excluído com sucesso",
     "invite": "Convite"
-  },
-  "roles": {
-    "domain": "Funções",
-    "subtitle": "Gerencie funções de acesso e permissões.",
-    "create": {
-      "header": "Criar função",
-      "hint": "Crie uma função para gerenciar o acesso no seu admin.",
-      "successToast": "Função {{name}} criada",
-      "tabs": {
-        "details": "Detalhes",
-        "permissions": "Permissões"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Nenhuma permissão",
-          "description": "Não há permissões para selecionar."
-        },
-        "filtered": {
-          "heading": "Nenhum resultado",
-          "description": "Nenhuma permissão corresponde aos critérios de filtro atuais."
-        }
-      }
-    },
-    "edit": {
-      "header": "Editar função",
-      "successToast": "Função {{name}} atualizada"
-    },
-    "delete": {
-      "title": "Excluir função",
-      "description": "Você está prestes a excluir a função {{name}}. Esta ação não pode ser desfeita.",
-      "successToast": "Função {{name}} excluída"
-    },
-    "fields": {
-      "permissions": "Permissões"
-    },
-    "actions": {
-      "managePermissions": "Gerenciar permissões"
-    },
-    "users": {
-      "alreadyAddedTooltip": "O usuário já possui esta função.",
-      "unassignableRoleTooltip": "Você não tem acesso para atribuir esta função — suas permissões não cobrem todas as políticas dela.",
-      "add": {
-        "successToast_one": "Usuário adicionado à função com sucesso.",
-        "successToast_other": "Usuários adicionados à função com sucesso.",
-        "list": {
-          "noRecordsMessage": "Crie um usuário primeiro."
-        }
-      },
-      "remove": {
-        "title_one": "Remover usuário",
-        "title_other": "Remover usuários",
-        "description_one": "Você está prestes a remover {{count}} usuário da função. Esta ação não pode ser desfeita.",
-        "description_other": "Você está prestes a remover {{count}} usuários da função. Esta ação não pode ser desfeita."
-      },
-      "list": {
-        "noRecordsMessage": "Esta função não possui usuários."
-      }
-    },
-    "permissions": {
-      "header": "Gerenciar permissões",
-      "hint": "Selecione as permissões que esta função deve incluir.",
-      "empty": {
-        "heading": "Nenhuma permissão",
-        "description": "Não há permissões para selecionar."
-      },
-      "filtered": {
-        "heading": "Nenhum resultado",
-        "description": "Nenhuma permissão corresponde aos critérios de filtro atuais."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Nenhuma função encontrada",
-        "description": "Crie funções para gerenciar o acesso no seu admin."
-      },
-      "filtered": {
-        "heading": "Nenhum resultado",
-        "description": "Nenhuma função corresponde aos critérios de filtro atuais."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Políticas",
-    "subtitle": "Defina as permissões que as funções podem conceder.",
-    "create": {
-      "header": "Criar política",
-      "hint": "Defina uma nova permissão que pode ser vinculada a funções.",
-      "successToast": "Política {{key}} criada"
-    },
-    "edit": {
-      "header": "Editar política",
-      "successToast": "Política {{key}} atualizada"
-    },
-    "delete": {
-      "title": "Excluir política",
-      "description": "Você está prestes a excluir a política {{key}}. Esta ação não pode ser desfeita.",
-      "successToast": "Política {{key}} excluída"
-    },
-    "fields": {
-      "roles": "Funções",
-      "users": "Usuários"
-    },
-    "list": {
-      "empty": {
-        "heading": "Nenhuma política encontrada",
-        "description": "Crie políticas para gerenciar as permissões que as funções podem conceder."
-      },
-      "filtered": {
-        "heading": "Nenhum resultado",
-        "description": "Nenhuma política corresponde aos critérios de filtro atuais."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Nenhuma função inclui esta política ainda."
-      },
-      "empty": {
-        "heading": "Nenhuma função",
-        "description": "Nenhuma função inclui esta política ainda."
-      }
-    }
   },
   "translations": {
     "domain": "Traduções",
@@ -3791,57 +3664,6 @@
       "continueWithProvider": "Continuar com {{provider}}",
       "or": "ou",
       "provisioningFailed": "Não foi possível concluir o seu login. Por favor, entre em contato com um administrador."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Acesso negado",
-      "description": "Você não tem permissão para acessar esta página.",
-      "requiredPermission": "Permissão necessária: {{permission}}",
-      "action": "Você não tem permissão para realizar esta ação."
-    },
-    "requiredPermissions": {
-      "title": "Permissões necessárias",
-      "none": "Nenhuma permissão declarada nesta visualização.",
-      "anyOf": "Qualquer uma de",
-      "allOf": "Todas de",
-      "source": "Origem: {{source}}"
-    },
-    "resources": {
-      "customer": "Cliente",
-      "customer_group": "Grupo de clientes",
-      "order": "Pedido",
-      "product": "Produto",
-      "product_category": "Categoria de produto",
-      "product_collection": "Coleção de produtos",
-      "product_tag": "Tag de produto",
-      "product_type": "Tipo de produto",
-      "inventory": "Inventário",
-      "reservation": "Reserva",
-      "promotion": "Promoção",
-      "campaign": "Campanha",
-      "price_list": "Lista de preços",
-      "region": "Região",
-      "store": "Loja",
-      "user": "Usuário",
-      "role": "Função",
-      "permission": "Permissão",
-      "sales_channel": "Canal de vendas",
-      "stock_location": "Local de estoque",
-      "shipping_profile": "Perfil de envio",
-      "shipping_option": "Opção de envio",
-      "tax_region": "Região fiscal",
-      "api_key": "Chave de API",
-      "return_reason": "Motivo de devolução",
-      "refund_reason": "Motivo de reembolso",
-      "workflow": "Workflow",
-      "translation": "Tradução"
-    },
-    "actions": {
-      "read": "Visualizar",
-      "create": "Criar",
-      "update": "Editar",
-      "delete": "Excluir"
     }
   }
 }

@@ -2850,7 +2850,6 @@
     "editUser": "Keisti administratorių",
     "inviteUser": "Pakviesti administratorių",
     "inviteUserHint": "Pakvieskite naują parduotuvės administratorių.",
-    "inviteRolesTooltip": "Jei rolė nepasirinkta, naudotojas bus pakviestas su supervartotojo role.",
     "sendInvite": "Siųsti pakvietimą",
     "pendingInvites": "Laukiantys pakvietimai",
     "deleteInviteWarning": "Ketinate pašalinti pakvietimą, išsiųstą {{email}}. Šis veiksmas neatstatomas.",
@@ -2867,11 +2866,6 @@
       "pending": "Laukia",
       "expired": "Negaliojantis"
     },
-    "roles": {
-      "admin": "Adkministratorius",
-      "developer": "Kūrėjas",
-      "member": "Narys"
-    },
     "list": {
       "empty": {
         "heading": "Administratorių nėra",
@@ -2885,133 +2879,6 @@
     "deleteUserWarning": "Ketinate pašalinti administratorių {{name}}. Šis veiksmas neatstatomas.",
     "deleteUserSuccess": "Administratorius {{name}} sėkmingai pašalintas",
     "invite": "Pakvietimas"
-  },
-  "roles": {
-    "domain": "Rolės",
-    "subtitle": "Tvarkyti prieigos roles ir leidimus.",
-    "create": {
-      "header": "Sukurti rolę",
-      "hint": "Sukurkite rolę, kad valdytumėte prieigą savo administravimo skydelyje.",
-      "successToast": "Rolė {{name}} sukurta",
-      "tabs": {
-        "details": "Informacija",
-        "permissions": "Leidimai"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Nėra leidimų",
-          "description": "Nėra leidimų pasirinkimui."
-        },
-        "filtered": {
-          "heading": "Nėra rezultatų",
-          "description": "Nė vienas leidimas neatitinka dabartinių filtro kriterijų."
-        }
-      }
-    },
-    "edit": {
-      "header": "Redaguoti rolę",
-      "successToast": "Rolė {{name}} atnaujinta"
-    },
-    "delete": {
-      "title": "Pašalinti rolę",
-      "description": "Ketinate pašalinti rolę {{name}}. Šis veiksmas neatstatomas.",
-      "successToast": "Rolė {{name}} pašalinta"
-    },
-    "fields": {
-      "permissions": "Leidimai"
-    },
-    "actions": {
-      "managePermissions": "Tvarkyti leidimus"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Naudotojas jau turi šią rolę.",
-      "unassignableRoleTooltip": "Neturite prieigos priskirti šios rolės – jūsų leidimai neapima visų jos politikų.",
-      "add": {
-        "successToast_one": "Naudotojas sėkmingai pridėtas prie rolės.",
-        "successToast_few": "Naudotojai sėkmingai pridėti prie rolės.",
-        "successToast_many": "Naudotojai sėkmingai pridėti prie rolės.",
-        "successToast_other": "Naudotojai sėkmingai pridėti prie rolės.",
-        "list": {
-          "noRecordsMessage": "Pirmiausia sukurkite naudotoją."
-        }
-      },
-      "remove": {
-        "title_one": "Pašalinti naudotoją",
-        "title_few": "Pašalinti naudotojus",
-        "title_many": "Pašalinti naudotojus",
-        "title_other": "Pašalinti naudotojus",
-        "description_one": "Ketinate pašalinti {{count}} naudotoją iš rolės. Šis veiksmas neatstatomas.",
-        "description_few": "Ketinate pašalinti {{count}} naudotojus iš rolės. Šis veiksmas neatstatomas.",
-        "description_many": "Ketinate pašalinti {{count}} naudotojų iš rolės. Šis veiksmas neatstatomas.",
-        "description_other": "Ketinate pašalinti {{count}} naudotojų iš rolės. Šis veiksmas neatstatomas."
-      },
-      "list": {
-        "noRecordsMessage": "Ši rolė neturi naudotojų."
-      }
-    },
-    "permissions": {
-      "header": "Tvarkyti leidimus",
-      "hint": "Pasirinkite leidimus, kuriuos turėtų apimti ši rolė.",
-      "empty": {
-        "heading": "Nėra leidimų",
-        "description": "Nėra leidimų pasirinkimui."
-      },
-      "filtered": {
-        "heading": "Nėra rezultatų",
-        "description": "Nė vienas leidimas neatitinka dabartinių filtro kriterijų."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Rolių nerasta",
-        "description": "Sukurkite roles, kad valdytumėte prieigą savo administravimo skydelyje."
-      },
-      "filtered": {
-        "heading": "Nėra rezultatų",
-        "description": "Nė viena rolė neatitinka dabartinių filtro kriterijų."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Politikos",
-    "subtitle": "Apibrėžkite leidimus, kuriuos rolės gali suteikti.",
-    "create": {
-      "header": "Sukurti politiką",
-      "hint": "Apibrėžkite naują leidimą, kurį galima priskirti rolėms.",
-      "successToast": "Politika {{key}} sukurta"
-    },
-    "edit": {
-      "header": "Redaguoti politiką",
-      "successToast": "Politika {{key}} atnaujinta"
-    },
-    "delete": {
-      "title": "Pašalinti politiką",
-      "description": "Ketinate pašalinti politiką {{key}}. Šis veiksmas neatstatomas.",
-      "successToast": "Politika {{key}} pašalinta"
-    },
-    "fields": {
-      "roles": "Rolės",
-      "users": "Naudotojai"
-    },
-    "list": {
-      "empty": {
-        "heading": "Politikų nerasta",
-        "description": "Sukurkite politikas, kad valdytumėte leidimus, kuriuos rolės gali suteikti."
-      },
-      "filtered": {
-        "heading": "Nėra rezultatų",
-        "description": "Nė viena politika neatitinka dabartinių filtro kriterijų."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Nė viena rolė dar neapima šios politikos."
-      },
-      "empty": {
-        "heading": "Nėra rolių",
-        "description": "Nė viena rolė dar neapima šios politikos."
-      }
-    }
   },
   "translations": {
     "domain": "Vertimai",
@@ -3899,57 +3766,6 @@
       "continueWithProvider": "Tęsti su {{provider}}",
       "or": "arba",
       "provisioningFailed": "Nepavyko užbaigti jūsų prisijungimo. Susisiekite su administratoriumi."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Prieiga uždrausta",
-      "description": "Neturite leidimo pasiekti šio puslapio.",
-      "requiredPermission": "Reikalingas leidimas: {{permission}}",
-      "action": "Neturite leidimo atlikti šio veiksmo."
-    },
-    "requiredPermissions": {
-      "title": "Reikalingi leidimai",
-      "none": "Šiame rodinyje nėra deklaruotų leidimų.",
-      "anyOf": "Bet kuris iš",
-      "allOf": "Visi iš",
-      "source": "Šaltinis: {{source}}"
-    },
-    "resources": {
-      "customer": "Klientas",
-      "customer_group": "Klientų grupė",
-      "order": "Užsakymas",
-      "product": "Prekė",
-      "product_category": "Prekės kategorija",
-      "product_collection": "Prekės kolekcija",
-      "product_tag": "Prekės žyma",
-      "product_type": "Prekės tipas",
-      "inventory": "Atsargos",
-      "reservation": "Rezervacija",
-      "promotion": "Akcija",
-      "campaign": "Kampanija",
-      "price_list": "Kainų sąrašas",
-      "region": "Regionas",
-      "store": "Parduotuvė",
-      "user": "Naudotojas",
-      "role": "Rolė",
-      "permission": "Leidimas",
-      "sales_channel": "Pardavimo kanalas",
-      "stock_location": "Sandėliavimo vieta",
-      "shipping_profile": "Siuntimo profilis",
-      "shipping_option": "Siuntimo parinktis",
-      "tax_region": "Mokesčių regionas",
-      "api_key": "API raktas",
-      "return_reason": "Grąžinimo priežastis",
-      "refund_reason": "Grąžinimo priežastis",
-      "workflow": "Darbo eiga",
-      "translation": "Vertimas"
-    },
-    "actions": {
-      "read": "Peržiūrėti",
-      "create": "Sukurti",
-      "update": "Redaguoti",
-      "delete": "Pašalinti"
     }
   }
 }

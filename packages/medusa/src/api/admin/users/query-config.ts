@@ -1,6 +1,5 @@
 export enum Entities {
   user = "user",
-  rbac_role = "rbac_role",
 }
 
 export const defaultAdminUserFields = [
@@ -25,16 +24,4 @@ export const listTransformQueryConfig = {
   ...retrieveTransformQueryConfig,
   isList: true,
   entity: Entities.user,
-}
-
-export const defaultAdminUserRolesFields = [
-  "user_id",
-  "rbac_role_id",
-  "rbac_role.*",
-]
-
-export const listUserRolesTransformQueryConfig = {
-  defaults: defaultAdminUserRolesFields,
-  isList: true,
-  entity: Entities.rbac_role,
 }

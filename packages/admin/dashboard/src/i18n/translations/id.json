@@ -2781,7 +2781,6 @@
     "editUser": "Edit Pengguna",
     "inviteUser": "Undang Pengguna",
     "inviteUserHint": "Undang pengguna baru ke toko Anda.",
-    "inviteRolesTooltip": "Jika tidak ada peran yang dipilih, pengguna akan diundang dengan peran superuser.",
     "sendInvite": "Kirim undangan",
     "pendingInvites": "Undangan Tertunda",
     "deleteInviteWarning": "Anda akan menghapus undangan untuk {{email}}. Tindakan ini tidak dapat dibatalkan.",
@@ -2798,11 +2797,6 @@
       "pending": "Tertunda",
       "expired": "Kedaluwarsa"
     },
-    "roles": {
-      "admin": "Admin",
-      "developer": "Pengembang",
-      "member": "Anggota"
-    },
     "list": {
       "empty": {
         "heading": "Tidak ada pengguna ditemukan",
@@ -2816,124 +2810,6 @@
     "deleteUserWarning": "Anda akan menghapus pengguna {{name}}. Tindakan ini tidak dapat dibatalkan.",
     "deleteUserSuccess": "Pengguna {{name}} berhasil dihapus",
     "invite": "Undang"
-  },
-  "roles": {
-    "domain": "Peran",
-    "subtitle": "Kelola peran akses dan izin.",
-    "create": {
-      "header": "Buat peran",
-      "hint": "Buat peran untuk mengelola akses di admin Anda.",
-      "successToast": "Peran {{name}} dibuat",
-      "tabs": {
-        "details": "Detail",
-        "permissions": "Izin"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Tidak ada izin",
-          "description": "Tidak ada izin untuk dipilih."
-        },
-        "filtered": {
-          "heading": "Tidak ada hasil",
-          "description": "Tidak ada izin yang cocok dengan kriteria filter saat ini."
-        }
-      }
-    },
-    "edit": {
-      "header": "Edit peran",
-      "successToast": "Peran {{name}} diperbarui"
-    },
-    "delete": {
-      "title": "Hapus peran",
-      "description": "Anda akan menghapus peran {{name}}. Tindakan ini tidak dapat dibatalkan.",
-      "successToast": "Peran {{name}} dihapus"
-    },
-    "fields": {
-      "permissions": "Izin"
-    },
-    "actions": {
-      "managePermissions": "Kelola izin"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Pengguna sudah memiliki peran ini.",
-      "unassignableRoleTooltip": "Anda tidak memiliki akses untuk menetapkan peran ini — izin Anda tidak mencakup semua kebijakannya.",
-      "add": {
-        "successToast_other": "Pengguna berhasil ditambahkan ke peran.",
-        "list": {
-          "noRecordsMessage": "Buat pengguna terlebih dahulu."
-        }
-      },
-      "remove": {
-        "title_other": "Hapus pengguna",
-        "description_other": "Anda akan menghapus {{count}} pengguna dari peran. Tindakan ini tidak dapat dibatalkan."
-      },
-      "list": {
-        "noRecordsMessage": "Peran ini tidak memiliki pengguna."
-      }
-    },
-    "permissions": {
-      "header": "Kelola izin",
-      "hint": "Pilih izin yang harus disertakan dalam peran ini.",
-      "empty": {
-        "heading": "Tidak ada izin",
-        "description": "Tidak ada izin untuk dipilih."
-      },
-      "filtered": {
-        "heading": "Tidak ada hasil",
-        "description": "Tidak ada izin yang cocok dengan kriteria filter saat ini."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Tidak ada peran ditemukan",
-        "description": "Buat peran untuk mengelola akses di admin Anda."
-      },
-      "filtered": {
-        "heading": "Tidak ada hasil",
-        "description": "Tidak ada peran yang cocok dengan kriteria filter saat ini."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Kebijakan",
-    "subtitle": "Tentukan izin yang dapat diberikan oleh peran.",
-    "create": {
-      "header": "Buat kebijakan",
-      "hint": "Tentukan izin baru yang dapat dilampirkan ke peran.",
-      "successToast": "Kebijakan {{key}} dibuat"
-    },
-    "edit": {
-      "header": "Edit kebijakan",
-      "successToast": "Kebijakan {{key}} diperbarui"
-    },
-    "delete": {
-      "title": "Hapus kebijakan",
-      "description": "Anda akan menghapus kebijakan {{key}}. Tindakan ini tidak dapat dibatalkan.",
-      "successToast": "Kebijakan {{key}} dihapus"
-    },
-    "fields": {
-      "roles": "Peran",
-      "users": "Pengguna"
-    },
-    "list": {
-      "empty": {
-        "heading": "Tidak ada kebijakan ditemukan",
-        "description": "Buat kebijakan untuk mengelola izin yang dapat diberikan oleh peran."
-      },
-      "filtered": {
-        "heading": "Tidak ada hasil",
-        "description": "Tidak ada kebijakan yang cocok dengan kriteria filter saat ini."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Belum ada peran yang menyertakan kebijakan ini."
-      },
-      "empty": {
-        "heading": "Tidak ada peran",
-        "description": "Belum ada peran yang menyertakan kebijakan ini."
-      }
-    }
   },
   "translations": {
     "domain": "Terjemahan",
@@ -3787,57 +3663,6 @@
       "continueWithProvider": "Lanjutkan dengan {{provider}}",
       "or": "atau",
       "provisioningFailed": "Kami tidak dapat menyelesaikan masuk Anda. Harap hubungi administrator."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Akses Ditolak",
-      "description": "Anda tidak memiliki izin untuk mengakses halaman ini.",
-      "requiredPermission": "Izin yang diperlukan: {{permission}}",
-      "action": "Anda tidak memiliki izin untuk melakukan tindakan ini."
-    },
-    "requiredPermissions": {
-      "title": "Izin yang diperlukan",
-      "none": "Tidak ada izin yang dideklarasikan dalam tampilan ini.",
-      "anyOf": "Salah satu dari",
-      "allOf": "Semua dari",
-      "source": "Sumber: {{source}}"
-    },
-    "resources": {
-      "customer": "Pelanggan",
-      "customer_group": "Grup Pelanggan",
-      "order": "Pesanan",
-      "product": "Produk",
-      "product_category": "Kategori Produk",
-      "product_collection": "Koleksi Produk",
-      "product_tag": "Tag Produk",
-      "product_type": "Tipe Produk",
-      "inventory": "Inventaris",
-      "reservation": "Reservasi",
-      "promotion": "Promosi",
-      "campaign": "Kampanye",
-      "price_list": "Daftar Harga",
-      "region": "Wilayah",
-      "store": "Toko",
-      "user": "Pengguna",
-      "role": "Peran",
-      "permission": "Izin",
-      "sales_channel": "Saluran Penjualan",
-      "stock_location": "Lokasi Stok",
-      "shipping_profile": "Profil Pengiriman",
-      "shipping_option": "Opsi Pengiriman",
-      "tax_region": "Wilayah Pajak",
-      "api_key": "Kunci API",
-      "return_reason": "Alasan Pengembalian",
-      "refund_reason": "Alasan Pengembalian Dana",
-      "workflow": "Alur Kerja",
-      "translation": "Terjemahan"
-    },
-    "actions": {
-      "read": "Lihat",
-      "create": "Buat",
-      "update": "Edit",
-      "delete": "Hapus"
     }
   }
 }

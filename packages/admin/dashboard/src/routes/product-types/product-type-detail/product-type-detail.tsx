@@ -56,7 +56,7 @@ export const ProductTypeDetail = () => {
                 <ProductTypeProductSection productType={product_type} />
               )}
             </LayoutComposer.Entry>
-            {detailPageDefaultEntries(product_type, { permissions: false })}
+            {detailPageDefaultEntries(product_type)}
           </>
         ),
       }}

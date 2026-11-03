@@ -3,9 +3,7 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
-import { PolicyOperation } from "@medusajs/framework/utils"
 import * as QueryConfig from "./query-config"
-import { Entities } from "./query-config"
 import {
   AdminDeleteExchangeItemActionSchema,
   AdminGetExchangeParams,
@@ -23,15 +21,6 @@ import {
 
 export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    matcher: "/admin/exchanges/*",
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.read,
-      },
-    ],
-  },
-  {
     method: ["GET"],
     matcher: "/admin/exchanges",
     middlewares: [
@@ -39,12 +28,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersParams,
         QueryConfig.listTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.read,
-      },
     ],
   },
   {
@@ -67,12 +50,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.create,
-      },
-    ],
   },
   {
     method: ["POST"],
@@ -83,12 +60,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
     ],
   },
   {
@@ -103,12 +74,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: ["DELETE"],
@@ -118,12 +83,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         AdminDeleteExchangeItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
     ],
   },
   {
@@ -136,12 +95,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: ["POST"],
@@ -153,12 +106,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: ["DELETE"],
@@ -168,12 +115,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         AdminDeleteExchangeItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
     ],
   },
 
@@ -187,12 +128,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: ["POST"],
@@ -204,12 +139,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: ["DELETE"],
@@ -219,12 +148,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         AdminDeleteExchangeItemActionSchema,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
     ],
   },
   {
@@ -237,12 +160,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: ["POST"],
@@ -254,12 +171,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: ["DELETE"],
@@ -270,12 +181,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
-    ],
   },
   {
     method: ["POST"],
@@ -285,34 +190,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
-    ],
-  },
-  {
-    method: ["DELETE"],
-    matcher: "/admin/exchanges/:id/request",
-    middlewares: [],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
-    ],
-  },
-  {
-    method: ["DELETE"],
-    matcher: "/admin/exchanges/:id",
-    middlewares: [],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.delete,
-      },
     ],
   },
   {
@@ -324,12 +201,6 @@ export const adminExchangeRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetOrdersOrderParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.order_exchange,
-        operation: PolicyOperation.update,
-      },
     ],
   },
 ]

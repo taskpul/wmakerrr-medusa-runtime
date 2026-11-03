@@ -2787,7 +2787,6 @@
     "editUser": "Benutzer bearbeiten",
     "inviteUser": "Benutzer einladen",
     "inviteUserHint": "Laden Sie einen neuen Benutzer in Ihren Shop ein.",
-    "inviteRolesTooltip": "Wenn keine Rolle ausgewählt ist, wird der Benutzer mit einer Superuser-Rolle eingeladen.",
     "sendInvite": "Einladung senden",
     "pendingInvites": "Ausstehende Einladungen",
     "deleteInviteWarning": "Sie sind dabei, die Einladung für {{email}} zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
@@ -2804,11 +2803,6 @@
       "pending": "Ausstehend",
       "expired": "Abgelaufen"
     },
-    "roles": {
-      "admin": "Admin",
-      "developer": "Entwickler",
-      "member": "Mitglied"
-    },
     "list": {
       "empty": {
         "heading": "Keine Benutzer gefunden",
@@ -2822,127 +2816,6 @@
     "deleteUserWarning": "Sie sind dabei, den Benutzer {{name}} zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
     "deleteUserSuccess": "Benutzer {{name}} erfolgreich gelöscht",
     "invite": "Einladen"
-  },
-  "roles": {
-    "domain": "Rollen",
-    "subtitle": "Zugriffsrollen und Berechtigungen verwalten.",
-    "create": {
-      "header": "Rolle erstellen",
-      "hint": "Erstellen Sie eine Rolle, um den Zugriff in Ihrem Admin zu verwalten.",
-      "successToast": "Rolle {{name}} erstellt",
-      "tabs": {
-        "details": "Details",
-        "permissions": "Berechtigungen"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Keine Berechtigungen",
-          "description": "Es gibt keine Berechtigungen zum Auswählen."
-        },
-        "filtered": {
-          "heading": "Keine Ergebnisse",
-          "description": "Keine Berechtigungen entsprechen den aktuellen Filterkriterien."
-        }
-      }
-    },
-    "edit": {
-      "header": "Rolle bearbeiten",
-      "successToast": "Rolle {{name}} aktualisiert"
-    },
-    "delete": {
-      "title": "Rolle löschen",
-      "description": "Sie sind dabei, die Rolle {{name}} zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
-      "successToast": "Rolle {{name}} gelöscht"
-    },
-    "fields": {
-      "permissions": "Berechtigungen"
-    },
-    "actions": {
-      "managePermissions": "Berechtigungen verwalten"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Benutzer hat diese Rolle bereits.",
-      "unassignableRoleTooltip": "Sie haben keinen Zugriff, um diese Rolle zuzuweisen – Ihre Berechtigungen decken nicht alle zugehörigen Richtlinien ab.",
-      "add": {
-        "successToast_one": "Benutzer wurde erfolgreich zur Rolle hinzugefügt.",
-        "successToast_other": "Benutzer wurden erfolgreich zur Rolle hinzugefügt.",
-        "list": {
-          "noRecordsMessage": "Erstellen Sie zuerst einen Benutzer."
-        }
-      },
-      "remove": {
-        "title_one": "Benutzer entfernen",
-        "title_other": "Benutzer entfernen",
-        "description_one": "Sie sind dabei, {{count}} Benutzer aus der Rolle zu entfernen. Diese Aktion kann nicht rückgängig gemacht werden.",
-        "description_other": "Sie sind dabei, {{count}} Benutzer aus der Rolle zu entfernen. Diese Aktion kann nicht rückgängig gemacht werden."
-      },
-      "list": {
-        "noRecordsMessage": "Diese Rolle hat keine Benutzer."
-      }
-    },
-    "permissions": {
-      "header": "Berechtigungen verwalten",
-      "hint": "Wählen Sie Berechtigungen aus, die diese Rolle beinhalten soll.",
-      "empty": {
-        "heading": "Keine Berechtigungen",
-        "description": "Es gibt keine Berechtigungen zum Auswählen."
-      },
-      "filtered": {
-        "heading": "Keine Ergebnisse",
-        "description": "Keine Berechtigungen entsprechen den aktuellen Filterkriterien."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Keine Rollen gefunden",
-        "description": "Erstellen Sie Rollen, um den Zugriff in Ihrem Admin zu verwalten."
-      },
-      "filtered": {
-        "heading": "Keine Ergebnisse",
-        "description": "Keine Rollen entsprechen den aktuellen Filterkriterien."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Richtlinien",
-    "subtitle": "Legen Sie die Berechtigungen fest, die Rollen gewähren können.",
-    "create": {
-      "header": "Richtlinie erstellen",
-      "hint": "Definieren Sie eine neue Berechtigung, die Rollen zugewiesen werden kann.",
-      "successToast": "Richtlinie {{key}} erstellt"
-    },
-    "edit": {
-      "header": "Richtlinie bearbeiten",
-      "successToast": "Richtlinie {{key}} aktualisiert"
-    },
-    "delete": {
-      "title": "Richtlinie löschen",
-      "description": "Sie sind dabei, die Richtlinie {{key}} zu löschen. Diese Aktion kann nicht rückgängig gemacht werden.",
-      "successToast": "Richtlinie {{key}} gelöscht"
-    },
-    "fields": {
-      "roles": "Rollen",
-      "users": "Benutzer"
-    },
-    "list": {
-      "empty": {
-        "heading": "Keine Richtlinien gefunden",
-        "description": "Erstellen Sie Richtlinien, um die Berechtigungen zu verwalten, die Rollen gewähren können."
-      },
-      "filtered": {
-        "heading": "Keine Ergebnisse",
-        "description": "Keine Richtlinien entsprechen den aktuellen Filterkriterien."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Noch keine Rollen schließen diese Richtlinie ein."
-      },
-      "empty": {
-        "heading": "Keine Rollen",
-        "description": "Noch keine Rollen schließen diese Richtlinie ein."
-      }
-    }
   },
   "translations": {
     "domain": "Übersetzungen",
@@ -3798,57 +3671,6 @@
       "continueWithProvider": "Weiter mit {{provider}}",
       "or": "oder",
       "provisioningFailed": "Wir konnten Ihre Anmeldung nicht abschließen. Bitte wenden Sie sich an einen Administrator."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Zugriff verweigert",
-      "description": "Sie haben keine Berechtigung, auf diese Seite zuzugreifen.",
-      "requiredPermission": "Erforderliche Berechtigung: {{permission}}",
-      "action": "Sie haben keine Berechtigung, diese Aktion durchzuführen."
-    },
-    "requiredPermissions": {
-      "title": "Erforderliche Berechtigungen",
-      "none": "In dieser Ansicht sind keine Berechtigungen deklariert.",
-      "anyOf": "Mindestens eine von",
-      "allOf": "Alle von",
-      "source": "Quelle: {{source}}"
-    },
-    "resources": {
-      "customer": "Kunde",
-      "customer_group": "Kundengruppe",
-      "order": "Bestellung",
-      "product": "Produkt",
-      "product_category": "Produktkategorie",
-      "product_collection": "Produktsammlung",
-      "product_tag": "Produkt-Tag",
-      "product_type": "Produkttyp",
-      "inventory": "Inventar",
-      "reservation": "Reservierung",
-      "promotion": "Aktion",
-      "campaign": "Kampagne",
-      "price_list": "Preisliste",
-      "region": "Region",
-      "store": "Shop",
-      "user": "Benutzer",
-      "role": "Rolle",
-      "permission": "Berechtigung",
-      "sales_channel": "Vertriebskanal",
-      "stock_location": "Lagerstandort",
-      "shipping_profile": "Versandprofil",
-      "shipping_option": "Versandoption",
-      "tax_region": "Steuerregion",
-      "api_key": "API-Schlüssel",
-      "return_reason": "Rückgabegrund",
-      "refund_reason": "Erstattungsgrund",
-      "workflow": "Workflow",
-      "translation": "Übersetzung"
-    },
-    "actions": {
-      "read": "Anzeigen",
-      "create": "Erstellen",
-      "update": "Bearbeiten",
-      "delete": "Löschen"
     }
   }
 }

@@ -2766,7 +2766,6 @@
     "editUser": "Redigera användare",
     "inviteUser": "Bjud in användare",
     "inviteUserHint": "Bjud in en ny användare till butiken.",
-    "inviteRolesTooltip": "Om ingen roll väljs bjuds användaren in med en superanvändarroll.",
     "sendInvite": "Skicka inbjudan",
     "pendingInvites": "Väntande inbjudningar",
     "deleteInviteWarning": "Du håller på att ta bort inbjudan för {{email}}. Den här åtgärden kan inte ångras.",
@@ -2783,11 +2782,6 @@
       "pending": "Väntande",
       "expired": "Utgången"
     },
-    "roles": {
-      "admin": "Admin",
-      "developer": "Utvecklare",
-      "member": "Medlem"
-    },
     "list": {
       "empty": {
         "heading": "Inga användare hittades",
@@ -2801,127 +2795,6 @@
     "deleteUserWarning": "Du håller på att ta bort användaren {{name}}. Den här åtgärden kan inte ångras.",
     "deleteUserSuccess": "Användare {{name}} togs bort",
     "invite": "Bjud in"
-  },
-  "roles": {
-    "domain": "Roller",
-    "subtitle": "Hantera roller och behörigheter.",
-    "create": {
-      "header": "Skapa roll",
-      "hint": "Skapa en roll för att hantera åtkomst i adminpanelen.",
-      "successToast": "Rollen {{name}} har skapats",
-      "tabs": {
-        "details": "Detaljer",
-        "permissions": "Behörigheter"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Inga behörigheter",
-          "description": "Det finns inga behörigheter att välja."
-        },
-        "filtered": {
-          "heading": "Inga resultat",
-          "description": "Inga behörigheter matchar de aktuella filtren."
-        }
-      }
-    },
-    "edit": {
-      "header": "Redigera roll",
-      "successToast": "Rollen {{name}} har uppdaterats"
-    },
-    "delete": {
-      "title": "Ta bort roll",
-      "description": "Du håller på att ta bort rollen {{name}}. Den här åtgärden kan inte ångras.",
-      "successToast": "Rollen {{name}} har tagits bort"
-    },
-    "fields": {
-      "permissions": "Behörigheter"
-    },
-    "actions": {
-      "managePermissions": "Hantera behörigheter"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Användaren har redan den här rollen.",
-      "unassignableRoleTooltip": "Du har inte behörighet att tilldela den här rollen – dina behörigheter omfattar inte alla dess policyer.",
-      "add": {
-        "successToast_one": "Användaren har lagts till i rollen.",
-        "successToast_other": "Användarna har lagts till i rollen.",
-        "list": {
-          "noRecordsMessage": "Skapa först en användare."
-        }
-      },
-      "remove": {
-        "title_one": "Ta bort användare",
-        "title_other": "Ta bort användare",
-        "description_one": "Du håller på att ta bort {{count}} användare från rollen. Den här åtgärden kan inte ångras.",
-        "description_other": "Du håller på att ta bort {{count}} användare från rollen. Den här åtgärden kan inte ångras."
-      },
-      "list": {
-        "noRecordsMessage": "Den här rollen har inga användare."
-      }
-    },
-    "permissions": {
-      "header": "Hantera behörigheter",
-      "hint": "Välj vilka behörigheter den här rollen ska innehålla.",
-      "empty": {
-        "heading": "Inga behörigheter",
-        "description": "Det finns inga behörigheter att välja."
-      },
-      "filtered": {
-        "heading": "Inga resultat",
-        "description": "Inga behörigheter matchar de aktuella filtren."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Inga roller hittades",
-        "description": "Skapa roller för att hantera åtkomst i adminpanelen."
-      },
-      "filtered": {
-        "heading": "Inga resultat",
-        "description": "Inga roller matchar de aktuella filtren."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Policyer",
-    "subtitle": "Definiera behörigheter som roller kan ge.",
-    "create": {
-      "header": "Skapa policy",
-      "hint": "Definiera en ny behörighet som kan kopplas till roller.",
-      "successToast": "Policyn {{key}} har skapats"
-    },
-    "edit": {
-      "header": "Redigera policy",
-      "successToast": "Policyn {{key}} har uppdaterats"
-    },
-    "delete": {
-      "title": "Ta bort policy",
-      "description": "Du håller på att ta bort policyn {{key}}. Den här åtgärden kan inte ångras.",
-      "successToast": "Policyn {{key}} har tagits bort"
-    },
-    "fields": {
-      "roles": "Roller",
-      "users": "Användare"
-    },
-    "list": {
-      "empty": {
-        "heading": "Inga policyer hittades",
-        "description": "Skapa policyer för att hantera vilka behörigheter roller kan ge."
-      },
-      "filtered": {
-        "heading": "Inga resultat",
-        "description": "Inga policyer matchar de aktuella filtren."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Inga roller innehåller den här policyn ännu."
-      },
-      "empty": {
-        "heading": "Inga roller",
-        "description": "Inga roller innehåller den här policyn ännu."
-      }
-    }
   },
   "translations": {
     "domain": "Översättningar",
@@ -3776,57 +3649,6 @@
       "continueWithProvider": "Fortsätt med {{provider}}",
       "or": "eller",
       "provisioningFailed": "Vi kunde inte slutföra inloggningen. Kontakta en administratör."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Åtkomst nekad",
-      "description": "Du har inte behörighet att komma åt den här sidan.",
-      "requiredPermission": "Obligatorisk behörighet: {{permission}}",
-      "action": "Du har inte behörighet att utföra den här åtgärden."
-    },
-    "requiredPermissions": {
-      "title": "Obligatoriska behörigheter",
-      "none": "Inga behörigheter har angetts för den här vyn.",
-      "anyOf": "Någon av",
-      "allOf": "Alla",
-      "source": "Källa: {{source}}"
-    },
-    "resources": {
-      "customer": "Kund",
-      "customer_group": "Kundgrupp",
-      "order": "Beställning",
-      "product": "Produkt",
-      "product_category": "Produktkategori",
-      "product_collection": "Produktkollektion",
-      "product_tag": "Produkttagg",
-      "product_type": "Produkttyp",
-      "inventory": "Lager",
-      "reservation": "Reservation",
-      "promotion": "Kampanj",
-      "campaign": "Kampanj",
-      "price_list": "Prislista",
-      "region": "Region",
-      "store": "Butik",
-      "user": "Användare",
-      "role": "Roll",
-      "permission": "Behörighet",
-      "sales_channel": "Försäljningskanal",
-      "stock_location": "Lagerplats",
-      "shipping_profile": "Fraktprofil",
-      "shipping_option": "Fraktalternativ",
-      "tax_region": "Skatteregion",
-      "api_key": "API-nyckel",
-      "return_reason": "Returorsak",
-      "refund_reason": "Återbetalningsorsak",
-      "workflow": "Arbetsflöde",
-      "translation": "Översättning"
-    },
-    "actions": {
-      "read": "Visa",
-      "create": "Skapa",
-      "update": "Redigera",
-      "delete": "Ta bort"
     }
   }
 }

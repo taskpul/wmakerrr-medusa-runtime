@@ -26,12 +26,37 @@ Run the bootstrap verification without installing dependencies:
 node .royalroyals/verify-bootstrap.mjs
 ```
 
+## License-safe baseline
+
+The baseline removes public module, API, workflow, Admin, and package-graph
+references to the Enterprise paths that are absent from this repository. The
+deterministic public graph is recorded in `public-package-graph.json` and can be
+regenerated only through the reviewed verifier:
+
+```bash
+node .royalroyals/verify-baseline.mjs --write-graph
+node .royalroyals/verify-baseline.mjs
+```
+
+The baseline verification is complete only after an immutable install and the
+canonical monorepo build also pass:
+
+```bash
+yarn install --immutable
+yarn build
+```
+
+The candidate records this as local reproducibility evidence, not admission
+evidence. Protected CI, reviewed immutable artifacts, package digests, and all
+remaining isolation gates are still required before release.
+
 ## Admission state
 
 `candidate-manifest.json` deliberately contains pending gates and no artifact
-or package digest. A later phase must make the license-safe source compile,
-implement Store-native commerce boundaries, and produce immutable CI evidence
-for every gate before the application can admit a package set.
+or package digest. The source now compiles as a license-safe baseline, but a
+later phase must implement Store-native commerce boundaries and produce
+immutable CI evidence for every gate before the application can admit a package
+set.
 
 ## Repository governance
 

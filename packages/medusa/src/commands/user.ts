@@ -1,8 +1,4 @@
-import {
-  ContainerRegistrationKeys,
-  FeatureFlag,
-  Modules,
-} from "@medusajs/framework/utils"
+import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { track } from "@medusajs/telemetry"
 import express from "express"
 import loaders from "../loaders"
@@ -32,21 +28,6 @@ export default async function ({
 
     const provider = "emailpass"
 
-    // Check if RBAC is enabled and get super admin role
-    let userRoles: string[] = []
-    const rbacEnabled = FeatureFlag.isFeatureEnabled("rbac")
-
-    if (rbacEnabled) {
-      const rbacService = container.resolve(Modules.RBAC)
-      const superAdminRoles = await rbacService.listRbacRoles({
-        id: "role_super_admin",
-      })
-
-      if (superAdminRoles.length > 0) {
-        userRoles = [superAdminRoles[0].id]
-      }
-    }
-
     if (invite) {
       const { result: invites } = await workflowService.run(
         "create-invite-step",
@@ -55,7 +36,6 @@ export default async function ({
             invites: [
               {
                 email,
-                roles: userRoles,
               },
             ],
           },
@@ -70,10 +50,6 @@ export default async function ({
       Open the invite in Medusa Admin at: [your-admin-url]/invite?token=${createdInvite.token}`
       )
     } else {
-      if (userRoles.length > 0) {
-        logger.info("Assigning super admin role to user.")
-      }
-
       const { result: users } = await workflowService.run(
         "create-users-workflow",
         {
@@ -81,7 +57,6 @@ export default async function ({
             users: [
               {
                 email,
-                roles: userRoles,
               },
             ],
           },
@@ -109,10 +84,7 @@ export default async function ({
         },
       })
 
-      logger.info(
-        "User created successfully." +
-          (userRoles.length > 0 ? " Super admin role assigned." : "")
-      )
+      logger.info("User created successfully.")
     }
   } catch (err) {
     console.error(err)

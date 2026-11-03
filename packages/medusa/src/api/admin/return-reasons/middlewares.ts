@@ -3,9 +3,7 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
-import { PolicyOperation } from "@medusajs/framework/utils"
 import * as QueryConfig from "./query-config"
-import { Entities } from "./query-config"
 import {
   AdminCreateReturnReason,
   AdminGetReturnReasonsParams,
@@ -15,15 +13,6 @@ import {
 
 export const adminReturnReasonRoutesMiddlewares: MiddlewareRoute[] = [
   {
-    matcher: "/admin/return-reasons/*",
-    policies: [
-      {
-        resource: Entities.return_reason,
-        operation: PolicyOperation.read,
-      },
-    ],
-  },
-  {
     method: ["GET"],
     matcher: "/admin/return-reasons",
     middlewares: [
@@ -31,12 +20,6 @@ export const adminReturnReasonRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetReturnReasonsParams,
         QueryConfig.listTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.return_reason,
-        operation: PolicyOperation.read,
-      },
     ],
   },
   {
@@ -59,12 +42,6 @@ export const adminReturnReasonRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.return_reason,
-        operation: PolicyOperation.create,
-      },
-    ],
   },
   {
     method: ["POST"],
@@ -75,22 +52,6 @@ export const adminReturnReasonRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetReturnReasonsReturnReasonParams,
         QueryConfig.retrieveTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.return_reason,
-        operation: PolicyOperation.update,
-      },
-    ],
-  },
-  {
-    method: ["DELETE"],
-    matcher: "/admin/return-reasons/:id",
-    policies: [
-      {
-        resource: Entities.return_reason,
-        operation: PolicyOperation.delete,
-      },
     ],
   },
 ]

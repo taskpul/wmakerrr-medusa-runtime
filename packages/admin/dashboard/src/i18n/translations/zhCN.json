@@ -2781,7 +2781,6 @@
     "editUser": "编辑用户",
     "inviteUser": "邀请用户",
     "inviteUserHint": "邀请新用户到您的商店。",
-    "inviteRolesTooltip": "如果未选择角色，用户将以超级用户角色受邀。",
     "sendInvite": "发送邀请",
     "pendingInvites": "待处理邀请",
     "deleteInviteWarning": "您即将删除邀请 {{email}}。此操作无法撤销。",
@@ -2798,11 +2797,6 @@
       "pending": "待处理",
       "expired": "已过期"
     },
-    "roles": {
-      "admin": "管理员",
-      "developer": "开发者",
-      "member": "成员"
-    },
     "list": {
       "empty": {
         "heading": "暂无用户",
@@ -2816,124 +2810,6 @@
     "deleteUserWarning": "您即将删除用户 {{name}}。此操作无法撤销。",
     "deleteUserSuccess": "用户 {{name}} 删除成功。",
     "invite": "邀请"
-  },
-  "roles": {
-    "domain": "角色",
-    "subtitle": "管理访问角色和权限。",
-    "create": {
-      "header": "创建角色",
-      "hint": "创建角色以管理管理后台的访问权限。",
-      "successToast": "角色 {{name}} 已创建",
-      "tabs": {
-        "details": "详情",
-        "permissions": "权限"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "暂无权限",
-          "description": "没有可选择的权限。"
-        },
-        "filtered": {
-          "heading": "无结果",
-          "description": "没有符合当前筛选条件的权限。"
-        }
-      }
-    },
-    "edit": {
-      "header": "编辑角色",
-      "successToast": "角色 {{name}} 已更新"
-    },
-    "delete": {
-      "title": "删除角色",
-      "description": "您即将删除角色 {{name}}。此操作无法撤消。",
-      "successToast": "角色 {{name}} 已删除"
-    },
-    "fields": {
-      "permissions": "权限"
-    },
-    "actions": {
-      "managePermissions": "管理权限"
-    },
-    "users": {
-      "alreadyAddedTooltip": "用户已拥有此角色。",
-      "unassignableRoleTooltip": "您无权分配此角色——您的权限未涵盖其所有策略。",
-      "add": {
-        "successToast_other": "用户已成功添加到角色。",
-        "list": {
-          "noRecordsMessage": "请先创建用户。"
-        }
-      },
-      "remove": {
-        "title_other": "移除用户",
-        "description_other": "您即将从角色中移除 {{count}} 个用户。此操作无法撤消。"
-      },
-      "list": {
-        "noRecordsMessage": "此角色暂无用户。"
-      }
-    },
-    "permissions": {
-      "header": "管理权限",
-      "hint": "选择此角色应包含的权限。",
-      "empty": {
-        "heading": "暂无权限",
-        "description": "没有可选择的权限。"
-      },
-      "filtered": {
-        "heading": "无结果",
-        "description": "没有符合当前筛选条件的权限。"
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "未找到角色",
-        "description": "创建角色以管理管理后台的访问权限。"
-      },
-      "filtered": {
-        "heading": "无结果",
-        "description": "没有符合当前筛选条件的角色。"
-      }
-    }
-  },
-  "policies": {
-    "domain": "策略",
-    "subtitle": "定义角色可授予的权限。",
-    "create": {
-      "header": "创建策略",
-      "hint": "定义可附加到角色的新权限。",
-      "successToast": "策略 {{key}} 已创建"
-    },
-    "edit": {
-      "header": "编辑策略",
-      "successToast": "策略 {{key}} 已更新"
-    },
-    "delete": {
-      "title": "删除策略",
-      "description": "您即将删除策略 {{key}}。此操作无法撤消。",
-      "successToast": "策略 {{key}} 已删除"
-    },
-    "fields": {
-      "roles": "角色",
-      "users": "用户"
-    },
-    "list": {
-      "empty": {
-        "heading": "未找到策略",
-        "description": "创建策略以管理角色可授予的权限。"
-      },
-      "filtered": {
-        "heading": "无结果",
-        "description": "没有符合当前筛选条件的策略。"
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "暂无角色包含此策略。"
-      },
-      "empty": {
-        "heading": "暂无角色",
-        "description": "暂无角色包含此策略。"
-      }
-    }
   },
   "translations": {
     "domain": "翻译",
@@ -3787,57 +3663,6 @@
       "continueWithProvider": "通过 {{provider}} 继续",
       "or": "或",
       "provisioningFailed": "无法完成您的登录。请联系管理员。"
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "访问被拒绝",
-      "description": "您没有访问此页面的权限。",
-      "requiredPermission": "所需权限：{{permission}}",
-      "action": "您没有执行此操作的权限。"
-    },
-    "requiredPermissions": {
-      "title": "所需权限",
-      "none": "此视图未声明任何权限。",
-      "anyOf": "以下任意一项",
-      "allOf": "以下全部",
-      "source": "来源：{{source}}"
-    },
-    "resources": {
-      "customer": "客户",
-      "customer_group": "客户群组",
-      "order": "订单",
-      "product": "产品",
-      "product_category": "产品分类",
-      "product_collection": "产品系列",
-      "product_tag": "产品标签",
-      "product_type": "产品类型",
-      "inventory": "库存",
-      "reservation": "预留",
-      "promotion": "促销",
-      "campaign": "营销活动",
-      "price_list": "价格列表",
-      "region": "地区",
-      "store": "商店",
-      "user": "用户",
-      "role": "角色",
-      "permission": "权限",
-      "sales_channel": "销售渠道",
-      "stock_location": "库存位置",
-      "shipping_profile": "配送方案",
-      "shipping_option": "配送选项",
-      "tax_region": "税区",
-      "api_key": "API 密钥",
-      "return_reason": "退货原因",
-      "refund_reason": "退款原因",
-      "workflow": "工作流",
-      "translation": "翻译"
-    },
-    "actions": {
-      "read": "查看",
-      "create": "创建",
-      "update": "编辑",
-      "delete": "删除"
     }
   }
 }

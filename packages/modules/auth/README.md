@@ -38,13 +38,13 @@ Auth Module for Medusa: manages auth identities, provider identities, password r
 
 ## At a glance
 
-| | |
-| --- | --- |
-| Package | `@medusajs/auth` |
-| Type | Commerce Module |
-| Module key | `Modules.AUTH` (`"auth"`) |
+|                       |                                    |
+| --------------------- | ---------------------------------- |
+| Package               | `@medusajs/auth`                   |
+| Type                  | Commerce Module                    |
+| Module key            | `Modules.AUTH` (`"auth"`)          |
 | Registered by default | Yes, with the `emailpass` provider |
-| Import from | `@medusajs/medusa/auth` |
+| Import from           | `@medusajs/medusa/auth`            |
 
 ## Features
 
@@ -52,7 +52,6 @@ Auth Module for Medusa: manages auth identities, provider identities, password r
   - [`@medusajs/auth-emailpass`](../providers/auth-emailpass): email and password.
   - [`@medusajs/auth-github`](../providers/auth-github): GitHub OAuth.
   - [`@medusajs/auth-google`](../providers/auth-google): Google OAuth.
-  - [`@medusajs/auth-oidc`](../providers/auth-oidc): OpenID Connect.
 - Link multiple provider identities to one auth identity.
 - Password reset tokens and token-based verifications.
 - Built-in MFA with TOTP and recovery codes.
@@ -88,16 +87,16 @@ module.exports = defineConfig({
 
 ## Configuration
 
-| Option | Type | Description | Default |
-| --- | --- | --- | --- |
-| `providers` | `{ resolve: string, id: string, options?: Record<string, unknown> }[]` | Auth Module Providers to register. | `emailpass` provider |
-| `mfa.encryption_key` | `string` | Key used to encrypt MFA secrets at rest. | `AUTH_MFA_ENCRYPTION_KEY` env var |
-| `mfa.recovery_code_count` | `number` | Number of recovery codes generated for an auth identity. | `10` |
-| `mfa.challenge_ttl_seconds` | `number` | Seconds an MFA challenge remains valid. | `300` |
-| `mfa.challenge_max_attempts` | `number` | Failed verification attempts allowed per MFA challenge. | `5` |
-| `mfa.disable_policy` | `"challenge" \| "session"` | Policy used when disabling MFA. | `"session"` |
-| `mfa.providers` | `{ resolve?: string, id: string, options?: Record<string, unknown> }[]` | Additional MFA providers, or options for built-in ones such as `totp`. | - |
-| `verification.providers` | `{ resolve?: string, id: string, options?: Record<string, unknown> }[]` | Additional verification providers, or options for the built-in `token` provider. | - |
+| Option                       | Type                                                                    | Description                                                                      | Default                           |
+| ---------------------------- | ----------------------------------------------------------------------- | -------------------------------------------------------------------------------- | --------------------------------- |
+| `providers`                  | `{ resolve: string, id: string, options?: Record<string, unknown> }[]`  | Auth Module Providers to register.                                               | `emailpass` provider              |
+| `mfa.encryption_key`         | `string`                                                                | Key used to encrypt MFA secrets at rest.                                         | `AUTH_MFA_ENCRYPTION_KEY` env var |
+| `mfa.recovery_code_count`    | `number`                                                                | Number of recovery codes generated for an auth identity.                         | `10`                              |
+| `mfa.challenge_ttl_seconds`  | `number`                                                                | Seconds an MFA challenge remains valid.                                          | `300`                             |
+| `mfa.challenge_max_attempts` | `number`                                                                | Failed verification attempts allowed per MFA challenge.                          | `5`                               |
+| `mfa.disable_policy`         | `"challenge" \| "session"`                                              | Policy used when disabling MFA.                                                  | `"session"`                       |
+| `mfa.providers`              | `{ resolve?: string, id: string, options?: Record<string, unknown> }[]` | Additional MFA providers, or options for built-in ones such as `totp`.           | -                                 |
+| `verification.providers`     | `{ resolve?: string, id: string, options?: Record<string, unknown> }[]` | Additional verification providers, or options for the built-in `token` provider. | -                                 |
 
 ## Resources
 

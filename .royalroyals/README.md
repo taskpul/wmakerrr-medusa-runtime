@@ -50,6 +50,26 @@ The candidate records this as local reproducibility evidence, not admission
 evidence. Protected CI, reviewed immutable artifacts, package digests, and all
 remaining isolation gates are still required before release.
 
+## Public API compatibility
+
+The compatibility verifier compares every public manifest field and recursively
+follows local re-exports from all 79 public package entry points. It checks 1,321
+public source files against the exact upstream commit and accepts only the 28
+license-driven changes whose before/after hashes are pinned in
+`public-api-exceptions.json`.
+
+The exact upstream commit must exist in the local Git object database. It can be
+fetched without checking out Enterprise source into this repository:
+
+```bash
+git fetch --filter=blob:none upstream cfff3f57381873097dcc77851038d5dbe8f5839c
+node .royalroyals/verify-public-api.mjs
+```
+
+This is local compatibility evidence only. The `public-api-compatibility` gate
+remains pending until the same command, immutable install, and complete build
+run through a trusted protected review/CI path and produce immutable evidence.
+
 ## Admission state
 
 `candidate-manifest.json` deliberately contains pending gates and no artifact

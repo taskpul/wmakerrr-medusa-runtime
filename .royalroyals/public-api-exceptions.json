@@ -1,0 +1,179 @@
+{
+  "schemaVersion": 1,
+  "upstreamCommit": "cfff3f57381873097dcc77851038d5dbe8f5839c",
+  "packageCount": 79,
+  "changes": [
+    {
+      "path": "packages/core/core-flows/src/index.ts",
+      "upstreamSha256": "0d55e04b5f986060d45888cb216db5dc8e3345115591cf75f1613e00777aeb09",
+      "currentSha256": "b3bf721fee80a36659dfcd7c1095eb8b67cc14a3756d5feab45a5ff404d1dac3",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/core-flows/src/invite/steps/index.ts",
+      "upstreamSha256": "249ef92937097c202391e71400e619cee7274ffd0c024ad6f287a29726bc56db",
+      "currentSha256": "541ed26ed50ef8e1752d19e9b1175b8f6348fb51694fba1c99254a9e23f472b0",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/core-flows/src/invite/workflows/accept-invite.ts",
+      "upstreamSha256": "337d36ae27f8e8bb27195c63a7d4f3b6514ca41747905fe0450923eb2aefec31",
+      "currentSha256": "f82ed6e1c6e7912bbc5c43b3f22799e3185e159a8ca5a694ae81a6738905d387",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/core-flows/src/invite/workflows/create-invites.ts",
+      "upstreamSha256": "d9b6b8639de2889d244e0b6f814502bc0a40c8a772e9747353015208092681f6",
+      "currentSha256": "bfdc50bfa86386ff22a370718121233284a3326941166a3d86ca3723ab3666c2",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/core-flows/src/user/steps/index.ts",
+      "upstreamSha256": "f2cf2856f57ce653848a0452f3b07b6b29a7d4872170ee67fdcd78d7c3ecc229",
+      "currentSha256": "4606d1ff9fa7c6c25659c1c2947a077e67e37ffd466d4c35170f525bedefb02c",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/core-flows/src/user/workflows/create-users.ts",
+      "upstreamSha256": "7e489d2730664d12d2d25c268c240b1610b45fb1e31556705ea2c6e299587f6f",
+      "currentSha256": "b5d4baec513ea30112732eafaec9054c47c3f335fbb784bf211b1e9ef5570ffa",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/core-flows/src/user/workflows/index.ts",
+      "upstreamSha256": "2a6e94529d84c1dcf179f50bb9596254444a1ed7820ede01f88b3d514e241503",
+      "currentSha256": "c6badaff0ac5168470a9592096765d4e4669359cfed8451f6e5c810ddaf08353",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/framework/src/http/middlewares/index.ts",
+      "upstreamSha256": "913a7fbcc8e2c9997bbf45848e1bbc772e4ee4ca3fd2257ebe4896f2a0677029",
+      "currentSha256": "98c1f77436acd0cafd0c889eb8fda810b845ed0dd2ddf64de78ee9bd3d15bcf4",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/framework/src/http/router.ts",
+      "upstreamSha256": "dc96b43ace69d7a44a8ca70f9634293fe7a70de613e0667734823ae93f419c4f",
+      "currentSha256": "1fa29cc1dde7f804cd32c1c86552da6b425c74ab788e37858579143764d672cc",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/framework/src/http/types.ts",
+      "upstreamSha256": "23733d4183574c2b13f8dfee42a395aab7feb199fa7493e4f02a68fe5385f259",
+      "currentSha256": "b21880a47576dbea04da5fe4ed473ae2f67f0914a5570107fcf16df3c08f3302",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/framework/src/http/utils/get-query-config.ts",
+      "upstreamSha256": "2d98b355037c61238e235ee68258fe2070433318b788a8f55c1fbc0ad0f30683",
+      "currentSha256": "5a17feabfb4c394599b125d4b418f0061bec4bd1710053cc55563d7bc22e9e1e",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/framework/src/index.ts",
+      "upstreamSha256": "dbed9b965a0d1d0d1780aae0e7a6476f1048692775c93d11bb4d122ddd670a07",
+      "currentSha256": "b70141bd514f0dd8def813d3c6c5c7712ca03cb6d9ca9a6fd5a365d7f0ad40b1",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/framework/src/types/container.ts",
+      "upstreamSha256": "a142c814c08cbe6ccf2d9f997dd599db9bacc399030056d9a0458448438089b7",
+      "currentSha256": "9d389e81701af82da373292210d402b324d57f10486885c28328e0324fa23b46",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/js-sdk/src/admin/index.ts",
+      "upstreamSha256": "aa7099920797bf9e8a078dfcd49262f94e7206dda496cf7676e9394ad7e89d92",
+      "currentSha256": "918c2117ebae84e8c271d35dcc1e36e7f1d6cc59e8876227aa746a530210bb3f",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/utils/src/common/define-config.ts",
+      "upstreamSha256": "4a9767e684ad59abb2dc4d8041d3c143b06c8a20de3665b9bf7cad8cafc3ed4c",
+      "currentSha256": "d3a583c0cde4099dbaa66aa141eb1bacda028d3965b8757003211e0573f3b72e",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/utils/src/index.ts",
+      "upstreamSha256": "91aeac76624ba75ad37ac2f5154d8183fefcd82c9471da942fc86cfabfc7ac58",
+      "currentSha256": "804810ad3c8c78e5ffaa2393192ca33a79af4bf466893337a244544462fce94b",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/utils/src/license/index.ts",
+      "upstreamSha256": "257f6216f7fd290887a2782d3a7a842361d186827387b98a8a21ece29e9dff12",
+      "currentSha256": "4916732754de9f5c4fd96fa733b5889b41f4d035c8e3c4021f9ac7fb833519f0",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/utils/src/link/links.ts",
+      "upstreamSha256": "19256cb98ff45f06eae6463bb9a8542663af3c0939af4186b48a0f59b555cc2c",
+      "currentSha256": "15039ca373f2e32e3150d37636be1986b5c3cb994e3b6b04e31d1f7f2c6f96b9",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/utils/src/modules-sdk/definition.ts",
+      "upstreamSha256": "183838a95232e07bfcd7ffbc9c48de8a3a70c0fe6f985e809a510e72fe96f010",
+      "currentSha256": "62b01ad4243d5b8fc511288f2e8045ab29c2e64c3ce3d36866076d58faa76907",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/utils/src/modules-sdk/index.ts",
+      "upstreamSha256": "a08a54db2c9bc9029f6124eaa459efb5177ebe77e34f03546ba8ea06adfe2415",
+      "currentSha256": "845cc7c3ce030174e0073ae0148aca572d7c457a80551ce68aa8fd8f01cce55e",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/utils/src/modules-sdk/modules-to-container-types.ts",
+      "upstreamSha256": "f13e9a2b0c648116adf232f98d13285a10ad216bdb6d0d2fcdd2294af28ad795",
+      "currentSha256": "aedf3ea5f3ce01ce30c4ca56c3d173ff353b9c97b941b73a67ca2eea804e3380",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/utils/src/policies/discover-policies.ts",
+      "upstreamSha256": "89ceceb04450cf36efde711e8c656d091ac1793017ed059b2e90c657d38125fc",
+      "currentSha256": null,
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/utils/src/policies/index.ts",
+      "upstreamSha256": "734ee597ab373553d6557dc15811129026876ac4f69347acd32e0c93deb00519",
+      "currentSha256": null,
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/medusa/src/types/index.ts",
+      "upstreamSha256": "2b9ee2a51ba49237aafb02d80723a7ab6312e97aa3dd59e7448cdded2c5a159d",
+      "currentSha256": "1e8ed717758a7cd7c1d8b366d7e3cafab9986c4fc67fa6417f427e321313eb64",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/medusa/src/types/policies.ts",
+      "upstreamSha256": "16b4be90c3221bfea6cb4be64174dd55ebe960a9062bf3ac39dcdaed449e0df3",
+      "currentSha256": null,
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/medusa/src/utils/default-policy-operations.ts",
+      "upstreamSha256": "5905f27dcc71f622a38b6d856fb14afba07c932f00705d7e7fcf4ebba21e648d",
+      "currentSha256": null,
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/medusa/src/utils/generate-resource-policies.ts",
+      "upstreamSha256": "c1815f4c7ea1c845264715336c11dc0a98db56c42d69e0c93507668454bb6e99",
+      "currentSha256": null,
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/medusa/src/utils/index.ts",
+      "upstreamSha256": "0e5eb0d9ed53b2cdeee0c174d6ba1a88f3c7c6c2f7ac5c5bc9787193e5e79932",
+      "currentSha256": "af1d2b8cfc7838eed74c5dd06f9ed4e3582cc5501e4e079f73a37d854aa1698f",
+      "reason": "License-driven removal of an excluded Enterprise contract."
+    }
+  ],
+  "evidence": {
+    "publicFileCount": 1321,
+    "verifierSha256": "8c734179927d26e04f50d30b65c87e193370f4ed6810fdcb85ce6b98f59b7cd1"
+  }
+}

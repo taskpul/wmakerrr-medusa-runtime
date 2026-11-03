@@ -29,10 +29,8 @@ jobs:
     env:
       UPSTREAM_REVISION: cfff3f57381873097dcc77851038d5dbe8f5839c
     steps:
-      - name: Configure deterministic Git worktree
-        run: |
-          git config --global core.longpaths true
-          git config --global core.autocrlf true
+      - name: Enable Git long paths
+        run: git config --global core.longpaths true
 
       - name: Check out governance tooling
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -47,6 +45,12 @@ jobs:
           persist-credentials: false
           ref: ${{ inputs.candidate_ref || github.sha }}
           fetch-depth: 0
+
+      - name: Reproduce recorded candidate worktree
+        working-directory: candidate
+        run: |
+          git config core.autocrlf true
+          git checkout-index --all --force
 
       - name: Resolve immutable candidate revision
         id: candidate

@@ -30,17 +30,18 @@ jobs:
       UPSTREAM_REVISION: cfff3f57381873097dcc77851038d5dbe8f5839c
     steps:
       - name: Check out governance tooling
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: governance
           persist-credentials: false
 
       - name: Check out candidate
-        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           path: candidate
           persist-credentials: false
           ref: ${{ inputs.candidate_ref || github.sha }}
+          fetch-depth: 0
 
       - name: Resolve immutable candidate revision
         id: candidate
@@ -49,7 +50,7 @@ jobs:
         run: echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Set up Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
           node-version-file: candidate/.nvmrc
 
@@ -84,7 +85,7 @@ jobs:
 
       - name: Upload immutable evidence
         id: evidence
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
         with:
           name: controlled-distribution-${{ steps.candidate.outputs.revision }}
           path: controlled-distribution-evidence.json

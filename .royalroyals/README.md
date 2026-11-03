@@ -32,3 +32,17 @@ node .royalroyals/verify-bootstrap.mjs
 or package digest. A later phase must make the license-safe source compile,
 implement Store-native commerce boundaries, and produce immutable CI evidence
 for every gate before the application can admit a package set.
+
+## Repository governance
+
+The upstream Medusa workflows and Dependabot configuration are excluded from
+this repository. They target Medusa organization secrets, applications, and
+external services and must never run under the Royalroyals account. GitHub
+Actions is also disabled at repository level. Royalroyals CI will be introduced
+as a separate reviewed phase before Actions is enabled.
+
+`main` is maintained through pull requests. GitHub branch protection is not
+available for this private repository on the account's current plan; the API
+returns HTTP 403 unless the account upgrades or the repository becomes public.
+Privacy takes priority, so this limitation remains an explicit admission
+blocker rather than making the repository public.

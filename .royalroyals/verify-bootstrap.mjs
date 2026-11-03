@@ -13,6 +13,10 @@ const exclusions = (await readFile(
   join(metadata, "enterprise-exclusions.txt"),
   "utf8",
 )).split(/\r?\n/).filter(Boolean)
+const repositoryExclusions = (await readFile(
+  join(metadata, "repository-exclusions.txt"),
+  "utf8",
+)).split(/\r?\n/).filter(Boolean)
 const enterpriseNotice = await readFile(
   join(root, "ENTERPRISE-LICENSE.md"),
   "utf8",
@@ -54,6 +58,14 @@ for (const path of exclusions) {
   try {
     await access(join(root, path))
     errors.push(`excluded enterprise path is present: ${path}`)
+  } catch (error) {
+    if (error?.code !== "ENOENT") throw error
+  }
+}
+for (const path of repositoryExclusions) {
+  try {
+    await access(join(root, path))
+    errors.push(`excluded upstream repository automation is present: ${path}`)
   } catch (error) {
     if (error?.code !== "ENOENT") throw error
   }

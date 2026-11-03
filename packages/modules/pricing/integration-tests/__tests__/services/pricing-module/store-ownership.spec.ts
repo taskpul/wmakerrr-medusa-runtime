@@ -1,11 +1,13 @@
 import { IPricingModuleService } from "@medusajs/framework/types"
 import { Modules } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
+import { resolve } from "path"
 
 jest.setTimeout(30000)
 
 moduleIntegrationTestRunner<IPricingModuleService>({
   moduleName: Modules.PRICING,
+  resolve: resolve(process.cwd(), "src"),
   moduleOptions: {
     store_isolation: {
       mode: "shared",

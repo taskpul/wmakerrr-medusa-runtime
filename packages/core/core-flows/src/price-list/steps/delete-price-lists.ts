@@ -13,16 +13,16 @@ export const deletePriceListsStepId = "delete-price-lists"
  */
 export const deletePriceListsStep = createStep(
   deletePriceListsStepId,
-  async (ids: DeletePriceListsStepInput, { container }) => {
+  async (ids: DeletePriceListsStepInput, { container, context }) => {
     const pricingModule = container.resolve<IPricingModuleService>(
       Modules.PRICING
     )
 
-    await pricingModule.softDeletePriceLists(ids)
+    await pricingModule.softDeletePriceLists(ids, {}, context)
 
     return new StepResponse(void 0, ids)
   },
-  async (idsToRestore, { container }) => {
+  async (idsToRestore, { container, context }) => {
     if (!idsToRestore?.length) {
       return
     }
@@ -31,6 +31,6 @@ export const deletePriceListsStep = createStep(
       Modules.PRICING
     )
 
-    await pricingModule.restorePriceLists(idsToRestore)
+    await pricingModule.restorePriceLists(idsToRestore, {}, context)
   }
 )

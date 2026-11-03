@@ -65,6 +65,12 @@ import {
 } from "@utils"
 import { CreatePromotionRuleValueDTO } from "../types/promotion-rule-value"
 import { buildPromotionRuleQueryFilterFromContext } from "../utils/compute-actions/build-promotion-rule-query-filter-from-context"
+import { setPromotionStoreDatabaseContext } from "../database-context"
+import {
+  GeneratedCrudHookInput,
+  GeneratedCrudResultHookInput,
+  PromotionStoreOwnership,
+} from "../store-ownership"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -120,6 +126,8 @@ export default class PromotionModuleService
   protected campaignBudgetUsageService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof CampaignBudgetUsage>
   >
+  protected readonly storeOwnership_: PromotionStoreOwnership
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -145,6 +153,74 @@ export default class PromotionModuleService
     this.campaignService_ = campaignService
     this.campaignBudgetService_ = campaignBudgetService
     this.campaignBudgetUsageService_ = campaignBudgetUsageService
+    this.storeOwnership_ = new PromotionStoreOwnership(moduleDeclaration, {
+      Promotion: promotionService,
+      ApplicationMethod: applicationMethodService,
+      Campaign: campaignService,
+      CampaignBudget: campaignBudgetService,
+      CampaignBudgetUsage: campaignBudgetUsageService,
+      PromotionRule: promotionRuleService,
+      PromotionRuleValue: promotionRuleValueService,
+    })
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeOwnership_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeOwnership_.resolveStoreId(context)
+    const execute = async (
+      transactionManager: SqlEntityManager,
+      scopedContext: Context
+    ) => {
+      scopedContext.storeId ??= storeId
+      const activeStoreId = this.databaseStoreContexts_.get(transactionManager)
+      if (activeStoreId && activeStoreId !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Promotion transaction is already bound to another Store"
+        )
+      }
+      if (!activeStoreId) {
+        await setPromotionStoreDatabaseContext(
+          transactionManager,
+          storeId,
+          this.storeOwnership_.isShared
+        )
+        this.databaseStoreContexts_.set(transactionManager, storeId)
+      }
+      return await task(scopedContext)
+    }
+    const transactionManager = context.transactionManager as
+      SqlEntityManager | undefined
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      {
+        manager: context.manager as SqlEntityManager | undefined,
+        isolationLevel: context.isolationLevel,
+        enableNestedTransactions: context.enableNestedTransactions,
+      } as any
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: GeneratedCrudHookInput
+  ): Promise<unknown[]> {
+    return this.storeOwnership_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: GeneratedCrudResultHookInput
+  ): Promise<void> {
+    this.storeOwnership_.validateGeneratedMethodResult(input)
   }
 
   @InjectManager()
@@ -171,6 +247,7 @@ export default class PromotionModuleService
     // Ensure we share the same now date across all filters
     const now = new Date()
     const activeFilters = {
+      store_id: this.storeOwnership_.resolveStoreId(sharedContext ?? {}),
       status: PromotionStatus.ACTIVE,
       $or: [
         {
@@ -1445,12 +1522,17 @@ export default class PromotionModuleService
   ) {
     const promotionIds = data.map((d) => d.id)
     const existingPromotions = await this.promotionService_.list(
-      { id: promotionIds },
-      { relations: ["application_method"] }
+      this.storeOwnership_.scope({ id: promotionIds }, sharedContext),
+      { relations: ["application_method"] },
+      sharedContext
     )
     const existingCampaigns = await this.campaignService_.list(
-      { id: data.map((d) => d.campaign_id).filter((d) => isPresent(d)) },
-      { relations: ["budget"] }
+      this.storeOwnership_.scope(
+        { id: data.map((d) => d.campaign_id).filter((d) => isPresent(d)) },
+        sharedContext
+      ),
+      { relations: ["budget"] },
+      sharedContext
     )
 
     const existingPromotionsMap = new Map<

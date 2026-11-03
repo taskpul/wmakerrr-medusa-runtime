@@ -27,6 +27,7 @@ import {
   remoteQueryObjectFromString,
   unflattenObjectKeys,
   isString,
+  getActiveMedusaContext,
 } from "@medusajs/utils"
 import { RelationMap, RemoteJoiner } from "../joiner"
 import { queryCacheDecoratorOptions } from "./cache"
@@ -342,13 +343,16 @@ export class Query {
       }
     }
 
-    const indexResponse = (await this.#indexModule.query({
-      fields,
-      filters,
-      joinFilters,
-      pagination,
-      idsOnly: true,
-    })) as unknown as GraphResultSet<TEntry>
+    const indexResponse = (await this.#indexModule.query(
+      {
+        fields,
+        filters,
+        joinFilters,
+        pagination,
+        idsOnly: true,
+      },
+      getActiveMedusaContext()
+    )) as unknown as GraphResultSet<TEntry>
 
     delete queryOptions.filters
 

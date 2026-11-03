@@ -86,9 +86,14 @@ function loadMigrationsList() {
 export async function createIndexTestBed({
   schema,
   workerMode = "shared",
+  storeIsolation,
 }: {
   schema: string
   workerMode?: "shared" | "server"
+  storeIsolation?: {
+    mode: "shared" | "dedicated"
+    store_id?: string
+  }
 }): Promise<IndexModuleTestBed> {
   const dbName = `medusa-index-module-${Math.random()
     .toString(36)
@@ -155,7 +160,7 @@ export async function createIndexTestBed({
 
     const module = new IndexModuleService(
       container.cradle as any,
-      { schema } as any,
+      { schema, store_isolation: storeIsolation } as any,
       { worker_mode: workerMode } as any
     )
 

@@ -468,7 +468,9 @@ export default class RedisEventBusService extends AbstractEventBusModuleService 
         }
 
         try {
-          return await subscriber(event).then((data) => {
+          return await this.runWithEventStoreContext_(event, () =>
+            subscriber(event)
+          ).then((data) => {
             // For every subscriber that completes successfully, add their id to the list of completed subscribers
             completedSubscribersInCurrentAttempt.push(id)
             return data

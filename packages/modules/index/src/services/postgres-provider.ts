@@ -15,10 +15,12 @@ import {
   InjectManager,
   InjectTransactionManager,
   isDefined,
+  MedusaError,
   MedusaContext,
   Modules,
   toMikroORMEntity,
   unflattenObjectKeys,
+  runWithMedusaContext,
 } from "@medusajs/framework/utils"
 import {
   EntityManager,
@@ -59,6 +61,44 @@ export class PostgresProvider implements IndexTypes.StorageProvider {
   protected readonly manager_: SqlEntityManager
   protected readonly query_: RemoteQueryFunction
   protected baseRepository_: BaseRepository
+
+  private resolveEventStoreId_(
+    event: Event,
+    entity: string
+  ): string | undefined {
+    if (entity !== "Product" && entity !== "ProductVariant") {
+      return undefined
+    }
+
+    const records = (Array.isArray(event.data) ? event.data : [event.data]) as {
+      store_id?: string
+    }[]
+    const storeIds = [
+      ...new Set(
+        records.map((record) => record?.store_id?.trim()).filter(Boolean)
+      ),
+    ] as string[]
+    const isolation = this.moduleOptions_.store_isolation
+    const isShared = isolation?.mode === "shared"
+    const configuredStoreId = isolation?.store_id ?? "__medusa_dedicated__"
+
+    if (isShared && storeIds.length !== 1) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Shared Product index events require exactly one Store provenance"
+      )
+    }
+    if (
+      !isShared &&
+      storeIds.some((storeId) => storeId !== configuredStoreId)
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Product index event does not match the dedicated Store"
+      )
+    }
+    return storeIds[0] ?? configuredStoreId
+  }
 
   constructor(
     container: InjectedDependencies,
@@ -186,6 +226,10 @@ export class PostgresProvider implements IndexTypes.StorageProvider {
   ): Subscriber<{ id: string | string[] }> {
     return async (event: Event) => {
       await this.#isReady_
+      const eventStoreId = this.resolveEventStoreId_(
+        event,
+        schemaEntityObjectRepresentation.entity
+      )
 
       const data_: { id: string }[] = Array.isArray(event.data)
         ? event.data
@@ -223,24 +267,31 @@ export class PostgresProvider implements IndexTypes.StorageProvider {
       }
 
       for (const idsBatch of idsBatches) {
-        const graphConfig: Parameters<QueryGraphFunction>[0] = {
-          entity: alias,
-          filters: {
-            id: idsBatch,
-          },
-          fields: [...new Set(["id", ...fields])],
-          withDeleted,
+        const processBatch = async () => {
+          const graphConfig: Parameters<QueryGraphFunction>[0] = {
+            entity: alias,
+            filters: {
+              id: idsBatch,
+            },
+            fields: [...new Set(["id", ...fields])],
+            withDeleted,
+          }
+
+          const { data: entityData } = await this.query_.graph(graphConfig)
+
+          const argument = {
+            entity: schemaEntityObjectRepresentation.entity,
+            data: entityData,
+            schemaEntityObjectRepresentation,
+          }
+
+          await this[targetMethod](argument)
         }
-
-        const { data: entityData } = await this.query_.graph(graphConfig)
-
-        const argument = {
-          entity: schemaEntityObjectRepresentation.entity,
-          data: entityData,
-          schemaEntityObjectRepresentation,
+        if (eventStoreId) {
+          await runWithMedusaContext({ storeId: eventStoreId }, processBatch)
+        } else {
+          await processBatch()
         }
-
-        await this[targetMethod](argument)
       }
     }
   }

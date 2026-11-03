@@ -11,8 +11,9 @@ Commerce module for stock locations (warehouses, stores) and their addresses. In
 import { Modules } from "@medusajs/framework/utils"
 import type { IStockLocationService } from "@medusajs/framework/types"
 
-const stockLocationModuleService: IStockLocationService =
-  container.resolve(Modules.STOCK_LOCATION)
+const stockLocationModuleService: IStockLocationService = container.resolve(
+  Modules.STOCK_LOCATION
+)
 
 const location = await stockLocationModuleService.createStockLocations({
   name: "Main Warehouse",
@@ -57,6 +58,13 @@ yarn migration:create           # after any change in src/models
 ```
 
 ## Gotchas
+
+- Controlled runtime Store isolation is owned by `src/store-ownership.ts` and
+  `src/database-context.ts`; do not duplicate ownership checks in routes.
+- Stock Location and Address rows have immutable `store_id`. Nested addresses
+  must be stamped with the same Store before persistence.
+- Shared mode requires verified `Context.storeId` and the non-bypass
+  `medusa_stock_location_request` database role.
 
 - `updateStockLocations(selector, data)` returns `serialized[0]` whenever `data` is a single object, so the selector form returns only the first updated location despite its `StockLocationDTO[]` signature.
 - `upsertStockLocations` splits input by presence of `id`: entries with `id` are updated, the rest created.

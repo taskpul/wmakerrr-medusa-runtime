@@ -1,4 +1,5 @@
 import { model, ProductUtils } from "@medusajs/framework/utils"
+import { PRODUCT_DEDICATED_STORE_ID } from "../store-ownership"
 
 import ProductCategory from "./product-category"
 import ProductCollection from "./product-collection"
@@ -15,6 +16,7 @@ import ProductVariant from "./product-variant"
 const Product = model
   .define("Product", {
     id: model.id({ prefix: "prod" }).primaryKey(),
+    store_id: model.text().default(PRODUCT_DEDICATED_STORE_ID),
     /**
      * The product's display title.
      */
@@ -149,26 +151,32 @@ const Product = model
   })
   .indexes([
     {
+      name: "IDX_product_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+      where: "deleted_at IS NULL",
+    },
+    {
       name: "IDX_product_handle_unique",
-      on: ["handle"],
+      on: ["store_id", "handle"],
       unique: true,
       where: "deleted_at IS NULL",
     },
     {
       name: "IDX_product_type_id",
-      on: ["type_id"],
+      on: ["store_id", "type_id"],
       unique: false,
       where: "deleted_at IS NULL",
     },
     {
       name: "IDX_product_collection_id",
-      on: ["collection_id"],
+      on: ["store_id", "collection_id"],
       unique: false,
       where: "deleted_at IS NULL",
     },
     {
       name: "IDX_product_status",
-      on: ["status"],
+      on: ["store_id", "status"],
       unique: false,
       where: "deleted_at IS NULL",
     },

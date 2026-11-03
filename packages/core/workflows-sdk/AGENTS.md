@@ -37,11 +37,9 @@ export const createBrandWorkflow = createWorkflow(
   function (input: { name: string; notify?: boolean }) {
     const brand = createBrandStep({ name: input.name })
     const payload = transform({ brand }, ({ brand }) => ({ id: brand.id }))
-    when("notify-brand", { input }, ({ input }) => !!input.notify).then(
-      () => {
-        notifyBrandStep(payload)
-      }
-    )
+    when("notify-brand", { input }, ({ input }) => !!input.notify).then(() => {
+      notifyBrandStep(payload)
+    })
     return new WorkflowResponse(brand)
   }
 )
@@ -74,6 +72,10 @@ const { result } = await createBrandWorkflow(req.scope).run({
 
 - A step with `async: true` that returns no `StepResponse` leaves the workflow waiting in the background; if it does return a `StepResponse` it completes immediately (`wrapAsyncHandler`).
 - Complete it later with the workflow engine service (`Modules.WORKFLOW_ENGINE`) `setStepSuccess` / `setStepFailure`, passing `idempotencyKey: { action, transactionId, stepId, workflowId }`. Docs: https://docs.medusajs.com/learn/fundamentals/workflows/long-running-workflow.md
+- The controlled distribution persists `context.storeId` in workflow flow
+  metadata. Async continuation restores that Store and rejects a caller that
+  tries to resume the transaction under another Store. Do not source Store
+  context from step payloads or mutable event data.
 
 ### Hooks
 
@@ -82,9 +84,12 @@ const productCreated = createHook("productCreated", { product })
 return new WorkflowResponse(product, { hooks: [productCreated] })
 
 // consumer, e.g. src/workflows/hooks/product-created.ts
-myWorkflow.hooks.productCreated(async ({ product }, { container }) => {
-  // ...
-}, async (compensateInput, { container }) => {})
+myWorkflow.hooks.productCreated(
+  async ({ product }, { container }) => {
+    // ...
+  },
+  async (compensateInput, { container }) => {}
+)
 ```
 
 - One handler per hook: a second registration throws `Cannot define multiple hook handlers for the <name> hook`. Unconsumed hooks run as no-op steps.

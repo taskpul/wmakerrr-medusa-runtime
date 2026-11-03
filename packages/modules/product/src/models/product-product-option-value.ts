@@ -1,4 +1,5 @@
 import { model } from "@medusajs/framework/utils"
+import { PRODUCT_DEDICATED_STORE_ID } from "../store-ownership"
 import ProductOptionValue from "./product-option-value"
 import ProductProductOption from "./product-product-option"
 
@@ -8,6 +9,7 @@ import ProductProductOption from "./product-product-option"
 const ProductProductOptionValue = model
   .define("ProductProductOptionValue", {
     id: model.id({ prefix: "prodoptval" }).primaryKey(),
+    store_id: model.text().default(PRODUCT_DEDICATED_STORE_ID),
     product_product_option: model.belongsTo(() => ProductProductOption, {
       mappedBy: "values",
     }),
@@ -16,6 +18,12 @@ const ProductProductOptionValue = model
     }),
   })
   .indexes([
+    {
+      name: "IDX_product_product_option_value_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+      where: "deleted_at IS NULL",
+    },
     {
       /**
        * Non-partial companion to the partial index generated for the

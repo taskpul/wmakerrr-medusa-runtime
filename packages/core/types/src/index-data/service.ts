@@ -1,4 +1,5 @@
 import { IModuleService, ModuleServiceInitializeOptions } from "../modules-sdk"
+import { Context } from "../shared-context"
 import { IndexQueryConfig, QueryResultSet } from "./query-config"
 
 /**
@@ -11,6 +12,10 @@ export interface IndexModuleOptions {
   }
   defaultAdapterOptions?: ModuleServiceInitializeOptions
   schema: string
+  store_isolation?: {
+    mode?: "dedicated" | "shared"
+    store_id?: string
+  }
 }
 
 export interface IndexInfo {
@@ -24,7 +29,8 @@ export interface IndexInfo {
 
 export interface IIndexService extends IModuleService {
   query<const TEntry extends string>(
-    config: IndexQueryConfig<TEntry>
+    config: IndexQueryConfig<TEntry>,
+    sharedContext?: Context
   ): Promise<QueryResultSet<TEntry>>
 
   /**
@@ -35,7 +41,10 @@ export interface IIndexService extends IModuleService {
    *
    * @param strategy The sync strategy
    */
-  sync({ strategy }?: { strategy?: "full" | "reset" }): Promise<void>
+  sync(
+    { strategy }?: { strategy?: "full" | "reset" },
+    sharedContext?: Context
+  ): Promise<void>
 
   /**
    * Get the index information

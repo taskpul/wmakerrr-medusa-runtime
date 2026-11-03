@@ -25,7 +25,7 @@ export const dismissRemoteLinkStepId = "dismiss-remote-links"
  */
 export const dismissRemoteLinkStep = createStep(
   dismissRemoteLinkStepId,
-  async (data: DismissRemoteLinksStepInput, { container }) => {
+  async (data: DismissRemoteLinksStepInput, { container, context }) => {
     const entries = Array.isArray(data) ? data : [data]
 
     if (!entries.length) {
@@ -37,21 +37,23 @@ export const dismissRemoteLinkStep = createStep(
     // Our current revert strategy for dismissed links are to recreate it again.
     // This works when its just the primary keys, but when you have additional data
     // in the links, we need to preserve them in order to recreate the links accurately.
-    const dataBeforeDismiss = (await link.list(data, {
-      asLinkDefinition: true,
-    })) as LinkDefinition[]
+    const dataBeforeDismiss = (await link.list(
+      data,
+      { asLinkDefinition: true },
+      context
+    )) as LinkDefinition[]
 
-    await link.dismiss(entries)
+    await link.dismiss(entries, context)
 
     return new StepResponse(entries, dataBeforeDismiss)
   },
-  async (dataBeforeDismiss, { container }) => {
+  async (dataBeforeDismiss, { container, context }) => {
     if (!dataBeforeDismiss?.length) {
       return
     }
 
     const link = container.resolve<Link>(ContainerRegistrationKeys.LINK)
 
-    await link.create(dataBeforeDismiss)
+    await link.create(dataBeforeDismiss, context)
   }
 )

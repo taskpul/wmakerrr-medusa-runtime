@@ -2,10 +2,12 @@ import { PromotionUtils, model } from "@medusajs/framework/utils"
 import ApplicationMethod from "./application-method"
 import Campaign from "./campaign"
 import PromotionRule from "./promotion-rule"
+import { PROMOTION_DEDICATED_STORE_ID } from "../store-ownership"
 
 const Promotion = model
   .define("Promotion", {
     id: model.id({ prefix: "promo" }).primaryKey(),
+    store_id: model.text().default(PROMOTION_DEDICATED_STORE_ID),
     code: model.text().searchable(),
     is_automatic: model.boolean().default(false),
     is_tax_inclusive: model.boolean().default(false),
@@ -47,8 +49,13 @@ const Promotion = model
   .indexes([
     {
       name: "IDX_unique_promotion_code",
-      on: ["code"],
+      on: ["store_id", "code"],
       where: "deleted_at IS NULL",
+      unique: true,
+    },
+    {
+      name: "IDX_promotion_store_id_id",
+      on: ["store_id", "id"],
       unique: true,
     },
     {

@@ -624,6 +624,28 @@ export class LocalWorkflow {
       const flow = transaction.getFlow() ?? {}
       const metadata = (flow.metadata ??
         {}) as Required<TransactionFlow>["metadata"]
+
+      if (metadata.storeId !== undefined && !isString(metadata.storeId)) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Workflow Store context metadata is invalid"
+        )
+      }
+
+      if (
+        metadata.storeId &&
+        this.medusaContext.storeId &&
+        metadata.storeId !== this.medusaContext.storeId
+      ) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Workflow Store context cannot be rebound during continuation"
+        )
+      }
+
+      if (metadata.storeId) {
+        this.medusaContext.storeId = metadata.storeId
+      }
       this.medusaContext.eventGroupId = metadata.eventGroupId
       this.medusaContext.parentStepIdempotencyKey =
         metadata.parentStepIdempotencyKey

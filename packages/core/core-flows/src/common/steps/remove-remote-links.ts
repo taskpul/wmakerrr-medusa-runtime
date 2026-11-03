@@ -20,7 +20,7 @@ export const removeRemoteLinkStepId = "remove-remote-links"
  */
 export const removeRemoteLinkStep = createStep(
   removeRemoteLinkStepId,
-  async (data: RemoveRemoteLinksStepInput, { container }) => {
+  async (data: RemoveRemoteLinksStepInput, { container, context }) => {
     const entries = Array.isArray(data) ? data : [data]
 
     if (!entries.length) {
@@ -48,16 +48,16 @@ export const removeRemoteLinkStep = createStep(
     }
 
     const link = container.resolve<Link>(ContainerRegistrationKeys.LINK)
-    await link.delete(grouped)
+    await link.delete(grouped, context)
 
     return new StepResponse(grouped, grouped)
   },
-  async (removedLinks, { container }) => {
+  async (removedLinks, { container, context }) => {
     if (!removedLinks) {
       return
     }
 
     const link = container.resolve<Link>(ContainerRegistrationKeys.LINK)
-    await link.restore(removedLinks)
+    await link.restore(removedLinks, context)
   }
 )

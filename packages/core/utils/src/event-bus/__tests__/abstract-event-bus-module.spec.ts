@@ -1,9 +1,10 @@
 import { EventBusTypes } from "@medusajs/types"
 import { AbstractEventBusModuleService } from ".."
+import { runWithMedusaContext } from "../../modules-sdk/decorators/context-parameter"
 
 class MockEventBusModuleService extends AbstractEventBusModuleService {
-  constructor() {
-    super({}, {}, {} as any)
+  constructor(moduleOptions: Record<string, unknown> = {}) {
+    super({}, moduleOptions, {} as any)
   }
 
   async emit<T>(
@@ -31,6 +32,13 @@ class MockEventBusModuleService extends AbstractEventBusModuleService {
 
   public testParseEventMetadataDates(metadata?: EventBusTypes.EventMetadata) {
     return this.parseEventMetadataDates(metadata)
+  }
+
+  public testRunWithEventStoreContext<T>(
+    event: EventBusTypes.Message<unknown>,
+    task: () => T
+  ) {
+    return this.runWithEventStoreContext_(event, task)
   }
 }
 
@@ -109,6 +117,47 @@ describe("AbstractEventBusModuleService", () => {
       expect(metadata?.published_at).toEqual(
         new Date("2026-06-20T11:00:00.000Z")
       )
+    })
+  })
+
+  describe("Store provenance", () => {
+    it("fails closed when shared emission has no active Store", () => {
+      const eventBus = new MockEventBusModuleService({
+        store_isolation: { mode: "shared" },
+      })
+
+      expect(() => eventBus.testWithCreatedAtMetadata()).toThrow(
+        "Shared event emission requires Store provenance"
+      )
+    })
+
+    it("stamps and restores the active Store", () => {
+      const eventBus = new MockEventBusModuleService({
+        options: { store_isolation: { mode: "shared" } },
+      })
+      const metadata = runWithMedusaContext({ storeId: "store_a" }, () =>
+        eventBus.testWithCreatedAtMetadata()
+      )
+
+      expect(metadata.store_id).toBe("store_a")
+      expect(
+        eventBus.testRunWithEventStoreContext(
+          { name: "test", data: {}, metadata },
+          () => eventBus.testWithCreatedAtMetadata().store_id
+        )
+      ).toBe("store_a")
+    })
+
+    it("rejects Store provenance that conflicts with dedicated placement", () => {
+      const eventBus = new MockEventBusModuleService({
+        store_isolation: { mode: "dedicated", store_id: "store_a" },
+      })
+
+      expect(() =>
+        runWithMedusaContext({ storeId: "store_b" }, () =>
+          eventBus.testWithCreatedAtMetadata()
+        )
+      ).toThrow("Event Store provenance does not match dedicated placement")
     })
   })
 })

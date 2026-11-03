@@ -2,10 +2,12 @@ import { model, PaymentCollectionStatus } from "@medusajs/framework/utils"
 import Payment from "./payment"
 import PaymentProvider from "./payment-provider"
 import PaymentSession from "./payment-session"
+import { PAYMENT_DEDICATED_STORE_ID } from "../store-isolation"
 
 const PaymentCollection = model
   .define("PaymentCollection", {
     id: model.id({ prefix: "pay_col" }).primaryKey(),
+    store_id: model.text().default(PAYMENT_DEDICATED_STORE_ID),
     currency_code: model.text(),
     amount: model.bigNumber(),
     authorized_amount: model.bigNumber().nullable(),

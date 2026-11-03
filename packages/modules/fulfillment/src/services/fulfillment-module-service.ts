@@ -19,6 +19,7 @@ import {
   UpdateServiceZoneDTO,
   ValidateFulfillmentDataContext,
 } from "@medusajs/framework/types"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
   arrayDifference,
   deepCopy,
@@ -48,6 +49,12 @@ import {
 } from "@models"
 import { isContextValid, Rule, validateAndNormalizeRules } from "@utils"
 import { joinerConfig } from "../joiner-config"
+import { setFulfillmentStoreDatabaseContext } from "../database-context"
+import {
+  FulfillmentStoreOwnership,
+  GeneratedCrudHookInput,
+  GeneratedCrudResultHookInput,
+} from "../store-ownership"
 import { UpdateShippingOptionsInput } from "../types/service"
 import FulfillmentProviderService from "./fulfillment-provider"
 
@@ -117,6 +124,9 @@ export default class FulfillmentModuleService
   protected readonly fulfillmentService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof Fulfillment>
   >
+  protected readonly fulfillmentAddressService_: ModulesSdkTypes.IMedusaInternalService<any>
+  protected readonly storeOwnership_: FulfillmentStoreOwnership
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -146,10 +156,90 @@ export default class FulfillmentModuleService
     this.shippingOptionTypeService_ = shippingOptionTypeService
     this.fulfillmentProviderService_ = fulfillmentProviderService
     this.fulfillmentService_ = fulfillmentService
+    this.fulfillmentAddressService_ = fulfillmentAddressService
+    this.storeOwnership_ = new FulfillmentStoreOwnership(moduleDeclaration, {
+      Fulfillment: fulfillmentService,
+      FulfillmentAddress: fulfillmentAddressService,
+      FulfillmentSet: fulfillmentSetService,
+      ServiceZone: serviceZoneService,
+      GeoZone: geoZoneService,
+      ShippingOption: shippingOptionService,
+      ShippingOptionRule: shippingOptionRuleService,
+      ShippingOptionType: shippingOptionTypeService,
+      ShippingProfile: shippingProfileService,
+    })
   }
 
   __joinerConfig(): ModuleJoinerConfig {
     return joinerConfig
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeOwnership_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeOwnership_.resolveStoreId(context)
+    if (!this.storeOwnership_.isShared) {
+      context.storeId ??= storeId
+      return await task(context)
+    }
+
+    const execute = async (
+      transactionManager: SqlEntityManager,
+      scopedContext: Context
+    ) => {
+      scopedContext.storeId ??= storeId
+      const activeStoreId = this.databaseStoreContexts_.get(transactionManager)
+      if (activeStoreId && activeStoreId !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Fulfillment transaction is already bound to another Store"
+        )
+      }
+      if (!activeStoreId) {
+        await setFulfillmentStoreDatabaseContext(
+          transactionManager,
+          storeId,
+          this.storeOwnership_.isShared
+        )
+        this.databaseStoreContexts_.set(transactionManager, storeId)
+      }
+      return await task(scopedContext)
+    }
+
+    const transactionManager = context.transactionManager as
+      SqlEntityManager | undefined
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+
+    const transactionOptions = {
+      manager: context.manager as SqlEntityManager | undefined,
+      isolationLevel: context.isolationLevel,
+      enableNestedTransactions: context.enableNestedTransactions,
+    }
+
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      transactionOptions
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: GeneratedCrudHookInput
+  ): Promise<unknown[]> {
+    return this.storeOwnership_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: GeneratedCrudResultHookInput
+  ): Promise<void> {
+    this.storeOwnership_.validateGeneratedMethodResult(input)
   }
 
   @InjectManager()
@@ -188,7 +278,7 @@ export default class FulfillmentModuleService
     )
 
     let shippingOptions = await this.shippingOptionService_.list(
-      normalizedFilters,
+      this.storeOwnership_.scope(normalizedFilters, sharedContext),
       normalizedConfig,
       sharedContext
     )
@@ -217,6 +307,13 @@ export default class FulfillmentModuleService
     config: FindConfig<FulfillmentTypes.FulfillmentDTO> = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<FulfillmentTypes.FulfillmentDTO> {
+    await this.storeOwnership_.assertOwnedIds(
+      this.fulfillmentService_,
+      [id],
+      "Fulfillment",
+      sharedContext,
+      true
+    )
     const fulfillment = await this.fulfillmentService_.retrieve(
       id,
       config,
@@ -235,7 +332,7 @@ export default class FulfillmentModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<FulfillmentTypes.FulfillmentDTO[]> {
     const fulfillments = await this.fulfillmentService_.list(
-      filters,
+      this.storeOwnership_.scope(filters, sharedContext),
       config,
       sharedContext
     )
@@ -252,7 +349,7 @@ export default class FulfillmentModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<[FulfillmentDTO[], number]> {
     const [fulfillments, count] = await this.fulfillmentService_.listAndCount(
-      filters,
+      this.storeOwnership_.scope(filters ?? {}, sharedContext),
       config,
       sharedContext
     )
@@ -308,7 +405,10 @@ export default class FulfillmentModuleService
       | FulfillmentTypes.CreateFulfillmentSetDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof FulfillmentSet>[]> {
-    const data_ = Array.isArray(data) ? data : [data]
+    const data_ = this.storeOwnership_.stampFulfillmentSets(
+      Array.isArray(data) ? data : [data],
+      sharedContext
+    )
 
     if (!data_.length) {
       return []
@@ -371,7 +471,16 @@ export default class FulfillmentModuleService
       | FulfillmentTypes.CreateServiceZoneDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ServiceZone>[]> {
-    const data_ = Array.isArray(data) ? data : [data]
+    const data_ = this.storeOwnership_.stampServiceZones(
+      Array.isArray(data) ? data : [data],
+      sharedContext
+    )
+
+    await this.storeOwnership_.assertParentOwnership(
+      "ServiceZone",
+      data_,
+      sharedContext
+    )
 
     if (!data_.length) {
       return []
@@ -432,7 +541,16 @@ export default class FulfillmentModuleService
       | FulfillmentTypes.CreateShippingOptionDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ShippingOption>[]> {
-    const data_ = Array.isArray(data) ? data : [data]
+    const data_ = this.storeOwnership_.stampShippingOptions(
+      Array.isArray(data) ? data : [data],
+      sharedContext
+    )
+
+    await this.storeOwnership_.assertParentOwnership(
+      "ShippingOption",
+      data_,
+      sharedContext
+    )
 
     if (!data_.length) {
       return []
@@ -493,7 +611,9 @@ export default class FulfillmentModuleService
       | FulfillmentTypes.CreateShippingProfileDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ShippingProfile>[]> {
-    const data_ = Array.isArray(data) ? data : [data]
+    const data_ = (Array.isArray(data) ? data : [data]).map((entry) =>
+      this.storeOwnership_.stamp(entry, sharedContext)
+    )
 
     if (!data_.length) {
       return []
@@ -521,7 +641,15 @@ export default class FulfillmentModuleService
       FulfillmentTypes.CreateGeoZoneDTO | FulfillmentTypes.CreateGeoZoneDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<FulfillmentTypes.GeoZoneDTO | FulfillmentTypes.GeoZoneDTO[]> {
-    const data_ = Array.isArray(data) ? data : [data]
+    const data_ = (Array.isArray(data) ? data : [data]).map((entry) =>
+      this.storeOwnership_.stamp(entry, sharedContext)
+    )
+
+    await this.storeOwnership_.assertParentOwnership(
+      "GeoZone",
+      data_,
+      sharedContext
+    )
 
     FulfillmentModuleService.validateGeoZones(data_)
 
@@ -580,7 +708,15 @@ export default class FulfillmentModuleService
       | FulfillmentTypes.CreateShippingOptionRuleDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ShippingOptionRule>[]> {
-    const data_ = Array.isArray(data) ? data : [data]
+    const data_ = (Array.isArray(data) ? data : [data]).map((entry) =>
+      this.storeOwnership_.stamp(entry, sharedContext)
+    )
+
+    await this.storeOwnership_.assertParentOwnership(
+      "ShippingOptionRule",
+      data_,
+      sharedContext
+    )
 
     if (!data_.length) {
       return []
@@ -602,7 +738,14 @@ export default class FulfillmentModuleService
     data: FulfillmentTypes.CreateFulfillmentDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<FulfillmentTypes.FulfillmentDTO> {
-    const { order, additional_data, ...fulfillmentDataToCreate } = data
+    const { order, additional_data, ...fulfillmentDataToCreate } =
+      this.storeOwnership_.stampFulfillments(data, sharedContext)
+
+    await this.storeOwnership_.assertParentOwnership(
+      "Fulfillment",
+      fulfillmentDataToCreate,
+      sharedContext
+    )
 
     const fulfillment = await this.fulfillmentService_.create(
       fulfillmentDataToCreate,
@@ -627,11 +770,14 @@ export default class FulfillmentModuleService
           additional_data
         )
       await this.fulfillmentService_.update(
-        {
-          id: fulfillment.id,
-          data: providerResult.data ?? {},
-          labels: providerResult.labels ?? [],
-        },
+        this.storeOwnership_.stampFulfillments(
+          {
+            id: fulfillment.id,
+            data: providerResult.data ?? {},
+            labels: providerResult.labels ?? [],
+          },
+          sharedContext
+        ),
         sharedContext
       )
     } catch (error) {
@@ -672,7 +818,14 @@ export default class FulfillmentModuleService
     data: FulfillmentTypes.CreateFulfillmentDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<FulfillmentTypes.FulfillmentDTO> {
-    const { order, ...fulfillmentDataToCreate } = data
+    const { order, ...fulfillmentDataToCreate } =
+      this.storeOwnership_.stampFulfillments(data, sharedContext)
+
+    await this.storeOwnership_.assertParentOwnership(
+      "Fulfillment",
+      fulfillmentDataToCreate,
+      sharedContext
+    )
 
     const fulfillment = await this.fulfillmentService_.create(
       fulfillmentDataToCreate,
@@ -697,11 +850,14 @@ export default class FulfillmentModuleService
           } as Record<any, any>
         )
       await this.fulfillmentService_.update(
-        {
-          id: fulfillment.id,
-          data: providerResult.data ?? {},
-          labels: providerResult.labels ?? [],
-        },
+        this.storeOwnership_.stampFulfillments(
+          {
+            id: fulfillment.id,
+            data: providerResult.data ?? {},
+            labels: providerResult.labels ?? [],
+          },
+          sharedContext
+        ),
         sharedContext
       )
     } catch (error) {
@@ -752,7 +908,10 @@ export default class FulfillmentModuleService
     | InferEntityType<typeof FulfillmentSet>[]
     | InferEntityType<typeof FulfillmentSet>
   > {
-    const data_ = Array.isArray(data) ? data : [data]
+    const data_ = this.storeOwnership_.stampFulfillmentSets(
+      Array.isArray(data) ? data : [data],
+      sharedContext
+    )
 
     if (!data_.length) {
       return []
@@ -985,7 +1144,16 @@ export default class FulfillmentModuleService
   ): Promise<
     InferEntityType<typeof ServiceZone> | InferEntityType<typeof ServiceZone>[]
   > {
-    const data_ = Array.isArray(data) ? data : [data]
+    const data_ = this.storeOwnership_.stampServiceZones(
+      Array.isArray(data) ? data : [data],
+      sharedContext
+    )
+
+    await this.storeOwnership_.assertParentOwnership(
+      "ServiceZone",
+      data_,
+      sharedContext
+    )
 
     if (!data_.length) {
       return []
@@ -1258,9 +1426,16 @@ export default class FulfillmentModuleService
     | InferEntityType<typeof ShippingOption>
     | InferEntityType<typeof ShippingOption>[]
   > {
-    const dataArray = Array.isArray(data)
-      ? data.map((d) => deepCopy(d))
-      : [deepCopy(data)]
+    const dataArray = this.storeOwnership_.stampShippingOptions(
+      Array.isArray(data) ? data.map((d) => deepCopy(d)) : [deepCopy(data)],
+      sharedContext
+    )
+
+    await this.storeOwnership_.assertParentOwnership(
+      "ShippingOption",
+      dataArray,
+      sharedContext
+    )
 
     if (!dataArray.length) {
       return []
@@ -1430,7 +1605,9 @@ export default class FulfillmentModuleService
       | FulfillmentTypes.UpsertShippingOptionDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ShippingOption>[]> {
-    const input = Array.isArray(data) ? data : [data]
+    const input = (Array.isArray(data) ? data : [data]).map((entry) =>
+      this.storeOwnership_.stamp(entry, sharedContext)
+    )
     const forUpdate = input.filter(
       (shippingOption): shippingOption is UpdateShippingOptionsInput =>
         !!shippingOption.id
@@ -1563,7 +1740,9 @@ export default class FulfillmentModuleService
     }
 
     const types = await this.shippingOptionTypeService_.update(
-      normalizedInput,
+      normalizedInput.map((entry) =>
+        this.storeOwnership_.stamp(entry, sharedContext)
+      ),
       sharedContext
     )
 
@@ -1642,7 +1821,9 @@ export default class FulfillmentModuleService
     }
 
     const profiles = await this.shippingProfileService_.update(
-      normalizedInput,
+      normalizedInput.map((entry) =>
+        this.storeOwnership_.stamp(entry, sharedContext)
+      ),
       sharedContext
     )
 
@@ -1686,7 +1867,9 @@ export default class FulfillmentModuleService
     | InferEntityType<typeof ShippingProfile>[]
     | InferEntityType<typeof ShippingProfile>
   > {
-    const input = Array.isArray(data) ? data : [data]
+    const input = (Array.isArray(data) ? data : [data]).map((entry) =>
+      this.storeOwnership_.stamp(entry, sharedContext)
+    )
     const forUpdate = input.filter((prof) => !!prof.id)
     const forCreate = input.filter(
       (prof): prof is FulfillmentTypes.CreateShippingProfileDTO => !prof.id
@@ -1730,7 +1913,15 @@ export default class FulfillmentModuleService
       FulfillmentTypes.UpdateGeoZoneDTO | FulfillmentTypes.UpdateGeoZoneDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<FulfillmentTypes.GeoZoneDTO | FulfillmentTypes.GeoZoneDTO[]> {
-    const data_ = Array.isArray(data) ? data : [data]
+    const data_ = (Array.isArray(data) ? data : [data]).map((entry) =>
+      this.storeOwnership_.stamp(entry, sharedContext)
+    )
+
+    await this.storeOwnership_.assertParentOwnership(
+      "GeoZone",
+      data_,
+      sharedContext
+    )
 
     if (!data_.length) {
       return []
@@ -1795,7 +1986,15 @@ export default class FulfillmentModuleService
     | InferEntityType<typeof ShippingOptionRule>
     | InferEntityType<typeof ShippingOptionRule>[]
   > {
-    const data_ = Array.isArray(data) ? data : [data]
+    const data_ = (Array.isArray(data) ? data : [data]).map((entry) =>
+      this.storeOwnership_.stamp(entry, sharedContext)
+    )
+
+    await this.storeOwnership_.assertParentOwnership(
+      "ShippingOptionRule",
+      data_,
+      sharedContext
+    )
 
     if (!data_.length) {
       return []
@@ -1831,6 +2030,15 @@ export default class FulfillmentModuleService
     data: FulfillmentTypes.UpdateFulfillmentDTO,
     @MedusaContext() sharedContext: Context
   ): Promise<InferEntityType<typeof Fulfillment>> {
+    const fulfillmentData = this.storeOwnership_.stampFulfillments(
+      { id, ...data },
+      sharedContext
+    )
+    await this.storeOwnership_.assertParentOwnership(
+      "Fulfillment",
+      fulfillmentData,
+      sharedContext
+    )
     const existingFulfillment: InferEntityType<typeof Fulfillment> =
       await this.fulfillmentService_.retrieve(
         id,
@@ -1852,8 +2060,11 @@ export default class FulfillmentModuleService
      * There is a bit of logic as we need to reassign the data of those we want to keep
      * and we also need to emit the events later on.
      */
-    if (isDefined(data.labels) && isPresent(data.labels)) {
-      for (let label of data.labels) {
+    if (
+      isDefined(fulfillmentData.labels) &&
+      isPresent(fulfillmentData.labels)
+    ) {
+      for (let label of fulfillmentData.labels) {
         if (!("id" in label)) {
           continue
         }
@@ -1877,7 +2088,7 @@ export default class FulfillmentModuleService
     }
 
     const [fulfillment] = await this.fulfillmentService_.update(
-      [{ id, ...data }],
+      [fulfillmentData],
       sharedContext
     )
 
@@ -1994,6 +2205,12 @@ export default class FulfillmentModuleService
       )
     }
 
+    await this.storeOwnership_.assertParentOwnership(
+      "ShippingOption",
+      shippingOptionsData,
+      sharedContext
+    )
+
     const promises = shippingOptionsData.map((option) =>
       this.fulfillmentProviderService_.canCalculate(option.provider_id, option)
     )
@@ -2001,9 +2218,36 @@ export default class FulfillmentModuleService
     return await promiseAll(promises)
   }
 
+  @InjectManager()
   async calculateShippingOptionsPrices(
-    shippingOptionsData: FulfillmentTypes.CalculateShippingOptionPriceDTO[]
+    shippingOptionsData: FulfillmentTypes.CalculateShippingOptionPriceDTO[],
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<CalculatedShippingOptionPrice[]> {
+    const optionIds = shippingOptionsData.map((option) => option.id)
+    await this.storeOwnership_.assertOwnedIds(
+      this.shippingOptionService_,
+      optionIds,
+      "Shipping options",
+      sharedContext
+    )
+    const ownedOptions = await this.shippingOptionService_.list(
+      this.storeOwnership_.scope({ id: optionIds }, sharedContext),
+      { select: ["id", "provider_id"], take: null },
+      sharedContext
+    )
+    const providersByOption = new Map(
+      ownedOptions.map((option) => [option.id, option.provider_id])
+    )
+    if (
+      shippingOptionsData.some(
+        (option) => providersByOption.get(option.id) !== option.provider_id
+      )
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Shipping option provider does not match the active Store option"
+      )
+    }
     const promises = shippingOptionsData.map((data) =>
       this.fulfillmentProviderService_.calculatePrice(
         data.provider_id,

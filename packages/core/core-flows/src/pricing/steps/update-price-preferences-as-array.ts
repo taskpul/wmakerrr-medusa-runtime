@@ -31,25 +31,32 @@ export const updatePricePreferencesAsArrayStepId =
  */
 export const updatePricePreferencesAsArrayStep = createStep(
   updatePricePreferencesAsArrayStepId,
-  async (input: UpdatePricePreferencesAsArrayStepInput, { container }) => {
+  async (
+    input: UpdatePricePreferencesAsArrayStepInput,
+    { container, context }
+  ) => {
     const service = container.resolve<IPricingModuleService>(Modules.PRICING)
 
     if (!input.length) {
       return new StepResponse([], { prevData: [], newDataIds: [] })
     }
 
-    const prevData = await service.listPricePreferences({
-      $or: input.map((entry) => {
-        if (!entry.attribute || !entry.value) {
-          throw new MedusaError(
-            MedusaError.Types.INVALID_DATA,
-            "Attribute and value must be provided when updating price preferences"
-          )
-        }
+    const prevData = await service.listPricePreferences(
+      {
+        $or: input.map((entry) => {
+          if (!entry.attribute || !entry.value) {
+            throw new MedusaError(
+              MedusaError.Types.INVALID_DATA,
+              "Attribute and value must be provided when updating price preferences"
+            )
+          }
 
-        return { attribute: entry.attribute, value: entry.value }
-      }, {}),
-    })
+          return { attribute: entry.attribute, value: entry.value }
+        }, {}),
+      },
+      {},
+      context
+    )
 
     const toUpsert = input.map((entry) => {
       const prevEntry = prevData.find(
@@ -65,8 +72,10 @@ export const updatePricePreferencesAsArrayStep = createStep(
       }
     })
 
-    const upsertedPricePreferences =
-      await service.upsertPricePreferences(toUpsert)
+    const upsertedPricePreferences = await service.upsertPricePreferences(
+      toUpsert,
+      context
+    )
 
     const newIds = arrayDifference(
       upsertedPricePreferences.map((p) => p.id),
@@ -78,14 +87,14 @@ export const updatePricePreferencesAsArrayStep = createStep(
       newDataIds: newIds,
     })
   },
-  async (compensationData, { container }) => {
+  async (compensationData, { container, context }) => {
     if (!compensationData) {
       return
     }
 
     const service = container.resolve<IPricingModuleService>(Modules.PRICING)
 
-    await service.upsertPricePreferences(compensationData.prevData)
-    await service.deletePricePreferences(compensationData.newDataIds)
+    await service.upsertPricePreferences(compensationData.prevData, context)
+    await service.deletePricePreferences(compensationData.newDataIds, context)
   }
 )

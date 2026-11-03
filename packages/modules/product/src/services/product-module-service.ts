@@ -54,7 +54,14 @@ import {
   toHandle,
 } from "@medusajs/framework/utils"
 import { EntityManager } from "@medusajs/framework/mikro-orm/core"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { ProductRepository } from "../repositories"
+import { setProductStoreDatabaseContext } from "../database-context"
+import {
+  GeneratedCrudHookInput,
+  GeneratedCrudResultHookInput,
+  ProductStoreOwnership,
+} from "../store-ownership"
 import {
   UpdateCategoryInput,
   UpdateCollectionInput,
@@ -177,6 +184,8 @@ export default class ProductModuleService
     InferEntityType<typeof ProductVariantProductImage>
   >
   protected readonly eventBusModuleService_?: IEventBusModuleService
+  protected readonly storeOwnership_: ProductStoreOwnership
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -217,10 +226,92 @@ export default class ProductModuleService
     this.productOptionValueService_ = productOptionValueService
     this.productVariantProductImageService_ = productVariantProductImageService
     this.eventBusModuleService_ = eventBusModuleService
+    this.storeOwnership_ = new ProductStoreOwnership(moduleDeclaration, {
+      Product: productService,
+      ProductCategory: productCategoryService,
+      ProductCollection: productCollectionService,
+      ProductOption: productOptionService,
+      ProductOptionValue: productOptionValueService,
+      ProductTag: productTagService,
+      ProductType: productTypeService,
+      ProductVariant: productVariantService,
+      ProductImage: productImageService,
+      ProductProductOption: productProductOptionService,
+    })
   }
 
   __joinerConfig(): ModuleJoinerConfig {
     return joinerConfig
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeOwnership_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeOwnership_.resolveStoreId(context)
+    if (!this.storeOwnership_.isShared) {
+      context.storeId ??= storeId
+      return await task(context)
+    }
+
+    const execute = async (
+      transactionManager: SqlEntityManager,
+      scopedContext: Context
+    ) => {
+      scopedContext.storeId ??= storeId
+      const activeStoreId = this.databaseStoreContexts_.get(transactionManager)
+      if (activeStoreId && activeStoreId !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Product transaction is already bound to another Store"
+        )
+      }
+
+      if (!activeStoreId) {
+        await setProductStoreDatabaseContext(
+          transactionManager,
+          storeId,
+          this.storeOwnership_.isShared
+        )
+        this.databaseStoreContexts_.set(transactionManager, storeId)
+      }
+
+      return await task(scopedContext)
+    }
+
+    const transactionManager = context.transactionManager as
+      SqlEntityManager | undefined
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+
+    const transactionOptions = {
+      manager: context.manager as SqlEntityManager | undefined,
+      isolationLevel: context.isolationLevel,
+      enableNestedTransactions: context.enableNestedTransactions,
+    }
+
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      transactionOptions
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: GeneratedCrudHookInput
+  ): Promise<unknown[]> {
+    return this.storeOwnership_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: GeneratedCrudResultHookInput
+  ): Promise<void> {
+    this.storeOwnership_.validateGeneratedMethodResult(input)
   }
 
   @InjectManager()
@@ -228,8 +319,15 @@ export default class ProductModuleService
   async retrieveProduct(
     productId: string,
     config?: FindConfig<ProductTypes.ProductDTO>,
-    @MedusaContext() sharedContext?: Context
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<ProductTypes.ProductDTO> {
+    await this.storeOwnership_.assertOwnedIds(
+      this.productService_,
+      [productId],
+      "Product",
+      sharedContext,
+      true
+    )
     const relationsSet = new Set(config?.relations ?? [])
 
     relationsSet.delete("product_options")
@@ -397,7 +495,7 @@ export default class ProductModuleService
   async listProducts(
     filters?: ProductTypes.FilterableProductProps,
     config?: FindConfig<ProductTypes.ProductDTO>,
-    sharedContext?: Context
+    sharedContext: Context = {}
   ): Promise<ProductTypes.ProductDTO[]> {
     const { filters: normalizedFilters, shouldReturnEmpty } =
       await this.applyOptionValueFilter_(filters, sharedContext)
@@ -421,7 +519,7 @@ export default class ProductModuleService
     }
 
     const products = await this.productService_.list(
-      normalizedFilters,
+      this.storeOwnership_.scope(normalizedFilters ?? {}, sharedContext),
       this.getProductFindConfig_({
         ...config,
         relations: Array.from(relationsSet),
@@ -429,9 +527,8 @@ export default class ProductModuleService
       sharedContext
     )
 
-    const serializedProducts = await this.baseRepository_.serialize<
-      ProductTypes.ProductDTO[]
-    >(products)
+    const serializedProducts =
+      await this.baseRepository_.serialize<ProductTypes.ProductDTO[]>(products)
 
     if (shouldLoadVariantImages) {
       await this.assignImagesToVariants(serializedProducts, sharedContext)
@@ -449,7 +546,7 @@ export default class ProductModuleService
   async listAndCountProducts(
     filters?: ProductTypes.FilterableProductProps,
     config?: FindConfig<ProductTypes.ProductDTO>,
-    sharedContext?: Context
+    sharedContext: Context = {}
   ): Promise<[ProductTypes.ProductDTO[], number]> {
     const { filters: normalizedFilters, shouldReturnEmpty } =
       await this.applyOptionValueFilter_(filters, sharedContext)
@@ -490,19 +587,18 @@ export default class ProductModuleService
     }
 
     const [products, count] = await this.productService_.listAndCount(
-      normalizedFilters,
+      this.storeOwnership_.scope(normalizedFilters ?? {}, sharedContext),
       this.getProductFindConfig_({ ...config, relations }),
       sharedContext
     )
 
-    const serializedProducts = await this.baseRepository_.serialize<
-      ProductTypes.ProductDTO[]
-    >(products)
+    const serializedProducts =
+      await this.baseRepository_.serialize<ProductTypes.ProductDTO[]>(products)
 
     if (shouldLoadVariantImages) {
       await this.assignImagesToVariants(serializedProducts, sharedContext)
     }
-    
+
     if (shouldFilterOptionValues) {
       await this.filterOptionValues(serializedProducts, sharedContext)
     }
@@ -579,6 +675,40 @@ export default class ProductModuleService
     }
   }
 
+  private stampOptionGraph_(data: any, sharedContext: Context) {
+    const option = this.storeOwnership_.stamp(data, sharedContext)
+    if (Array.isArray(option.values)) {
+      option.values = option.values.map((value) =>
+        isString(value)
+          ? value
+          : this.storeOwnership_.stamp(value, sharedContext)
+      )
+    }
+    return option
+  }
+
+  private stampProductGraph_(data: any, sharedContext: Context) {
+    const product = this.storeOwnership_.stamp(data, sharedContext)
+    if (Array.isArray(product.images)) {
+      product.images = this.storeOwnership_.stampMany(
+        product.images,
+        sharedContext
+      )
+    }
+    if (Array.isArray(product.variants)) {
+      product.variants = this.storeOwnership_.stampMany(
+        product.variants,
+        sharedContext
+      )
+    }
+    if (Array.isArray(product.options)) {
+      product.options = product.options.map((option) =>
+        "id" in option ? option : this.stampOptionGraph_(option, sharedContext)
+      )
+    }
+    return product
+  }
+
   // @ts-expect-error
   createProductVariants(
     data: ProductTypes.CreateProductVariantDTO[],
@@ -605,9 +735,10 @@ export default class ProductModuleService
 
     const variants = await this.createVariants_(input, sharedContext)
 
-    const createdVariants = await this.baseRepository_.serialize<
-      ProductTypes.ProductVariantDTO[]
-    >(variants)
+    const createdVariants =
+      await this.baseRepository_.serialize<ProductTypes.ProductVariantDTO[]>(
+        variants
+      )
 
     return Array.isArray(data) ? createdVariants : createdVariants[0]
   }
@@ -648,7 +779,10 @@ export default class ProductModuleService
     )
 
     const createdVariants = await this.productVariantService_.create(
-      productVariantsWithOptions,
+      this.storeOwnership_.stampMany(
+        productVariantsWithOptions as ProductTypes.CreateProductVariantDTO[],
+        sharedContext
+      ),
       sharedContext
     )
 
@@ -741,9 +875,10 @@ export default class ProductModuleService
 
     const variants = await this.updateVariants_(normalizedInput, sharedContext)
 
-    const updatedVariants = await this.baseRepository_.serialize<
-      ProductTypes.ProductVariantDTO[]
-    >(variants)
+    const updatedVariants =
+      await this.baseRepository_.serialize<ProductTypes.ProductVariantDTO[]>(
+        variants
+      )
 
     return isString(idOrSelector) ? updatedVariants[0] : updatedVariants
   }
@@ -781,9 +916,7 @@ export default class ProductModuleService
     // Data normalization
     const variantsWithProductId: UpdateProductVariantInput[] = variants.map(
       (variant) => {
-        const { options, ...update } = data.find(
-          ({ id }) => id === variant.id
-        )!
+        const { options, ...update } = data.find(({ id }) => id === variant.id)!
 
         return {
           ...update,
@@ -839,7 +972,10 @@ export default class ProductModuleService
 
     const { entities: productVariants } =
       await this.productVariantService_.upsertWithReplace(
-        productVariantsWithOptions,
+        this.storeOwnership_.stampMany(
+          productVariantsWithOptions,
+          sharedContext
+        ),
         {
           // Only reconcile the options relation when options are actually being
           // updated. With no options in the payload the relation loop is a no-op
@@ -872,11 +1008,13 @@ export default class ProductModuleService
   ): Promise<ProductTypes.ProductTagDTO[] | ProductTypes.ProductTagDTO> {
     const input = Array.isArray(data) ? data : [data]
 
-    const tags = await this.productTagService_.create(input, sharedContext)
+    const tags = await this.productTagService_.create(
+      this.storeOwnership_.stampMany(input, sharedContext),
+      sharedContext
+    )
 
-    const createdTags = await this.baseRepository_.serialize<
-      ProductTypes.ProductTagDTO[]
-    >(tags)
+    const createdTags =
+      await this.baseRepository_.serialize<ProductTypes.ProductTagDTO[]>(tags)
 
     return Array.isArray(data) ? createdTags : createdTags[0]
   }
@@ -920,10 +1058,16 @@ export default class ProductModuleService
     let updated: InferEntityType<typeof ProductTag>[] = []
 
     if (forCreate.length) {
-      created = await this.productTagService_.create(forCreate, sharedContext)
+      created = await this.productTagService_.create(
+        this.storeOwnership_.stampMany(forCreate, sharedContext),
+        sharedContext
+      )
     }
     if (forUpdate.length) {
-      updated = await this.productTagService_.update(forUpdate, sharedContext)
+      updated = await this.productTagService_.update(
+        this.storeOwnership_.stampMany(forUpdate, sharedContext),
+        sharedContext
+      )
     }
 
     return [...created, ...updated]
@@ -969,13 +1113,12 @@ export default class ProductModuleService
     }
 
     const tags = await this.productTagService_.update(
-      normalizedInput,
+      this.storeOwnership_.stampMany(normalizedInput, sharedContext),
       sharedContext
     )
 
-    const updatedTags = await this.baseRepository_.serialize<
-      ProductTypes.ProductTagDTO[]
-    >(tags)
+    const updatedTags =
+      await this.baseRepository_.serialize<ProductTypes.ProductTagDTO[]>(tags)
 
     return isString(idOrSelector) ? updatedTags[0] : updatedTags
   }
@@ -996,17 +1139,18 @@ export default class ProductModuleService
   // @ts-expect-error
   async createProductTypes(
     data:
-      | ProductTypes.CreateProductTypeDTO[]
-      | ProductTypes.CreateProductTypeDTO,
+      ProductTypes.CreateProductTypeDTO[] | ProductTypes.CreateProductTypeDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<ProductTypes.ProductTypeDTO[] | ProductTypes.ProductTypeDTO> {
     const input = Array.isArray(data) ? data : [data]
 
-    const types = await this.productTypeService_.create(input, sharedContext)
+    const types = await this.productTypeService_.create(
+      this.storeOwnership_.stampMany(input, sharedContext),
+      sharedContext
+    )
 
-    const createdTypes = await this.baseRepository_.serialize<
-      ProductTypes.ProductTypeDTO[]
-    >(types)
+    const createdTypes =
+      await this.baseRepository_.serialize<ProductTypes.ProductTypeDTO[]>(types)
 
     return Array.isArray(data) ? createdTypes : createdTypes[0]
   }
@@ -1024,8 +1168,7 @@ export default class ProductModuleService
   @EmitEvents()
   async upsertProductTypes(
     data:
-      | ProductTypes.UpsertProductTypeDTO[]
-      | ProductTypes.UpsertProductTypeDTO,
+      ProductTypes.UpsertProductTypeDTO[] | ProductTypes.UpsertProductTypeDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<ProductTypes.ProductTypeDTO[] | ProductTypes.ProductTypeDTO> {
     const types = await this.upsertProductTypes_(data, sharedContext)
@@ -1040,9 +1183,8 @@ export default class ProductModuleService
   @InjectTransactionManager()
   protected async upsertProductTypes_(
     data:
-      | ProductTypes.UpsertProductTypeDTO
-      | ProductTypes.UpsertProductTypeDTO[],
-    sharedContext?: Context
+      ProductTypes.UpsertProductTypeDTO | ProductTypes.UpsertProductTypeDTO[],
+    sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ProductType>[]> {
     const input = Array.isArray(data) ? data : [data]
     const forUpdate = input.filter((type): type is UpdateTypeInput => !!type.id)
@@ -1054,10 +1196,16 @@ export default class ProductModuleService
     let updated: InferEntityType<typeof ProductType>[] = []
 
     if (forCreate.length) {
-      created = await this.productTypeService_.create(forCreate, sharedContext)
+      created = await this.productTypeService_.create(
+        this.storeOwnership_.stampMany(forCreate, sharedContext),
+        sharedContext
+      )
     }
     if (forUpdate.length) {
-      updated = await this.productTypeService_.update(forUpdate, sharedContext)
+      updated = await this.productTypeService_.update(
+        this.storeOwnership_.stampMany(forUpdate, sharedContext),
+        sharedContext
+      )
     }
 
     return [...created, ...updated]
@@ -1103,13 +1251,12 @@ export default class ProductModuleService
     }
 
     const types = await this.productTypeService_.update(
-      normalizedInput,
+      this.storeOwnership_.stampMany(normalizedInput, sharedContext),
       sharedContext
     )
 
-    const updatedTypes = await this.baseRepository_.serialize<
-      ProductTypes.ProductTypeDTO[]
-    >(types)
+    const updatedTypes =
+      await this.baseRepository_.serialize<ProductTypes.ProductTypeDTO[]>(types)
 
     return isString(idOrSelector) ? updatedTypes[0] : updatedTypes
   }
@@ -1138,9 +1285,10 @@ export default class ProductModuleService
 
     const options = await this.createOptions_(input, sharedContext)
 
-    const createdOptions = await this.baseRepository_.serialize<
-      ProductTypes.ProductOptionDTO[]
-    >(options)
+    const createdOptions =
+      await this.baseRepository_.serialize<ProductTypes.ProductOptionDTO[]>(
+        options
+      )
 
     return Array.isArray(data) ? createdOptions : createdOptions[0]
   }
@@ -1175,7 +1323,12 @@ export default class ProductModuleService
       }
     })
 
-    return this.productOptionService_.create(normalizedInput, sharedContext)
+    return this.productOptionService_.create(
+      normalizedInput.map((option) =>
+        this.stampOptionGraph_(option, sharedContext)
+      ),
+      sharedContext
+    )
   }
 
   async upsertProductOptions(
@@ -1282,9 +1435,10 @@ export default class ProductModuleService
 
     const options = await this.updateOptions_(normalizedInput, sharedContext)
 
-    const updatedOptions = await this.baseRepository_.serialize<
-      ProductTypes.ProductOptionDTO[]
-    >(options)
+    const updatedOptions =
+      await this.baseRepository_.serialize<ProductTypes.ProductOptionDTO[]>(
+        options
+      )
 
     return isString(idOrSelector) ? updatedOptions[0] : updatedOptions
   }
@@ -1423,7 +1577,9 @@ export default class ProductModuleService
 
     const { entities: productOptions } =
       await this.productOptionService_.upsertWithReplace(
-        normalizedInput,
+        normalizedInput.map((option) =>
+          this.stampOptionGraph_(option, sharedContext)
+        ),
         { relations: ["values"] },
         sharedContext
       )
@@ -1467,7 +1623,7 @@ export default class ProductModuleService
   @InjectManager()
   // @ts-expect-error
   async softDeleteProductOptions<
-    TReturnableLinkableKeys extends string = string
+    TReturnableLinkableKeys extends string = string,
   >(
     primaryKeyValues: string | object | string[] | object[],
     config?: SoftDeleteReturn<TReturnableLinkableKeys>,
@@ -1482,7 +1638,7 @@ export default class ProductModuleService
 
   @InjectTransactionManager()
   protected async softDeleteProductOptions_<
-    TReturnableLinkableKeys extends string = string
+    TReturnableLinkableKeys extends string = string,
   >(
     primaryKeyValues: string | object | string[] | object[],
     config?: SoftDeleteReturn<TReturnableLinkableKeys>,
@@ -1561,7 +1717,7 @@ export default class ProductModuleService
   @InjectManager()
   // @ts-expect-error
   async softDeleteProductOptionValues<
-    TReturnableLinkableKeys extends string = string
+    TReturnableLinkableKeys extends string = string,
   >(
     primaryKeyValues: string | object | string[] | object[],
     config?: SoftDeleteReturn<TReturnableLinkableKeys>,
@@ -1576,7 +1732,7 @@ export default class ProductModuleService
 
   @InjectTransactionManager()
   protected async softDeleteProductOptionValues_<
-    TReturnableLinkableKeys extends string = string
+    TReturnableLinkableKeys extends string = string,
   >(
     primaryKeyValues: string | object | string[] | object[],
     config?: SoftDeleteReturn<TReturnableLinkableKeys>,
@@ -1611,7 +1767,7 @@ export default class ProductModuleService
 
   @InjectTransactionManager()
   protected async restoreProductOptions_<
-    TReturnableLinkableKeys extends string
+    TReturnableLinkableKeys extends string,
   >(
     ids: string | object | string[] | object[],
     config?: RestoreReturn<TReturnableLinkableKeys>,
@@ -1776,7 +1932,7 @@ export default class ProductModuleService
 
     const createdPPOs = pposToCreate.length
       ? await this.productProductOptionService_.create(
-          pposToCreate,
+          this.storeOwnership_.stampMany(pposToCreate, sharedContext),
           sharedContext
         )
       : []
@@ -1812,7 +1968,7 @@ export default class ProductModuleService
 
     if (ppovToCreate.length) {
       await this.productProductOptionValueService_.create(
-        ppovToCreate,
+        this.storeOwnership_.stampMany(ppovToCreate, sharedContext),
         sharedContext
       )
     }
@@ -2174,7 +2330,7 @@ export default class ProductModuleService
 
     if (ppovToCreate.length) {
       await this.productProductOptionValueService_.create(
-        ppovToCreate,
+        this.storeOwnership_.stampMany(ppovToCreate, sharedContext),
         sharedContext
       )
     }
@@ -2345,9 +2501,10 @@ export default class ProductModuleService
 
     const collections = await this.createCollections_(input, sharedContext)
 
-    const createdCollections = await this.baseRepository_.serialize<
-      ProductTypes.ProductCollectionDTO[]
-    >(collections)
+    const createdCollections =
+      await this.baseRepository_.serialize<ProductTypes.ProductCollectionDTO[]>(
+        collections
+      )
 
     return Array.isArray(data) ? createdCollections : createdCollections[0]
   }
@@ -2365,7 +2522,7 @@ export default class ProductModuleService
     // with the collection ID
     const { entities: productCollections } =
       await this.productCollectionService_.upsertWithReplace(
-        normalizedInput,
+        this.storeOwnership_.stampMany(normalizedInput, sharedContext),
         { relations: ["products"] },
         sharedContext
       )
@@ -2394,9 +2551,10 @@ export default class ProductModuleService
   > {
     const collections = await this.upsertCollections_(data, sharedContext)
 
-    const serializedCollections = await this.baseRepository_.serialize<
-      ProductTypes.ProductCollectionDTO[]
-    >(collections)
+    const serializedCollections =
+      await this.baseRepository_.serialize<ProductTypes.ProductCollectionDTO[]>(
+        collections
+      )
 
     return Array.isArray(data)
       ? serializedCollections
@@ -2482,9 +2640,10 @@ export default class ProductModuleService
       sharedContext
     )
 
-    const updatedCollections = await this.baseRepository_.serialize<
-      ProductTypes.ProductCollectionDTO[]
-    >(collections)
+    const updatedCollections =
+      await this.baseRepository_.serialize<ProductTypes.ProductCollectionDTO[]>(
+        collections
+      )
 
     return isString(idOrSelector) ? updatedCollections[0] : updatedCollections
   }
@@ -2501,8 +2660,11 @@ export default class ProductModuleService
     // TODO: Maybe we can update upsertWithReplace to not remove oneToMany entities, but just disassociate them? With that we can remove the code below.
     // Another alternative is to not allow passing product_ids to a collection, and instead set the collection_id through the product update call.
     const updatedCollections = await this.productCollectionService_.update(
-      normalizedInput.map((c) =>
-        removeUndefined({ ...c, products: undefined })
+      this.storeOwnership_.stampMany(
+        normalizedInput.map((c) =>
+          removeUndefined({ ...c, products: undefined })
+        ),
+        sharedContext
       ),
       sharedContext
     )
@@ -2554,7 +2716,14 @@ export default class ProductModuleService
     })
 
     if (toUpdate.length) {
-      await this.productService_.update(toUpdate, sharedContext)
+      await this.productService_.update(
+        toUpdate.map((entry) => ({
+          ...entry,
+          selector: this.storeOwnership_.scope(entry.selector, sharedContext),
+          data: this.storeOwnership_.stamp(entry.data, sharedContext),
+        })),
+        sharedContext
+      )
     }
 
     return collections
@@ -2590,13 +2759,14 @@ export default class ProductModuleService
     )
 
     const categories = await this.productCategoryService_.create(
-      input,
+      this.storeOwnership_.stampMany(input, sharedContext),
       sharedContext
     )
 
-    const createdCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(categories)
+    const createdCategories =
+      await this.baseRepository_.serialize<ProductTypes.ProductCategoryDTO[]>(
+        categories
+      )
 
     // TODO: Same as the update categories, for some reason I cant get the tree repository update
     eventBuilders.createdProductCategory({
@@ -2628,9 +2798,10 @@ export default class ProductModuleService
   > {
     const categories = await this.upsertProductCategories_(data, sharedContext)
 
-    const serializedCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(categories)
+    const serializedCategories =
+      await this.baseRepository_.serialize<ProductTypes.ProductCategoryDTO[]>(
+        categories
+      )
 
     return Array.isArray(data) ? serializedCategories : serializedCategories[0]
   }
@@ -2661,13 +2832,13 @@ export default class ProductModuleService
       })
 
       created = await this.productCategoryService_.create(
-        forCreate,
+        this.storeOwnership_.stampMany(forCreate, sharedContext),
         sharedContext
       )
     }
     if (forUpdate.length) {
       updated = await this.productCategoryService_.update(
-        forUpdate,
+        this.storeOwnership_.stampMany(forUpdate, sharedContext),
         sharedContext
       )
     }
@@ -2719,9 +2890,10 @@ export default class ProductModuleService
       sharedContext
     )
 
-    const serializedCategories = await this.baseRepository_.serialize<
-      ProductTypes.ProductCategoryDTO[]
-    >(categories)
+    const serializedCategories =
+      await this.baseRepository_.serialize<ProductTypes.ProductCategoryDTO[]>(
+        categories
+      )
 
     // TODO: for some reason I cant get the tree repository update
     // event. I ll need to investigate this
@@ -2764,7 +2936,7 @@ export default class ProductModuleService
     }
 
     const categories = await this.productCategoryService_.update(
-      normalizedInput,
+      this.storeOwnership_.stampMany(normalizedInput, sharedContext),
       sharedContext
     )
 
@@ -2775,7 +2947,7 @@ export default class ProductModuleService
   @EmitEvents()
   // @ts-expect-error
   async softDeleteProductCategories<
-    TReturnableLinkableKeys extends string = string
+    TReturnableLinkableKeys extends string = string,
   >(
     primaryKeyValues: string | object | string[] | object[],
     config?: SoftDeleteReturn<TReturnableLinkableKeys>,
@@ -2826,9 +2998,8 @@ export default class ProductModuleService
     const input = Array.isArray(data) ? data : [data]
     const products = await this.createProducts_(input, sharedContext)
 
-    const createdProducts = await this.baseRepository_.serialize<
-      ProductTypes.ProductDTO[]
-    >(products)
+    const createdProducts =
+      await this.baseRepository_.serialize<ProductTypes.ProductDTO[]>(products)
 
     await this.filterOptionValues(createdProducts, sharedContext)
 
@@ -2919,9 +3090,8 @@ export default class ProductModuleService
 
     const products = await this.updateProducts_(normalizedInput, sharedContext)
 
-    const updatedProducts = await this.baseRepository_.serialize<
-      ProductTypes.ProductDTO[]
-    >(products)
+    const updatedProducts =
+      await this.baseRepository_.serialize<ProductTypes.ProductDTO[]>(products)
 
     await this.filterOptionValues(updatedProducts, sharedContext)
 
@@ -3118,7 +3288,12 @@ export default class ProductModuleService
     }
 
     const [createdProducts] = await Promise.all([
-      this.productService_.create(productsToCreate, sharedContext),
+      this.productService_.create(
+        productsToCreate.map((product) =>
+          this.stampProductGraph_(product, sharedContext)
+        ),
+        sharedContext
+      ),
       allOptionsWithIds.length > 0
         ? this.createOptions_(allOptionsWithIds, sharedContext)
         : Promise.resolve([]),
@@ -3255,9 +3430,9 @@ export default class ProductModuleService
 
     await (sharedContext.transactionManager as any).flush()
 
-    const normalizedProducts = (await this.normalizeUpdateProductInput(
-      data
-    )) as UpdateProductInput[]
+    const normalizedProducts = (
+      (await this.normalizeUpdateProductInput(data)) as UpdateProductInput[]
+    ).map((product) => this.stampProductGraph_(product, sharedContext))
 
     for (const product of normalizedProducts) {
       this.validateProductUpdatePayload(product)
@@ -3350,9 +3525,10 @@ export default class ProductModuleService
       sharedContext
     )
 
-    const updatedProductOptionValues = await this.baseRepository_.serialize<
-      ProductTypes.ProductOptionValueDTO[]
-    >(productOptionValues)
+    const updatedProductOptionValues =
+      await this.baseRepository_.serialize<
+        ProductTypes.ProductOptionValueDTO[]
+      >(productOptionValues)
 
     // TODO: Because of the wrong method override, we have to compensate to prevent breaking
     // changes right now
@@ -3388,7 +3564,7 @@ export default class ProductModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ProductOptionValue>[]> {
     return await this.productOptionValueService_.update(
-      normalizedInput,
+      this.storeOwnership_.stampMany(normalizedInput, sharedContext),
       sharedContext
     )
   }
@@ -3478,7 +3654,7 @@ export default class ProductModuleService
     T extends ProductTypes.CreateProductDTO | ProductTypes.CreateProductDTO[],
     TOutput = T extends ProductTypes.CreateProductDTO[]
       ? ProductTypes.CreateProductDTO[]
-      : ProductTypes.CreateProductDTO
+      : ProductTypes.CreateProductDTO,
   >(
     products: T,
     @MedusaContext() sharedContext: Context = {}
@@ -3549,7 +3725,7 @@ export default class ProductModuleService
     T extends UpdateProductInput | UpdateProductInput[],
     TOutput = T extends UpdateProductInput[]
       ? UpdateProductInput[]
-      : UpdateProductInput
+      : UpdateProductInput,
   >(
     products: T,
     originalProducts?: InferEntityType<typeof Product>[]
@@ -3714,8 +3890,7 @@ export default class ProductModuleService
    */
   protected static checkIfVariantWithOptionsAlreadyExists(
     data: ((
-      | ProductTypes.CreateProductVariantDTO
-      | UpdateProductVariantInput
+      ProductTypes.CreateProductVariantDTO | UpdateProductVariantInput
     ) & { options: { id: string }[]; product_id: string })[],
     variants: InferEntityType<typeof ProductVariant>[]
   ) {
@@ -3798,7 +3973,7 @@ export default class ProductModuleService
     }
 
     const variants = await this.productVariantService_.list(
-      filters,
+      this.storeOwnership_.scope(filters ?? {}, sharedContext),
       {
         ...config,
         relations,
@@ -3838,7 +4013,7 @@ export default class ProductModuleService
     }
 
     const [variants, count] = await this.productVariantService_.listAndCount(
-      filters,
+      this.storeOwnership_.scope(filters ?? {}, sharedContext),
       {
         ...config,
         relations,
@@ -3858,9 +4033,10 @@ export default class ProductModuleService
       }
     }
 
-    const serializedVariants = await this.baseRepository_.serialize<
-      ProductTypes.ProductVariantDTO[]
-    >(variants)
+    const serializedVariants =
+      await this.baseRepository_.serialize<ProductTypes.ProductVariantDTO[]>(
+        variants
+      )
     return [serializedVariants, count]
   }
 
@@ -3871,6 +4047,13 @@ export default class ProductModuleService
     config?: FindConfig<any>,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<any> {
+    await this.storeOwnership_.assertOwnedIds(
+      this.productVariantService_,
+      [id],
+      "ProductVariant",
+      sharedContext,
+      true
+    )
     const shouldLoadImages = config?.relations?.includes("images")
 
     const relations = [...(config?.relations || [])]
@@ -3919,7 +4102,10 @@ export default class ProductModuleService
     // TODO: consider validation that image and variant are on the same product
 
     const productVariantProductImage =
-      await this.productVariantProductImageService_.create(data, sharedContext)
+      await this.productVariantProductImageService_.create(
+        this.storeOwnership_.stampMany(data, sharedContext),
+        sharedContext
+      )
 
     return (
       productVariantProductImage as unknown as InferEntityType<
@@ -3943,9 +4129,14 @@ export default class ProductModuleService
   ): Promise<void> {
     const pairs = Array.isArray(data) ? data : [data]
     const productVariantProductImages =
-      await this.productVariantProductImageService_.list({
-        $or: pairs,
-      })
+      await this.productVariantProductImageService_.list(
+        {
+          $or: pairs,
+          store_id: this.storeOwnership_.resolveStoreId(sharedContext),
+        },
+        {},
+        sharedContext
+      )
 
     await this.productVariantProductImageService_.delete(
       productVariantProductImages.map((p) => p.id as string),

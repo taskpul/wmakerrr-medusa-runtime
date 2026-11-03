@@ -1,4 +1,4 @@
-import { Modules } from "@medusajs/framework/utils"
+import { Modules, runWithMedusaContext } from "@medusajs/framework/utils"
 import { moduleIntegrationTestRunner } from "@medusajs/test-utils"
 import { ICachingModuleService } from "@medusajs/framework/types"
 import { MedusaModule } from "@medusajs/framework/modules-sdk"
@@ -335,6 +335,78 @@ moduleIntegrationTestRunner<ICachingModuleService>({
             "Either key or tags must be provided"
           )
         })
+      })
+    })
+  },
+})
+
+moduleIntegrationTestRunner<ICachingModuleService>({
+  moduleName: Modules.CACHING,
+  moduleOptions: {
+    in_memory: { enable: true },
+    store_isolation: { mode: "shared" },
+  },
+  testSuite: ({ service }) => {
+    describe("Caching Store isolation", () => {
+      it("fails closed without Store context", async () => {
+        await expect(service.get({ key: "shared-key" })).rejects.toThrow(
+          "Caching operations in shared mode require Store context"
+        )
+      })
+
+      it("isolates keys and explicit tags between Stores", async () => {
+        await runWithMedusaContext({ storeId: "store_a" }, async () => {
+          await service.set({
+            key: "shared-key",
+            tags: ["shared-tag"],
+            data: { store: "a" },
+          })
+        })
+        await runWithMedusaContext({ storeId: "store_b" }, async () => {
+          await service.set({
+            key: "shared-key",
+            tags: ["shared-tag"],
+            data: { store: "b" },
+          })
+          await service.clear({ tags: ["shared-tag"] })
+        })
+
+        await expect(
+          runWithMedusaContext({ storeId: "store_a" }, () =>
+            service.get({ key: "shared-key" })
+          )
+        ).resolves.toEqual({ store: "a" })
+        await expect(
+          runWithMedusaContext({ storeId: "store_b" }, () =>
+            service.get({ key: "shared-key" })
+          )
+        ).resolves.toBeNull()
+      })
+
+      it("scopes automatically computed tags", async () => {
+        await runWithMedusaContext({ storeId: "store_a" }, async () => {
+          await service.set({
+            key: "computed-a",
+            data: { __typename: "Product", id: "prod_shared" },
+          })
+        })
+        await runWithMedusaContext({ storeId: "store_b" }, async () => {
+          await service.set({
+            key: "computed-b",
+            data: { __typename: "Product", id: "prod_shared" },
+          })
+          const tags = await service.computeTags({
+            __typename: "Product",
+            id: "prod_shared",
+          })
+          await service.clear({ tags })
+        })
+
+        await expect(
+          runWithMedusaContext({ storeId: "store_a" }, () =>
+            service.get({ key: "computed-a" })
+          )
+        ).resolves.toEqual({ __typename: "Product", id: "prod_shared" })
       })
     })
   },

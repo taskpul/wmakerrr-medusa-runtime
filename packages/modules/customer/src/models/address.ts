@@ -1,9 +1,11 @@
 import { model } from "@medusajs/framework/utils"
 import Customer from "./customer"
+import { CUSTOMER_DEDICATED_STORE_ID } from "../store-isolation"
 
 const CustomerAddress = model
   .define("CustomerAddress", {
     id: model.id({ prefix: "cuaddr" }).primaryKey(),
+    store_id: model.text().default(CUSTOMER_DEDICATED_STORE_ID),
     address_name: model.text().searchable().nullable(),
     is_default_shipping: model.boolean().default(false),
     is_default_billing: model.boolean().default(false),
@@ -23,6 +25,11 @@ const CustomerAddress = model
     }),
   })
   .indexes([
+    {
+      name: "IDX_customer_address_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+    },
     {
       name: "IDX_customer_address_unique_customer_billing",
       on: ["customer_id"],

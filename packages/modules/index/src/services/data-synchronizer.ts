@@ -1,6 +1,8 @@
 import {
   CommonEvents,
   ContainerRegistrationKeys,
+  getActiveMedusaContext,
+  MedusaError,
   Modules,
   promiseAll,
 } from "@medusajs/framework/utils"
@@ -21,6 +23,38 @@ export class DataSynchronizer {
   #schemaObjectRepresentation: IndexTypes.SchemaObjectRepresentation
   #storageProvider: IndexTypes.StorageProvider
   #orchestrator!: Orchestrator
+  #storeIsolation?: IndexTypes.IndexModuleOptions["store_isolation"]
+
+  #isStoreOwnedEntity(entity: string) {
+    return ["Product", "ProductVariant", "Price", "SalesChannel"].includes(
+      entity
+    )
+  }
+
+  #resolveStoreId(entity: string): string | undefined {
+    if (!this.#isStoreOwnedEntity(entity)) {
+      return undefined
+    }
+    const requestedStoreId = getActiveMedusaContext()?.storeId?.trim()
+    if (this.#storeIsolation?.mode === "shared") {
+      if (!requestedStoreId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Shared index synchronization requires a Store context"
+        )
+      }
+      return requestedStoreId
+    }
+    const configuredStoreId =
+      this.#storeIsolation?.store_id ?? "__medusa_dedicated__"
+    if (requestedStoreId && requestedStoreId !== configuredStoreId) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Index synchronization does not match the dedicated Store"
+      )
+    }
+    return undefined
+  }
 
   get #query() {
     return this.#container[
@@ -68,13 +102,16 @@ export class DataSynchronizer {
   onApplicationStart({
     schemaObjectRepresentation,
     storageProvider,
+    storeIsolation,
   }: {
     lockDuration?: number
     schemaObjectRepresentation: IndexTypes.SchemaObjectRepresentation
     storageProvider: IndexTypes.StorageProvider
+    storeIsolation?: IndexTypes.IndexModuleOptions["store_isolation"]
   }) {
     this.#storageProvider = storageProvider
     this.#schemaObjectRepresentation = schemaObjectRepresentation
+    this.#storeIsolation = storeIsolation
 
     this.#isReady = true
   }
@@ -102,16 +139,18 @@ export class DataSynchronizer {
     const staleCondition = staleOnly ? "staled_at IS NOT NULL" : ""
 
     for (const entity of entities) {
+      const storeId = this.#resolveStoreId(entity)
+      const storeCondition = storeId ? `AND "data"->>'store_id' = ?` : ""
       await this.#container.manager.execute(
         `WITH deleted_data AS (
           DELETE FROM "index_data"
-          WHERE "name" = ? ${staleCondition ? `AND ${staleCondition}` : ""}
+          WHERE "name" = ? ${storeCondition} ${staleCondition ? `AND ${staleCondition}` : ""}
           RETURNING id
         )
         DELETE FROM "index_relation"
         WHERE ("parent_name" = ? AND "parent_id" IN (SELECT id FROM deleted_data))
            OR ("child_name" = ? AND "child_id" IN (SELECT id FROM deleted_data))`,
-        [entity, entity, entity]
+        storeId ? [entity, storeId, entity, entity] : [entity, entity, entity]
       )
     }
   }
@@ -129,20 +168,27 @@ export class DataSynchronizer {
 
   async #taskRunner(entity: string) {
     this.#logger.info(`[Index engine] syncing entity '${entity}'`)
+    const storeId = this.#resolveStoreId(entity)
+    const storeCondition = storeId ? `AND "data"->>'store_id' = ?` : ""
+    const storeParams = storeId ? [entity, storeId] : [entity]
 
     const [[lastCursor]] = await promiseAll([
-      this.#indexSyncService.list(
-        {
-          entity,
-        },
-        {
-          select: ["last_key"],
-        }
-      ),
-      this.#updatedStatus(entity, IndexMetadataStatus.PROCESSING),
+      storeId
+        ? Promise.resolve([])
+        : this.#indexSyncService.list(
+            {
+              entity,
+            },
+            {
+              select: ["last_key"],
+            }
+          ),
+      storeId
+        ? Promise.resolve()
+        : this.#updatedStatus(entity, IndexMetadataStatus.PROCESSING),
       this.#container.manager.execute(
-        `UPDATE "index_data" SET "staled_at" = NOW() WHERE "name" = ?`,
-        [entity]
+        `UPDATE "index_data" SET "staled_at" = NOW() WHERE "name" = ? ${storeCondition}`,
+        storeParams
       ),
     ])
 
@@ -163,14 +209,16 @@ export class DataSynchronizer {
             `[Index engine] syncing entity '${entity}' updating last cursor to ${ack.lastCursor} (+${chunkElapsedTime}ms)`
           )
 
-          await this.#indexSyncService.update({
-            data: {
-              last_key: ack.lastCursor,
-            },
-            selector: {
-              entity,
-            },
-          })
+          if (!storeId) {
+            await this.#indexSyncService.update({
+              data: {
+                last_key: ack.lastCursor,
+              },
+              selector: {
+                entity,
+              },
+            })
+          }
 
           if (!ack.done && !ack.err) {
             await this.#orchestrator.renewLock(entity)
@@ -196,21 +244,27 @@ export class DataSynchronizer {
 
     if (finalAcknoledgement.done) {
       await promiseAll([
-        this.#updatedStatus(entity, IndexMetadataStatus.DONE),
-        this.#indexSyncService.update({
-          data: {
-            last_key: finalAcknoledgement.lastCursor,
-          },
-          selector: {
-            entity,
-          },
-        }),
+        storeId
+          ? Promise.resolve()
+          : this.#updatedStatus(entity, IndexMetadataStatus.DONE),
+        storeId
+          ? Promise.resolve()
+          : this.#indexSyncService.update({
+              data: {
+                last_key: finalAcknoledgement.lastCursor,
+              },
+              selector: {
+                entity,
+              },
+            }),
         this.removeEntities([entity], true),
       ])
     }
 
     if (finalAcknoledgement.err) {
-      await this.#updatedStatus(entity, IndexMetadataStatus.ERROR)
+      if (!storeId) {
+        await this.#updatedStatus(entity, IndexMetadataStatus.ERROR)
+      }
     }
   }
 
@@ -278,9 +332,14 @@ export class DataSynchronizer {
     const batchSize = Math.min(pagination.batchSize ?? 100, 100)
     const limit = pagination.limit ?? Infinity
     let error = null
+    const storeId = this.#resolveStoreId(entityName)
 
     while (processed < limit) {
       const filters: Record<string, any> = {}
+
+      if (storeId) {
+        filters.store_id = storeId
+      }
 
       if (currentCursor) {
         filters[entityPrimaryKey] = { $gt: currentCursor }
@@ -292,7 +351,11 @@ export class DataSynchronizer {
 
       const queryResult = await this.#query.graph({
         entity: alias,
-        fields: [entityPrimaryKey],
+        fields:
+          this.#storeIsolation?.mode === "shared" &&
+          this.#isStoreOwnedEntity(entityName)
+            ? [entityPrimaryKey, "store_id"]
+            : [entityPrimaryKey],
         filters,
         pagination: {
           order: {

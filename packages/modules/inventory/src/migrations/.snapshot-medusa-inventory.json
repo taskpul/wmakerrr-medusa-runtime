@@ -22,6 +22,22 @@
           "enumItems": [],
           "mappedType": "text"
         },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
         "sku": {
           "name": "sku",
           "type": "text",
@@ -324,13 +340,22 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_inventory_item_deleted_at\" ON \"inventory_item\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_inventory_item_sku",
+          "keyName": "IDX_inventory_item_store_id_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_inventory_item_sku\" ON \"inventory_item\" (\"sku\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_inventory_item_store_id_id\" ON \"inventory_item\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_inventory_item_store_id_sku",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_inventory_item_store_id_sku\" ON \"inventory_item\" (\"store_id\", \"sku\") WHERE deleted_at IS NULL AND sku IS NOT NULL"
         },
         {
           "keyName": "inventory_item_pkey",
@@ -361,6 +386,22 @@
           "precision": null,
           "scale": null,
           "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"
@@ -580,22 +621,40 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_inventory_level_deleted_at\" ON \"inventory_level\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_inventory_level_location_id",
+          "keyName": "IDX_inventory_level_store_id_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_inventory_level_location_id\" ON \"inventory_level\" (\"location_id\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_inventory_level_store_id_id\" ON \"inventory_level\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_inventory_level_location_id_inventory_item_id",
+          "keyName": "IDX_inventory_level_store_inventory_item_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_inventory_level_location_id_inventory_item_id\" ON \"inventory_level\" (\"inventory_item_id\", \"location_id\") WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_inventory_level_store_inventory_item_id\" ON \"inventory_level\" (\"store_id\", \"inventory_item_id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_inventory_level_store_location_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_inventory_level_store_location_id\" ON \"inventory_level\" (\"store_id\", \"location_id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_inventory_level_store_location_inventory_item",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_inventory_level_store_location_inventory_item\" ON \"inventory_level\" (\"store_id\", \"inventory_item_id\", \"location_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "inventory_level_pkey",
@@ -640,6 +699,22 @@
           "precision": null,
           "scale": null,
           "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"
@@ -875,22 +950,40 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_reservation_item_deleted_at\" ON \"reservation_item\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_reservation_item_line_item_id",
+          "keyName": "IDX_reservation_item_store_id_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_reservation_item_line_item_id\" ON \"reservation_item\" (\"line_item_id\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_reservation_item_store_id_id\" ON \"reservation_item\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_reservation_item_location_id",
+          "keyName": "IDX_reservation_item_store_line_item_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_reservation_item_location_id\" ON \"reservation_item\" (\"location_id\") WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_reservation_item_store_line_item_id\" ON \"reservation_item\" (\"store_id\", \"line_item_id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_reservation_item_store_location_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_reservation_item_store_location_id\" ON \"reservation_item\" (\"store_id\", \"location_id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_reservation_item_store_inventory_item_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_reservation_item_store_inventory_item_id\" ON \"reservation_item\" (\"store_id\", \"inventory_item_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "reservation_item_pkey",

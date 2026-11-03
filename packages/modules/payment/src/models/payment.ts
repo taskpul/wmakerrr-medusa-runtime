@@ -3,12 +3,14 @@ import Capture from "./capture"
 import PaymentCollection from "./payment-collection"
 import PaymentSession from "./payment-session"
 import Refund from "./refund"
+import { PAYMENT_DEDICATED_STORE_ID } from "../store-isolation"
 
 // TODO: We should remove the `Payment` model and use the `PaymentSession` model instead.
 // We just need to move the refunds, captures, canceled_at, and captured_at to it.
 const Payment = model
   .define("Payment", {
     id: model.id({ prefix: "pay" }).primaryKey(),
+    store_id: model.text().default(PAYMENT_DEDICATED_STORE_ID),
     amount: model.bigNumber(),
     currency_code: model.text(),
     provider_id: model.text(),

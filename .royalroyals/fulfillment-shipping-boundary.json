@@ -1,0 +1,377 @@
+{
+  "contractVersion": 1,
+  "phase": "7G-6",
+  "status": "local-complete",
+  "upstreamVersion": "2.22.2",
+  "upstreamRevision": "cfff3f57381873097dcc77851038d5dbe8f5839c",
+  "authority": {
+    "module": "@medusajs/fulfillment",
+    "storeContextSource": "verified Context.storeId",
+    "sharedMode": "fail closed when Store context is absent or inconsistent",
+    "dedicatedMode": "use the immutable configured Store placement",
+    "providerRegistry": "cell-level capability; Store access is established by Store-owned Shipping Options and certified Stock Location links",
+    "publicContract": "preserve Medusa service, workflow, route, provider, event, link, and entity ID contracts"
+  },
+  "inventory": {
+    "fulfillmentTables": {
+      "count": 12,
+      "sha256": "07d109cd133d1493304c3dc0246968ece397af930ea6a0ef0e099a29a1377219"
+    },
+    "modelFiles": {
+      "count": 12,
+      "sha256": "86af7c821b9c9b55f1d772c7e5ad01586e7f7f6e9d44e3a76e454dba49f5cbe8"
+    },
+    "modelUniqueIndexes": {
+      "count": 11,
+      "sha256": "a30be5a09a8dfe5bb09d32339ddffbbef6b8cc768203d09424ab358f95b628d7"
+    },
+    "declaredServiceMethods": {
+      "count": 52,
+      "sha256": "bfac8de056a93616da5ee590a532071cb0c0a12a61ab66783c058b41e568d1b8"
+    },
+    "coreFlowFulfillmentReferences": {
+      "count": 43,
+      "sha256": "0cee55093bbe50c2147b1f3e976884f6ef900a824ca53b6e9d6d9f1e96bb553d"
+    },
+    "fulfillmentWorkflowFiles": {
+      "count": 21,
+      "sha256": "eed33c01179149d109b66a66da69507f44b4a925193b3cbfcc795405e12d97ba"
+    },
+    "fulfillmentStepFiles": {
+      "count": 28,
+      "sha256": "681e70f7485693122e53eadf5c5177ab5fdd86f2acd6c21b2640778b4a429d63"
+    },
+    "asynchronousFulfillmentPaths": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fulfillmentRoutes": {
+      "count": 40,
+      "sha256": "f05b84179b33a8f6335d855b42d62493d302bb74fd0081f4105deaf1e62cd56a"
+    },
+    "fulfillmentLinkDefinitions": {
+      "count": 8,
+      "sha256": "f71fedfca428f9efb4b5191a223471c96db5168d03dbfe52a4112210fa8a301c"
+    },
+    "rawPersistencePaths": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "fulfillmentJobSubscriberPaths": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "providerBoundaryFiles": {
+      "count": 2,
+      "sha256": "0a2b5497b39cc70d2249257743f0a864f61538410bc3c0903fc3b4880b3b67b6"
+    },
+    "queryBoundaryFiles": {
+      "count": 2,
+      "sha256": "772eca8636d802a60d286bc520009a7d2c210ca175880ee967aea54b980d61de"
+    },
+    "integrationTestFiles": {
+      "count": 10,
+      "sha256": "b5cc3de49bc41d600b8872b80480bc990cdba70e3c78a8bb010acf417d6fdc94"
+    }
+  },
+  "schema": {
+    "directStoreOwnedTables": [
+      "fulfillment",
+      "fulfillment_address",
+      "fulfillment_item",
+      "fulfillment_label",
+      "fulfillment_set",
+      "geo_zone",
+      "service_zone",
+      "shipping_option",
+      "shipping_option_rule",
+      "shipping_option_type",
+      "shipping_profile"
+    ],
+    "globalReferenceTables": ["fulfillment_provider"],
+    "storeScopedBusinessKeys": [
+      {
+        "table": "fulfillment_set",
+        "columns": ["store_id", "name"],
+        "where": "deleted_at IS NULL"
+      },
+      {
+        "table": "service_zone",
+        "columns": ["store_id", "name"],
+        "where": "deleted_at IS NULL"
+      },
+      {
+        "table": "shipping_profile",
+        "columns": ["store_id", "name"],
+        "where": "deleted_at IS NULL"
+      }
+    ],
+    "sameStoreRelationships": [
+      "service_zone.fulfillment_set_id -> fulfillment_set.id",
+      "geo_zone.service_zone_id -> service_zone.id",
+      "shipping_option.service_zone_id -> service_zone.id",
+      "shipping_option.shipping_profile_id -> shipping_profile.id",
+      "shipping_option.shipping_option_type_id -> shipping_option_type.id",
+      "shipping_option_rule.shipping_option_id -> shipping_option.id",
+      "fulfillment.shipping_option_id -> shipping_option.id",
+      "fulfillment.delivery_address_id -> fulfillment_address.id",
+      "fulfillment_item.fulfillment_id -> fulfillment.id",
+      "fulfillment_label.fulfillment_id -> fulfillment.id"
+    ],
+    "globalRelationships": [
+      "shipping_option.provider_id -> fulfillment_provider.id",
+      "fulfillment.provider_id -> fulfillment_provider.id"
+    ],
+    "externalIdentifiers": [
+      "fulfillment.location_id -> Stock Location",
+      "fulfillment_item.inventory_item_id -> Inventory Item",
+      "fulfillment_item.line_item_id -> Order or Cart Line Item"
+    ],
+    "requestRole": "medusa_fulfillment_request",
+    "migrationRule": "Use generated additive model migrations plus focused immutable-owner, same-Store composite relationship, request-role forced-RLS, dedicated-backfill, and executed rollback proof. Never revise historical migrations."
+  },
+  "links": {
+    "certifiableNow": [
+      {
+        "path": "packages/modules/link-modules/src/definitions/product-shipping-profile.ts",
+        "rule": "Product and Shipping Profile must share the verified Store."
+      },
+      {
+        "path": "packages/modules/link-modules/src/definitions/shipping-option-price-set.ts",
+        "rule": "Shipping Option and Price Set must share the verified Store."
+      }
+    ],
+    "blockedUntilPeerCertification": [
+      "packages/modules/link-modules/src/definitions/fulfillment-provider-location.ts",
+      "packages/modules/link-modules/src/definitions/fulfillment-set-location.ts",
+      "packages/modules/link-modules/src/definitions/order-fulfillment.ts",
+      "packages/modules/link-modules/src/definitions/order-return-fulfillment.ts",
+      "packages/modules/link-modules/src/definitions/readonly/cart-shipping-option.ts",
+      "packages/modules/link-modules/src/definitions/readonly/order-shipping-option.ts"
+    ],
+    "rule": "A shared link is available only after both Store-owned endpoints are certified. Global Fulfillment Providers still require a certified Store-owned Stock Location association. Read-only hydration must never reveal a foreign Store endpoint."
+  },
+  "providerBoundary": {
+    "registry": "Fulfillment Provider rows and provider registrations are cell-level references, not merchant-owned secrets.",
+    "invocation": "Shipping Option, Fulfillment, Stock Location, and referenced item ownership must be validated before a provider is selected or invoked.",
+    "context": "Provider validation, calculation, create, return, and cancellation receive only verified Store-scoped data and execution context.",
+    "failure": "Provider failure retains Store ownership across cleanup and compensation; it never falls back to another Store or provider association."
+  },
+  "queryAndBackground": {
+    "query": "Module service list/count/retrieve filters must scope by Store before pagination. Query graph and read-only link hydration must remain bounded by the same service boundary.",
+    "background": "No direct Fulfillment job, subscriber, or asynchronous Fulfillment workflow exists in the pinned source. Any future path must restore signed Store execution context and is rejected by the inventory verifier until reviewed.",
+    "events": "Shared-placement Fulfillment events carry verified Store provenance without changing the default dedicated Medusa event payload, public event name, or entity ID."
+  },
+  "invariants": [
+    "The canonical Fulfillment module remains the only owner of Fulfillment and shipping persistence and behavior.",
+    "Eleven merchant-specific Fulfillment tables receive immutable Store ownership; Fulfillment Provider remains a cell-level reference.",
+    "Shared placement requires transaction-local Store context before any Store-owned Fulfillment persistence access.",
+    "Dedicated placement derives Store context only from its immutable placement binding.",
+    "List, count, pagination, context filtering, calculation, Query, and read-only link paths scope before returning data.",
+    "Store ownership never comes from a request body, filter, selector, provider result, event payload, or link payload.",
+    "Nested set, zone, option, rule, fulfillment, address, item, and label relationships cannot cross Stores.",
+    "A provider registration may be global, but a Store may use it only through an owned Shipping Option or certified Stock Location association.",
+    "Provider calls cannot occur until every Store-owned input has been authorized.",
+    "Owner reassignment and transaction Store rebinding are rejected.",
+    "Public Medusa contracts, default dedicated event payloads, provider contracts, workflow IDs, and entity identifiers remain compatible.",
+    "A cross-module link is unavailable in shared placement until both Store-owned endpoints are certified.",
+    "Completing Fulfillment does not enable shared production while Cart, Order, Inventory, Sales Channel, Payment, and final admission remain uncertified."
+  ],
+  "internalGates": [
+    {
+      "name": "schema-persistence",
+      "status": "local-complete",
+      "exit": "Eleven immutable owners, Store-scoped keys, same-Store relationships, RLS, dedicated backfill, upgrade, and rollback are migration-tested."
+    },
+    {
+      "name": "service-workflow-provider",
+      "status": "local-complete",
+      "exit": "Generated/custom services, workflows, compensation, calculations, and provider calls use one verified Store path."
+    },
+    {
+      "name": "links-query-background",
+      "status": "local-complete",
+      "exit": "All eight links, Query hydration, events, and future background paths fail closed across Stores."
+    },
+    {
+      "name": "two-mode-attack-proof",
+      "status": "local-complete",
+      "exit": "Dedicated and shared modes pass the complete attack, concurrency, upgrade, and rollback matrix."
+    }
+  ],
+  "implementationSlices": [
+    {
+      "id": "7G-6A",
+      "name": "design and inventory freeze",
+      "status": "local-complete"
+    },
+    {
+      "id": "7G-6B",
+      "name": "schema, persistence, RLS, upgrade and rollback",
+      "status": "local-complete"
+    },
+    {
+      "id": "7G-6C",
+      "name": "services, workflows, calculations and provider boundary",
+      "status": "local-complete"
+    },
+    {
+      "id": "7G-6D",
+      "name": "links, Query, events and background inventory",
+      "status": "local-complete"
+    },
+    {
+      "id": "7G-6E",
+      "name": "dedicated and shared attack proof",
+      "status": "local-complete"
+    }
+  ],
+  "attackMatrix": [
+    {
+      "id": "FS-01",
+      "proof": "Shared generated CRUD without verified Store context is denied."
+    },
+    {
+      "id": "FS-02",
+      "proof": "Same-Store generated and custom Fulfillment CRUD succeeds."
+    },
+    {
+      "id": "FS-03",
+      "proof": "Foreign IDs cannot be retrieved, listed, counted, paginated, or context-filtered."
+    },
+    {
+      "id": "FS-04",
+      "proof": "Client-supplied store_id is ignored or rejected and never changes ownership."
+    },
+    {
+      "id": "FS-05",
+      "proof": "Owner reassignment and transaction Store rebinding are denied."
+    },
+    {
+      "id": "FS-06",
+      "proof": "Different Stores may reuse Fulfillment Set, Service Zone, and Shipping Profile names."
+    },
+    {
+      "id": "FS-07",
+      "proof": "Same-Store duplicates for each Store-scoped business key are denied."
+    },
+    {
+      "id": "FS-08",
+      "proof": "Service Zone and Fulfillment Set relationships cannot cross Stores."
+    },
+    {
+      "id": "FS-09",
+      "proof": "Geo Zone and Service Zone relationships cannot cross Stores."
+    },
+    {
+      "id": "FS-10",
+      "proof": "Shipping Option relationships to Service Zone, Shipping Profile, and Type cannot cross Stores."
+    },
+    {
+      "id": "FS-11",
+      "proof": "Shipping Option Rules cannot be attached to a foreign Store option."
+    },
+    {
+      "id": "FS-12",
+      "proof": "A Fulfillment cannot reference a foreign Store Shipping Option."
+    },
+    {
+      "id": "FS-13",
+      "proof": "Fulfillment Address, Item, and Label rows retain the parent Fulfillment Store."
+    },
+    {
+      "id": "FS-14",
+      "proof": "Fulfillment Provider rows remain global references and cannot become a merchant ownership bypass."
+    },
+    {
+      "id": "FS-15",
+      "proof": "Foreign Stock Location IDs are rejected before Fulfillment creation or provider invocation."
+    },
+    {
+      "id": "FS-16",
+      "proof": "Foreign Inventory Item IDs are rejected before Fulfillment item persistence."
+    },
+    {
+      "id": "FS-17",
+      "proof": "Foreign Cart or Order Line Item IDs are rejected before Fulfillment item persistence."
+    },
+    {
+      "id": "FS-18",
+      "proof": "Product-to-Shipping-Profile links reject either foreign endpoint."
+    },
+    {
+      "id": "FS-19",
+      "proof": "Shipping-Option-to-Price-Set links reject either foreign endpoint."
+    },
+    {
+      "id": "FS-20",
+      "proof": "Stock-Location-to-Fulfillment-Set and Provider links remain unavailable until Location ownership is certified."
+    },
+    {
+      "id": "FS-21",
+      "proof": "Order and Return Fulfillment links remain unavailable until Order ownership is certified."
+    },
+    {
+      "id": "FS-22",
+      "proof": "Cart and Order read-only Shipping Option hydration cannot reveal a foreign Store option."
+    },
+    {
+      "id": "FS-23",
+      "proof": "Shipping Option validation and price calculation scope the option before provider or Pricing access."
+    },
+    {
+      "id": "FS-24",
+      "proof": "A provider cannot be invoked with a foreign Store option, location, fulfillment, or item."
+    },
+    {
+      "id": "FS-25",
+      "proof": "Provider create failure removes only the initiating Store Fulfillment and preserves compensation ownership."
+    },
+    {
+      "id": "FS-26",
+      "proof": "Update, cancel, delivery, shipment, delete, soft-delete, restore, and compensation retain the original Store."
+    },
+    {
+      "id": "FS-27",
+      "proof": "Shared-placement Fulfillment events carry verified Store provenance and default dedicated events retain their upstream payload."
+    },
+    {
+      "id": "FS-28",
+      "proof": "Nested replacement of zones, geo zones, rules, and options cannot delete or attach foreign Store children."
+    },
+    {
+      "id": "FS-29",
+      "proof": "Query graph and link traversal cannot bypass service-level Store scoping."
+    },
+    {
+      "id": "FS-30",
+      "proof": "A newly introduced Fulfillment job, subscriber, or async workflow fails inventory verification until Store context is designed."
+    },
+    {
+      "id": "FS-31",
+      "proof": "Dedicated placement works without request Store context and rejects mismatched context."
+    },
+    {
+      "id": "FS-32",
+      "proof": "Shared database role and direct SQL without transaction Store context are denied by RLS."
+    },
+    {
+      "id": "FS-33",
+      "proof": "Concurrent Store A and Store B operations never exchange Fulfillment ownership or provider data."
+    },
+    {
+      "id": "FS-34",
+      "proof": "Upgrade backfill proves row counts, ownership counts, relationships, and stable Fulfillment digests."
+    },
+    {
+      "id": "FS-35",
+      "proof": "Rollback evidence restores the pre-change schema without partial policies, constraints, or Store columns."
+    }
+  ],
+  "admission": {
+    "candidateGatesChanged": [],
+    "sharedProduction": "disabled",
+    "dedicatedProduction": "unchanged",
+    "reason": "Fulfillment/shipping is locally complete, but shared production remains disabled until the remaining Phase 7 resource groups and final admission gates are certified."
+  }
+}

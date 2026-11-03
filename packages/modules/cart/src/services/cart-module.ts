@@ -24,7 +24,11 @@ import {
   ModulesSdkUtils,
   promiseAll,
   normalizeCurrencyCode,
+  StoreIsolationGeneratedCrudInput,
+  StoreIsolationGeneratedCrudResult,
+  StoreIsolationManager,
 } from "@medusajs/framework/utils"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
   Address,
   Cart,
@@ -42,6 +46,7 @@ import {
   UpdateLineItemDTO,
   UpdateShippingMethodTaxLineDTO,
 } from "@types"
+import { setCartStoreDatabaseContext } from "../database-context"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -53,6 +58,7 @@ type InjectedDependencies = {
   lineItemAdjustmentService: ModulesSdkTypes.IMedusaInternalService<any>
   lineItemTaxLineService: ModulesSdkTypes.IMedusaInternalService<any>
   shippingMethodTaxLineService: ModulesSdkTypes.IMedusaInternalService<any>
+  creditLineService: ModulesSdkTypes.IMedusaInternalService<any>
 }
 
 const generateMethodForModels = {
@@ -106,6 +112,8 @@ export default class CartModuleService
   protected shippingMethodTaxLineService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof ShippingMethodTaxLine>
   >
+  protected readonly storeIsolation_: StoreIsolationManager<any>
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -118,6 +126,7 @@ export default class CartModuleService
       lineItemAdjustmentService,
       shippingMethodTaxLineService,
       lineItemTaxLineService,
+      creditLineService,
     }: InjectedDependencies,
     protected readonly moduleDeclaration: InternalModuleDeclaration
   ) {
@@ -133,6 +142,73 @@ export default class CartModuleService
     this.lineItemAdjustmentService_ = lineItemAdjustmentService
     this.shippingMethodTaxLineService_ = shippingMethodTaxLineService
     this.lineItemTaxLineService_ = lineItemTaxLineService
+    this.storeIsolation_ = new StoreIsolationManager({
+      domain: "Cart",
+      moduleOptions: moduleDeclaration,
+      services: {
+        Cart: cartService,
+        CreditLine: creditLineService,
+        Address: addressService,
+        LineItem: lineItemService,
+        LineItemAdjustment: lineItemAdjustmentService,
+        LineItemTaxLine: lineItemTaxLineService,
+        ShippingMethod: shippingMethodService,
+        ShippingMethodAdjustment: shippingMethodAdjustmentService,
+        ShippingMethodTaxLine: shippingMethodTaxLineService,
+      },
+    })
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeIsolation_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeIsolation_.resolveStoreId(context)
+    const execute = async (manager: SqlEntityManager, scoped: Context) => {
+      scoped.storeId ??= storeId
+      const activeStoreId = this.databaseStoreContexts_.get(manager)
+      if (activeStoreId && activeStoreId !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Cart transaction is already bound to another Store"
+        )
+      }
+      if (!activeStoreId) {
+        await setCartStoreDatabaseContext(
+          manager,
+          storeId,
+          this.storeIsolation_.isShared
+        )
+        this.databaseStoreContexts_.set(manager, storeId)
+      }
+      return await task(scoped)
+    }
+    const transactionManager = context.transactionManager as
+      SqlEntityManager | undefined
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      { manager: context.manager as SqlEntityManager | undefined } as any
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: StoreIsolationGeneratedCrudInput
+  ): Promise<unknown[]> {
+    return this.storeIsolation_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: StoreIsolationGeneratedCrudResult
+  ): Promise<void> {
+    this.storeIsolation_.validateGeneratedMethodResult(input)
   }
 
   private shouldIncludeTotals(config: FindConfig<any>): boolean {

@@ -1,0 +1,394 @@
+{
+  "contractVersion": 1,
+  "phase": "7G-5A",
+  "status": "7G-5E-local-product-family-complete",
+  "upstreamVersion": "2.22.2",
+  "upstreamRevision": "cfff3f57381873097dcc77851038d5dbe8f5839c",
+  "distributionBaseRevision": "b7da8d3105f64827550a7cbcc808fae770ecdd3b",
+  "authority": {
+    "module": "@medusajs/product",
+    "storeContextSource": "verified Context.storeId",
+    "sharedMode": "fail closed when Store context is absent or inconsistent",
+    "dedicatedMode": "use the immutable configured Store placement",
+    "publicContract": "preserve Medusa service, workflow, route, event, and entity ID contracts"
+  },
+  "schema": {
+    "directStoreOwnedTables": [
+      "image",
+      "product",
+      "product_category",
+      "product_collection",
+      "product_option",
+      "product_option_value",
+      "product_product_option",
+      "product_product_option_value",
+      "product_tag",
+      "product_type",
+      "product_variant",
+      "product_variant_product_image"
+    ],
+    "parentDerivedPivotTables": [
+      "product_category_product",
+      "product_tags",
+      "product_variant_option"
+    ],
+    "storeScopedUniqueKeys": [
+      "product.handle",
+      "product_category.handle",
+      "product_collection.handle",
+      "product_option.title when is_exclusive is false",
+      "product_option_value option_id plus value",
+      "product_tag.value",
+      "product_type.value",
+      "product_variant.sku",
+      "product_variant.barcode",
+      "product_variant.ean",
+      "product_variant.upc"
+    ],
+    "sameStoreRelationships": [
+      "product_category.parent_category_id to product_category.id",
+      "product_option_value.option_id to product_option.id",
+      "product.type_id to product_type.id",
+      "product.collection_id to product_collection.id",
+      "product_product_option.product_id to product.id",
+      "product_product_option.option_id to product_option.id",
+      "product_product_option_value.product_option_id to product_product_option.id",
+      "product_product_option_value.option_value_id to product_option_value.id",
+      "image.product_id to product.id",
+      "product_tags.product_id to product.id and product_tag_id to product_tag.id",
+      "product_category_product.product_id to product.id and product_category_id to product_category.id",
+      "product_variant.product_id to product.id",
+      "product_variant_option.variant_id to product_variant.id and option_value_id to product_option_value.id",
+      "product_variant_product_image.variant_id to product_variant.id and image_id to image.id"
+    ]
+  },
+  "inventory": {
+    "productTables": {
+      "count": 15,
+      "sha256": "3ffe201c5396d367757795e92962d6e236f8164465f7cdc90a9f1b6a51181f6b"
+    },
+    "uniqueIndexes": {
+      "count": 38,
+      "sha256": "b0beaf3625048f7325ce6ed72903697b4df8431e7ffe731e93f76cb338c32fcd"
+    },
+    "modelFiles": {
+      "count": 12,
+      "sha256": "55911f4a05d4441a904c56512542902228258aa3f004367b17c2c5121456af2b"
+    },
+    "declaredServiceMethods": {
+      "count": 42,
+      "sha256": "d959e8136e1963e29eac51f30177eee0f81ef1bc3c24380ac3ac9ae12341b40b"
+    },
+    "coreFlowProductReferences": {
+      "count": 61,
+      "sha256": "515ada8cb517966f4f373cfbbc71e914c128da2057f328fa7e8f4f0d613db2d3"
+    },
+    "productWorkflowFiles": {
+      "count": 32,
+      "sha256": "fbdbb8a1fd7a53de311bb91415d8d248ab1f0bd57a05decd564e77de051b39c2"
+    },
+    "productStepFiles": {
+      "count": 43,
+      "sha256": "454678498d5d4f34e54ba19e527482bc56eeb91a092b30fa7b5cead3766d9376"
+    },
+    "asynchronousProductPaths": {
+      "count": 4,
+      "sha256": "714afed7b70f75f7e4ba41119f68b96cee438101e8ce8a209fe4f1db615d03a4"
+    },
+    "adminRoutes": {
+      "count": 35,
+      "sha256": "4278a2c59c72783c81d1e85b6c9a37e2f13bb1f459f1512eb3203a8e0dc763c1"
+    },
+    "storeRoutes": {
+      "count": 14,
+      "sha256": "90e5d3cb8b4e4df61cb849f0251dea0b7857a97b96e995f24ad6cfb133a00bf1"
+    },
+    "productLinkDefinitions": {
+      "count": 7,
+      "sha256": "b28467f43fa3fa2405961e61059e14262f58ddb8195e52d97e114f1f2465b6b1"
+    },
+    "rawPersistencePaths": {
+      "count": 5,
+      "sha256": "ffe1f26a0e41e4cb4af929bb9a21e6f1b9f19d55668d6f90bea96dc6359bb605"
+    },
+    "productJobSubscriberPaths": {
+      "count": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "crossModuleLinks": {
+    "writable": [
+      "packages/modules/link-modules/src/definitions/product-sales-channel.ts",
+      "packages/modules/link-modules/src/definitions/product-shipping-profile.ts",
+      "packages/modules/link-modules/src/definitions/product-variant-inventory-item.ts",
+      "packages/modules/link-modules/src/definitions/product-variant-price-set.ts"
+    ],
+    "readOnly": [
+      "packages/modules/link-modules/src/definitions/readonly/cart-product.ts",
+      "packages/modules/link-modules/src/definitions/readonly/order-product.ts",
+      "packages/modules/link-modules/src/definitions/readonly/product-translation.ts"
+    ],
+    "admissionRule": "A writable link requires both endpoints to resolve to the same verified Store; a read-only link must not hydrate a foreign Store endpoint. An uncertified endpoint keeps shared admission disabled."
+  },
+  "background": {
+    "asyncPaths": [
+      "packages/core/core-flows/src/product/steps/process-import-chunks.ts",
+      "packages/core/core-flows/src/product/steps/wait-confirmation-product-import.ts",
+      "packages/core/core-flows/src/product/workflows/export-products.ts",
+      "packages/core/core-flows/src/product/workflows/import-products.ts"
+    ],
+    "indexSurfaces": [
+      "packages/modules/index/src/services/index-module-service.ts",
+      "packages/modules/index/src/services/postgres-provider.ts",
+      "packages/modules/index/src/utils/default-schema.ts"
+    ],
+    "rule": "Every continuation, event, index document, relation, query, rebuild, replay, and full sync must retain one verified Store and fail closed when shared Store provenance is absent."
+  },
+  "invariants": [
+    "The canonical Product module remains the only owner of catalog persistence and behavior.",
+    "Every explicit Product entity receives immutable Store ownership at creation.",
+    "Implicit pivot ownership is derived from both parents and both parents must share one Store.",
+    "Shared placement requires transaction-local Store context before any Product persistence access.",
+    "Dedicated placement derives Store context only from its immutable placement binding.",
+    "List, count, pagination, search, graph, import, export, and index paths scope before reading or ordering.",
+    "Global product options are global only inside one Store.",
+    "Store ownership never comes from an untrusted request body, filter, selector, or event payload.",
+    "Owner reassignment and transaction Store rebinding are rejected.",
+    "Public Medusa contracts and entity identifiers remain compatible.",
+    "A cross-module link is unavailable in shared placement until both resource endpoints are certified.",
+    "Completing the Product phase family does not enable shared production while linked modules remain uncertified."
+  ],
+  "implementationEvidence": {
+    "7G-5B": {
+      "status": "local-complete",
+      "directStoreOwnedTables": 12,
+      "parentDerivedPivotTables": 3,
+      "forcedRlsTables": 15,
+      "storeScopedUniqueIndexes": 11,
+      "migrations": [
+        "packages/modules/product/src/migrations/Migration20261103154512.ts",
+        "packages/modules/product/src/migrations/Migration20261103154513_enforce_store_ownership.ts",
+        "packages/modules/product/src/migrations/Migration20261103154514_enforce_product_request_rls.ts",
+        "packages/modules/product/src/migrations/Migration20261103154515_enforce_composite_store_relationships.ts"
+      ],
+      "integrationTest": "packages/modules/product/integration-tests/__tests__/product-module-service/store-ownership-persistence.spec.ts",
+      "verifier": ".royalroyals/verify-product-persistence-isolation.mjs",
+      "admissionEffect": "none"
+    },
+    "7G-5C": {
+      "status": "local-complete",
+      "owner": "canonical Product module service plus central MedusaService manager hooks",
+      "coverage": [
+        "generated CRUD",
+        "custom Product mutations",
+        "list and count before pagination",
+        "transaction Store rebinding",
+        "workflow and compensation context propagation",
+        "event Store provenance"
+      ],
+      "integrationTests": [
+        "packages/modules/product/integration-tests/__tests__/product-module-service/store-ownership-service.spec.ts",
+        "packages/modules/product/integration-tests/__tests__/product-module-service/store-ownership-dedicated.spec.ts"
+      ],
+      "admissionEffect": "none"
+    },
+    "7G-5D": {
+      "status": "local-complete",
+      "owner": "workflow continuation context and Index module",
+      "coverage": [
+        "paused workflow Store retention",
+        "cross-Store continuation denial",
+        "event provenance",
+        "Store-scoped index query before pagination",
+        "Store-scoped sync and stale deletion",
+        "shared reset denial"
+      ],
+      "tests": [
+        "packages/core/utils/src/modules-sdk/__tests__/active-medusa-context.spec.ts",
+        "packages/core/workflows-sdk/src/utils/composer/__tests__/compose.spec.ts",
+        "packages/modules/index/src/services/__tests__/store-isolation.spec.ts"
+      ],
+      "admissionEffect": "none"
+    },
+    "7G-5E": {
+      "status": "local-complete",
+      "owner": "central module-link endpoint validation and two-mode proof",
+      "coverage": [
+        "Product and variant endpoint ownership",
+        "Price Set endpoint ownership",
+        "uncertified shared link denial",
+        "dedicated and shared service behavior",
+        "upgrade and rollback migrations"
+      ],
+      "tests": [
+        "packages/core/modules-sdk/src/__tests__/remote-link.spec.ts",
+        "packages/core/core-flows/src/product/steps/__tests__/create-variant-pricing-link.spec.ts",
+        "packages/modules/product/integration-tests/__tests__/product-module-service/store-ownership-persistence.spec.ts"
+      ],
+      "verifier": ".royalroyals/verify-product-runtime-isolation.mjs",
+      "admissionEffect": "none"
+    }
+  },
+  "attackMatrix": [
+    {
+      "id": "PC-01",
+      "proof": "Shared CRUD without verified Store context is denied."
+    },
+    {
+      "id": "PC-02",
+      "proof": "Same-Store CRUD succeeds through canonical Product services."
+    },
+    {
+      "id": "PC-03",
+      "proof": "Foreign IDs cannot be retrieved, listed, counted, or paginated."
+    },
+    {
+      "id": "PC-04",
+      "proof": "Client-supplied store_id is ignored or rejected and never changes ownership."
+    },
+    {
+      "id": "PC-05",
+      "proof": "Owner reassignment and transaction Store rebinding are denied."
+    },
+    {
+      "id": "PC-06",
+      "proof": "Different Stores may use the same product, category, and collection handles."
+    },
+    {
+      "id": "PC-07",
+      "proof": "Different Stores may use the same tag, type, global-option title, and variant identifiers."
+    },
+    {
+      "id": "PC-08",
+      "proof": "A same-Store duplicate for each Store-scoped unique key is denied."
+    },
+    {
+      "id": "PC-09",
+      "proof": "Category parent and tree traversal cannot cross Stores."
+    },
+    {
+      "id": "PC-10",
+      "proof": "Product type and collection relationships cannot cross Stores."
+    },
+    {
+      "id": "PC-11",
+      "proof": "Product-to-category and product-to-tag pivots cannot cross Stores."
+    },
+    {
+      "id": "PC-12",
+      "proof": "Product option, value, and product-option relationships cannot cross Stores."
+    },
+    {
+      "id": "PC-13",
+      "proof": "Variant, option-value, image, and variant-image relationships cannot cross Stores."
+    },
+    {
+      "id": "PC-14",
+      "proof": "Global options can be shared only by Products in the same Store."
+    },
+    {
+      "id": "PC-15",
+      "proof": "Soft delete, restore, cascades, and compensation retain the original Store."
+    },
+    {
+      "id": "PC-16",
+      "proof": "Raw Knex and native-delete paths cannot bypass Store scoping."
+    },
+    {
+      "id": "PC-17",
+      "proof": "Import continuations retain the initiating Store across pause and resume."
+    },
+    {
+      "id": "PC-18",
+      "proof": "Import resume under a different or absent Store is denied."
+    },
+    {
+      "id": "PC-19",
+      "proof": "Export emits only catalog records owned by the active Store."
+    },
+    {
+      "id": "PC-20",
+      "proof": "Product events retain verified Store provenance and replay idempotently."
+    },
+    {
+      "id": "PC-21",
+      "proof": "Index documents and relations are Store-namespaced."
+    },
+    {
+      "id": "PC-22",
+      "proof": "Index queries and pagination cannot return a foreign Store document."
+    },
+    {
+      "id": "PC-23",
+      "proof": "Index full sync and rebuild require an explicit Store partition."
+    },
+    {
+      "id": "PC-24",
+      "proof": "Product-to-Price-Set links reject either foreign endpoint."
+    },
+    {
+      "id": "PC-25",
+      "proof": "Product links to Inventory, Sales Channel, and Shipping Profile reject foreign endpoints."
+    },
+    {
+      "id": "PC-26",
+      "proof": "Read-only Cart, Order, and Translation links cannot hydrate foreign Product data."
+    },
+    {
+      "id": "PC-27",
+      "proof": "Dedicated placement works without request Store context and rejects a mismatched context."
+    },
+    {
+      "id": "PC-28",
+      "proof": "Shared database role and direct SQL without transaction Store context are denied by RLS."
+    },
+    {
+      "id": "PC-29",
+      "proof": "Implicit pivot insert, update, and delete fail when parents or context disagree."
+    },
+    {
+      "id": "PC-30",
+      "proof": "Concurrent Store A and Store B operations never exchange Product ownership."
+    },
+    {
+      "id": "PC-31",
+      "proof": "Upgrade backfill proves row counts, ownership counts, and stable catalog digests."
+    },
+    {
+      "id": "PC-32",
+      "proof": "Rollback evidence restores the pre-change schema without leaving partial enforcement."
+    }
+  ],
+  "implementationSlices": [
+    {
+      "id": "7G-5B",
+      "name": "Product schema ownership and persistence",
+      "status": "local-complete",
+      "exit": "Direct ownership, Store-scoped uniqueness, same-Store relationships, pivot enforcement, RLS, backfill, and rollback are migration-tested."
+    },
+    {
+      "id": "7G-5C",
+      "name": "Product service and core-flow closure",
+      "status": "local-complete",
+      "exit": "Generated CRUD, custom services, raw persistence, workflows, compensation, list/count, and import/export calls use one verified Store path."
+    },
+    {
+      "id": "7G-5D",
+      "name": "Product asynchronous and Index closure",
+      "status": "local-complete",
+      "exit": "Continuation, events, indexing, querying, rebuilds, replays, and full sync are Store-safe and fail closed."
+    },
+    {
+      "id": "7G-5E",
+      "name": "Product links and two-mode attack proof",
+      "status": "local-complete",
+      "exit": "All seven links and the complete dedicated/shared attack matrix pass with upgrade and rollback evidence."
+    }
+  ],
+  "admission": {
+    "candidateGatesChanged": [],
+    "sharedProduction": "disabled",
+    "dedicatedProduction": "unchanged",
+    "reason": "The Product phase family is locally complete, but shared production remains disabled until every linked commerce module and the final candidate gate are independently certified."
+  }
+}

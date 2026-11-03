@@ -19,5 +19,12 @@ export const ProductModule = {
   },
 
   list: jest.fn(async () => []),
+  listProducts: jest.fn(async (filters) =>
+    (filters.id ?? []).map((id) => ({ id }))
+  ),
+  listProductVariants: jest.fn(async (filters) =>
+    (filters.id ?? []).map((id) => ({ id }))
+  ),
+  __storeIsolationMode: jest.fn(() => "dedicated"),
   softDelete: jest.fn(() => {}),
 }

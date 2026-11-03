@@ -3,6 +3,9 @@ import { InventoryModule } from "../__mocks__/inventory-module"
 import { InventoryStockLocationLink } from "../__mocks__/inventory-stock-location-link"
 import { ProductInventoryLinkModule } from "../__mocks__/product-inventory-link"
 import { ProductModule } from "../__mocks__/product-module"
+import { PricingModule } from "../__mocks__/pricing-module"
+import { ProductShippingProfileLink } from "../__mocks__/product-shipping-profile-link"
+import { ShippingOptionPriceSetLink } from "../__mocks__/shipping-option-price-set-link"
 import { StockLocationFulfillmentSetLink } from "../__mocks__/stock-location-fulfillment-set-link"
 import { StockLocationModule } from "../__mocks__/stock-location-module"
 
@@ -14,10 +17,13 @@ const allModules = [
   InventoryModule,
   StockLocationModule,
   FulfillmentModule,
+  PricingModule,
   // links
   ProductInventoryLinkModule,
   InventoryStockLocationLink,
   StockLocationFulfillmentSetLink,
+  ProductShippingProfileLink,
+  ShippingOptionPriceSetLink,
 ]
 describe("Remote Link", function () {
   it("Should get all loaded modules and compose their relationships", async function () {
@@ -297,5 +303,138 @@ describe("Remote Link", function () {
       { returnLinkableKeys: ["inventory_level_id", "stock_location_id"] },
       {}
     )
+  })
+
+  it("rejects a foreign Product endpoint before writing a link", async function () {
+    const remoteLink = new Link(allModules as any)
+    ProductModule.listProductVariants.mockResolvedValueOnce([])
+
+    await expect(
+      remoteLink.create(
+        {
+          productService: { variant_id: "var_foreign" },
+          inventoryService: { inventory_item_id: "inv_local" },
+        },
+        { storeId: "store_a" }
+      )
+    ).rejects.toThrow(
+      "Product link endpoint does not belong to the active Store"
+    )
+    expect(ProductInventoryLinkModule.create).not.toHaveBeenCalledWith(
+      expect.arrayContaining([["var_foreign", "inv_local"]]),
+      expect.anything(),
+      expect.anything(),
+      expect.anything()
+    )
+  })
+
+  it("allows certified Product-to-Inventory links in shared placement", async function () {
+    const remoteLink = new Link(allModules as any)
+    ProductModule.__storeIsolationMode.mockReturnValueOnce("shared")
+
+    await expect(
+      remoteLink.create(
+        {
+          productService: { variant_id: "var_local" },
+          inventoryService: { inventory_item_id: "inv_local" },
+        },
+        { storeId: "store_a" }
+      )
+    ).resolves.toEqual([undefined])
+  })
+
+  it("rejects a foreign Inventory endpoint before writing a link", async function () {
+    const remoteLink = new Link(allModules as any)
+    InventoryModule.listInventoryItems.mockResolvedValueOnce([])
+    await expect(
+      remoteLink.create(
+        {
+          productService: { variant_id: "var_local" },
+          inventoryService: { inventory_item_id: "inv_foreign" },
+        },
+        { storeId: "store_a" }
+      )
+    ).rejects.toThrow(
+      "Inventory link endpoint does not belong to the active Store"
+    )
+  })
+
+  it("rejects a foreign Fulfillment endpoint before writing a link", async function () {
+    const remoteLink = new Link(allModules as any)
+    FulfillmentModule.listFulfillmentSets.mockResolvedValueOnce([])
+
+    await expect(
+      remoteLink.create(
+        {
+          stockLocationService: { stock_location_id: "loc_local" },
+          fulfillmentService: { fulfillment_set_id: "fset_foreign" },
+        },
+        { storeId: "store_a" }
+      )
+    ).rejects.toThrow(
+      "Fulfillment link endpoint does not belong to the active Store"
+    )
+  })
+
+  it("allows certified Fulfillment-to-Stock-Location links in shared placement", async function () {
+    const remoteLink = new Link(allModules as any)
+    FulfillmentModule.__storeIsolationMode.mockReturnValueOnce("shared")
+
+    await expect(
+      remoteLink.create(
+        {
+          stockLocationService: { stock_location_id: "loc_local" },
+          fulfillmentService: { fulfillment_set_id: "fset_local" },
+        },
+        { storeId: "store_a" }
+      )
+    ).resolves.toEqual([undefined])
+  })
+
+  it("rejects a foreign Stock Location endpoint before writing a link", async function () {
+    const remoteLink = new Link(allModules as any)
+    StockLocationModule.listStockLocations.mockResolvedValueOnce([])
+    await expect(
+      remoteLink.create(
+        {
+          stockLocationService: { stock_location_id: "loc_foreign" },
+          fulfillmentService: { fulfillment_set_id: "fset_local" },
+        },
+        { storeId: "store_a" }
+      )
+    ).rejects.toThrow(
+      "Stock Location link endpoint does not belong to the active Store"
+    )
+  })
+
+  it("allows the certified Product-to-Shipping-Profile link for one Store", async function () {
+    const remoteLink = new Link(allModules as any)
+    ProductModule.__storeIsolationMode.mockReturnValueOnce("shared")
+    FulfillmentModule.__storeIsolationMode.mockReturnValueOnce("shared")
+
+    await expect(
+      remoteLink.create(
+        {
+          productService: { product_id: "prod_local" },
+          fulfillmentService: { shipping_profile_id: "sp_local" },
+        },
+        { storeId: "store_a" }
+      )
+    ).resolves.toBeDefined()
+  })
+
+  it("allows the certified Shipping-Option-to-Price-Set link for one Store", async function () {
+    const remoteLink = new Link(allModules as any)
+    FulfillmentModule.__storeIsolationMode.mockReturnValueOnce("shared")
+
+    await expect(
+      remoteLink.create(
+        {
+          fulfillmentService: { shipping_option_id: "so_local" },
+          pricingService: { price_set_id: "pset_local" },
+        },
+        { storeId: "store_a" }
+      )
+    ).resolves.toBeDefined()
   })
 })

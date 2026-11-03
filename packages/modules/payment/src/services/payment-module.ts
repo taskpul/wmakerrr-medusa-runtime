@@ -59,6 +59,9 @@ import {
   promiseAll,
   RefundStatus,
   SoftDeletableFilterKey,
+  StoreIsolationGeneratedCrudInput,
+  StoreIsolationGeneratedCrudResult,
+  StoreIsolationManager,
 } from "@medusajs/framework/utils"
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
@@ -72,6 +75,7 @@ import {
 } from "@models"
 import { joinerConfig } from "../joiner-config"
 import PaymentProviderService from "./payment-provider"
+import { setPaymentStoreDatabaseContext } from "../database-context"
 
 type InjectedDependencies = {
   logger?: Logger
@@ -136,6 +140,8 @@ export default class PaymentModuleService
   protected accountHolderService_: ModulesSdkTypes.IMedusaInternalService<
     typeof AccountHolder
   >
+  protected readonly storeIsolation_: StoreIsolationManager<any>
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -162,10 +168,75 @@ export default class PaymentModuleService
     this.paymentProviderService_ = paymentProviderService
     this.paymentCollectionService_ = paymentCollectionService
     this.accountHolderService_ = accountHolderService
+    this.storeIsolation_ = new StoreIsolationManager({
+      domain: "Payment",
+      moduleOptions: moduleDeclaration,
+      services: {
+        PaymentCollection: paymentCollectionService,
+        PaymentSession: paymentSessionService,
+        Payment: paymentService,
+        Capture: captureService,
+        Refund: refundService,
+        AccountHolder: accountHolderService,
+      },
+      unscopedModels: ["RefundReason"],
+    })
   }
 
   __joinerConfig(): ModuleJoinerConfig {
     return joinerConfig
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeIsolation_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeIsolation_.resolveStoreId(context)
+    const execute = async (manager: SqlEntityManager, scoped: Context) => {
+      scoped.storeId ??= storeId
+      const activeStoreId = this.databaseStoreContexts_.get(manager)
+      if (activeStoreId && activeStoreId !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Payment transaction is already bound to another Store"
+        )
+      }
+      if (!activeStoreId) {
+        await setPaymentStoreDatabaseContext(
+          manager,
+          storeId,
+          this.storeIsolation_.isShared
+        )
+        this.databaseStoreContexts_.set(manager, storeId)
+      }
+      return await task(scoped)
+    }
+    const transactionManager = context.transactionManager as
+      SqlEntityManager | undefined
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      { manager: context.manager as SqlEntityManager | undefined } as any
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: StoreIsolationGeneratedCrudInput
+  ): Promise<unknown[]> {
+    return this.storeIsolation_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: StoreIsolationGeneratedCrudResult
+  ): Promise<void> {
+    this.storeIsolation_.validateGeneratedMethodResult(input)
   }
 
   protected roundToCurrencyPrecision(
@@ -261,9 +332,9 @@ export default class PaymentModuleService
         {
           id: idOrSelector,
           ...data,
-          ...(data.currency_code ? 
-            { currency_code: normalizeCurrencyCode(data.currency_code) } :
-            {}),
+          ...(data.currency_code
+            ? { currency_code: normalizeCurrencyCode(data.currency_code) }
+            : {}),
         },
       ]
     } else {
@@ -276,10 +347,9 @@ export default class PaymentModuleService
       updateData = collections.map((c) => ({
         id: c.id,
         ...data,
-        ...(data.currency_code ?
-          { currency_code: normalizeCurrencyCode(data.currency_code) } :
-          {}
-        ),
+        ...(data.currency_code
+          ? { currency_code: normalizeCurrencyCode(data.currency_code) }
+          : {}),
       }))
     }
 
@@ -336,10 +406,9 @@ export default class PaymentModuleService
       )
       .map((element) => ({
         ...element,
-        ...(element.currency_code ? 
-          { currency_code: normalizeCurrencyCode(element.currency_code) } :
-          {}
-        )
+        ...(element.currency_code
+          ? { currency_code: normalizeCurrencyCode(element.currency_code) }
+          : {}),
       }))
     const forCreate = input
       .filter(
@@ -347,10 +416,9 @@ export default class PaymentModuleService
       )
       .map((element) => ({
         ...element,
-        ...(element.currency_code ? 
-          { currency_code: normalizeCurrencyCode(element.currency_code) } :
-          {}
-        )
+        ...(element.currency_code
+          ? { currency_code: normalizeCurrencyCode(element.currency_code) }
+          : {}),
       }))
 
     const operations: Promise<InferEntityType<typeof PaymentCollection>[]>[] =
@@ -837,9 +905,12 @@ export default class PaymentModuleService
       { select: ["id"], relations: ["captures.raw_amount"] },
       sharedContext
     )
-    const capturedAmount = lockedPayment.captures.reduce((captureAmount, next) => {
-      return MathBN.add(captureAmount, next.raw_amount as BigNumberInput)
-    }, MathBN.convert(0))
+    const capturedAmount = lockedPayment.captures.reduce(
+      (captureAmount, next) => {
+        return MathBN.add(captureAmount, next.raw_amount as BigNumberInput)
+      },
+      MathBN.convert(0)
+    )
 
     const authorizedAmount = new BigNumber(payment.raw_amount as BigNumberInput)
     const newCaptureAmount = new BigNumber(data.amount)
@@ -1115,10 +1186,15 @@ export default class PaymentModuleService
       return { refund: resume!, alreadyRefunded: true }
     }
 
-    const capturedAmount = lockedPayment.captures.reduce((captureAmount, next) => {
-      const amountAsBigNumber = new BigNumber(next.raw_amount as BigNumberInput)
-      return MathBN.add(captureAmount, amountAsBigNumber)
-    }, MathBN.convert(0))
+    const capturedAmount = lockedPayment.captures.reduce(
+      (captureAmount, next) => {
+        const amountAsBigNumber = new BigNumber(
+          next.raw_amount as BigNumberInput
+        )
+        return MathBN.add(captureAmount, amountAsBigNumber)
+      },
+      MathBN.convert(0)
+    )
     // The refund being resumed is excluded: a soft-deleted one counts for
     // nothing already, and a stale pending one is this same refund rather than
     // an additional one, so leaving it in would double-count `data.amount`.
@@ -1253,7 +1329,11 @@ export default class PaymentModuleService
         // right after sessions/captures/refunds were created, and select-in
         // does not otherwise re-populate collections that are already loaded on
         // the managed entities in the shared context.
-        relations: ["payment_sessions", "payments.captures", "payments.refunds"],
+        relations: [
+          "payment_sessions",
+          "payments.captures",
+          "payments.refunds",
+        ],
         options: { refresh: true },
       },
       sharedContext

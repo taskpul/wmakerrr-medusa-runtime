@@ -21,23 +21,23 @@ export const createLinksStepId = "create-remote-links"
  */
 export const createRemoteLinkStep = createStep(
   createLinksStepId,
-  async (data: LinkDefinition[], { container }) => {
+  async (data: LinkDefinition[], { container, context }) => {
     const link = container.resolve<Link>(ContainerRegistrationKeys.LINK)
 
     if (!data.length) {
       return new StepResponse([], [])
     }
 
-    await link.create(data)
+    await link.create(data, context)
 
     return new StepResponse(data, data)
   },
-  async (createdLinks, { container }) => {
+  async (createdLinks, { container, context }) => {
     if (!createdLinks) {
       return
     }
 
     const link = container.resolve<Link>(ContainerRegistrationKeys.LINK)
-    await link.dismiss(createdLinks)
+    await link.dismiss(createdLinks, context)
   }
 )

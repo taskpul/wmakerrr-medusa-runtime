@@ -5,11 +5,19 @@ import {
   InternalModuleDeclaration,
 } from "@medusajs/types"
 import { ulid } from "ulid"
+import {
+  getActiveMedusaContext,
+  runWithMedusaContext,
+} from "../modules-sdk/decorators/context-parameter"
 
 export abstract class AbstractEventBusModuleService
   implements EventBusTypes.IEventBusModuleService
 {
   protected isWorkerMode: boolean = true
+  protected readonly eventStoreIsolation_: {
+    mode: "dedicated" | "shared"
+    storeId: string
+  }
 
   protected eventToSubscribersMap_: Map<
     string | symbol,
@@ -31,6 +39,13 @@ export abstract class AbstractEventBusModuleService
     moduleDeclaration: InternalModuleDeclaration
   ) {
     this.isWorkerMode = moduleDeclaration.worker_mode !== "server"
+    const configuredOptions =
+      (moduleOptions as any)?.options ?? (moduleOptions as any)
+    const options = configuredOptions?.store_isolation ?? {}
+    this.eventStoreIsolation_ = {
+      mode: options.mode ?? "dedicated",
+      storeId: options.store_id ?? "__medusa_dedicated__",
+    }
   }
 
   abstract emit<T>(
@@ -185,10 +200,45 @@ export abstract class AbstractEventBusModuleService
    * Adds `created_at` to event metadata when an event is emitted.
    */
   protected withCreatedAtMetadata(metadata?: EventMetadata): EventMetadata {
+    const activeStoreId = getActiveMedusaContext()?.storeId?.trim()
+    if (this.eventStoreIsolation_.mode === "shared" && !activeStoreId) {
+      throw new Error("Shared event emission requires Store provenance")
+    }
+    if (
+      this.eventStoreIsolation_.mode === "dedicated" &&
+      activeStoreId &&
+      activeStoreId !== this.eventStoreIsolation_.storeId
+    ) {
+      throw new Error(
+        "Event Store provenance does not match dedicated placement"
+      )
+    }
     return {
       ...metadata,
+      ...(activeStoreId ? { store_id: activeStoreId } : {}),
       created_at: new Date(),
+    } as EventMetadata
+  }
+
+  protected runWithEventStoreContext_<T>(
+    event: EventBusTypes.Message<unknown>,
+    task: () => T
+  ): T {
+    const eventStoreId = (event.metadata as any)?.store_id?.trim()
+    if (this.eventStoreIsolation_.mode === "shared" && !eventStoreId) {
+      throw new Error("Shared event delivery requires Store provenance")
     }
+    const storeId = eventStoreId ?? this.eventStoreIsolation_.storeId
+    if (
+      this.eventStoreIsolation_.mode === "dedicated" &&
+      eventStoreId &&
+      eventStoreId !== storeId
+    ) {
+      throw new Error(
+        "Event Store provenance does not match dedicated placement"
+      )
+    }
+    return runWithMedusaContext({ storeId }, task)
   }
 
   /**

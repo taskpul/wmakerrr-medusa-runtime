@@ -4,10 +4,12 @@ import { Order } from "./order"
 import { OrderShipping } from "./order-shipping-method"
 import { Return } from "./return"
 import { OrderTransaction } from "./transaction"
+import { ORDER_DEDICATED_STORE_ID } from "../store-isolation"
 
 const _OrderClaim = model
   .define("OrderClaim", {
     id: model.id({ prefix: "claim" }).primaryKey(),
+    store_id: model.text().default(ORDER_DEDICATED_STORE_ID),
     order_version: model.number(),
     display_id: model.autoincrement(),
     type: model.enum(ClaimType),

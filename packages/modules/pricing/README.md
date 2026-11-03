@@ -124,6 +124,13 @@ This is an admission-gated controlled-distribution capability. Do not activate
 shared placement until the distribution's database-policy, workflow,
 background-task, upgrade, and attack-matrix gates have also passed.
 
+Workflow context is durable across async continuation: the initiating Store is
+persisted in workflow metadata, restored during continuation, and cannot be
+rebound. Core Product and Fulfillment link steps validate referenced Price Sets
+through this Store-scoped service before link mutation. This closes only the
+Pricing endpoint of those relationships; the linked resource groups require
+their own ownership certification before shared placement can be admitted.
+
 ## Resources
 
 - [Pricing Module](https://docs.medusajs.com/resources/commerce-modules/pricing)

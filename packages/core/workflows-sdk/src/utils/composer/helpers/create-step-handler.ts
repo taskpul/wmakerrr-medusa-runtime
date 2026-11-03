@@ -1,5 +1,5 @@
 import { WorkflowStepHandlerArguments } from "@medusajs/orchestration"
-import { OrchestrationUtils } from "@medusajs/utils"
+import { OrchestrationUtils, runWithMedusaContext } from "@medusajs/utils"
 import { ApplyStepOptions } from "../create-step"
 import {
   CreateWorkflowComposerContext,
@@ -88,10 +88,10 @@ export function createStepHandler<
         }
       }
 
-      const stepResponse: StepResponse<any, any> = await invokeFn.apply(this, [
-        argInput,
-        executionContext,
-      ])
+      const stepResponse: StepResponse<any, any> = await runWithMedusaContext(
+        executionContext.context,
+        () => invokeFn.apply(this, [argInput, executionContext])
+      )
 
       if (!stepResponse || typeof stepResponse !== "object") {
         return {
@@ -120,10 +120,10 @@ export function createStepHandler<
           const stepOutput = (stepArguments.invoke[stepName] as any)?.output
 
           if (!stepOutput) {
-            const output = await compensateFn.apply(this, [
-              stepOutput,
-              executionContext,
-            ])
+            const output = await runWithMedusaContext(
+              executionContext.context,
+              () => compensateFn.apply(this, [stepOutput, executionContext])
+            )
             return { output }
           }
 
@@ -132,10 +132,10 @@ export function createStepHandler<
               ? stepOutput.compensateInput
               : stepOutput
 
-          const output = await compensateFn.apply(this, [
-            invokeResult,
-            executionContext,
-          ])
+          const output = await runWithMedusaContext(
+            executionContext.context,
+            () => compensateFn.apply(this, [invokeResult, executionContext])
+          )
           return {
             output,
           }

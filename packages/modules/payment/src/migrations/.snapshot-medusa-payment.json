@@ -22,6 +22,22 @@
           "enumItems": [],
           "mappedType": "text"
         },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
         "provider_id": {
           "name": "provider_id",
           "type": "text",
@@ -164,13 +180,13 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_account_holder_deleted_at\" ON \"account_holder\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_account_holder_provider_id_external_id_unique",
+          "keyName": "IDX_account_holder_store_id_provider_id_external_id_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_account_holder_provider_id_external_id_unique\" ON \"account_holder\" (\"provider_id\", \"external_id\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_account_holder_store_id_provider_id_external_id_unique\" ON \"account_holder\" (\"store_id\", \"provider_id\", \"external_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "account_holder_pkey",
@@ -201,6 +217,22 @@
           "precision": null,
           "scale": null,
           "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"
@@ -691,6 +723,22 @@
           "enumItems": [],
           "mappedType": "text"
         },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
         "currency_code": {
           "name": "currency_code",
           "type": "text",
@@ -972,6 +1020,22 @@
           "precision": null,
           "scale": null,
           "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"
@@ -1288,6 +1352,22 @@
           "precision": null,
           "scale": null,
           "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"
@@ -1643,6 +1723,22 @@
           "precision": null,
           "scale": null,
           "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
           "comment": null,
           "enumItems": [],
           "mappedType": "text"

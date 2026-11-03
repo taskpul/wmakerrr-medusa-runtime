@@ -13,20 +13,20 @@ export const deletePricePreferencesStepId = "delete-price-preferences"
  */
 export const deletePricePreferencesStep = createStep(
   deletePricePreferencesStepId,
-  async (ids: DeletePricePreferencesStepInput, { container }) => {
+  async (ids: DeletePricePreferencesStepInput, { container, context }) => {
     const service = container.resolve<IPricingModuleService>(Modules.PRICING)
 
-    await service.softDeletePricePreferences(ids)
+    await service.softDeletePricePreferences(ids, {}, context)
 
     return new StepResponse(void 0, ids)
   },
-  async (prevIds, { container }) => {
+  async (prevIds, { container, context }) => {
     if (!prevIds?.length) {
       return
     }
 
     const service = container.resolve<IPricingModuleService>(Modules.PRICING)
 
-    await service.restorePricePreferences(prevIds)
+    await service.restorePricePreferences(prevIds, {}, context)
   }
 )

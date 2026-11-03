@@ -3,6 +3,7 @@ import { Modules } from "@medusajs/utils"
 export const defaultSchema = `
   type Product @Listeners(values: ["${Modules.PRODUCT}.product.created", "${Modules.PRODUCT}.product.updated", "${Modules.PRODUCT}.product.deleted", "${Modules.PRODUCT}.product.restored"]) {
     id: ID
+    store_id: String
     title: String
     handle: String
     status: String
@@ -19,6 +20,7 @@ export const defaultSchema = `
 
   type ProductVariant @Listeners(values: ["${Modules.PRODUCT}.product-variant.created", "${Modules.PRODUCT}.product-variant.updated", "${Modules.PRODUCT}.product-variant.deleted", "${Modules.PRODUCT}.product-variant.restored"]) {
     id: ID
+    store_id: String
     product_id: String
     sku: String
 
@@ -27,6 +29,7 @@ export const defaultSchema = `
   
   type Price @Listeners(values: ["${Modules.PRICING}.price.created", "${Modules.PRICING}.price.updated", "${Modules.PRICING}.price.deleted", "${Modules.PRICING}.price.restored"]) {
     id: ID
+    store_id: String
     amount: Float
     currency_code: String
     price_list_id: String
@@ -34,6 +37,7 @@ export const defaultSchema = `
 
   type SalesChannel @Listeners(values: ["${Modules.SALES_CHANNEL}.sales-channel.created", "${Modules.SALES_CHANNEL}.sales-channel.updated", "${Modules.SALES_CHANNEL}.sales-channel.deleted", "${Modules.SALES_CHANNEL}.sales-channel.restored"]) {
     id: ID
+    store_id: String
     is_disabled: Boolean
   }
 `

@@ -55,10 +55,16 @@ import {
 } from "@models"
 
 import { Collection } from "@medusajs/framework/mikro-orm/core"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { ServiceTypes } from "@types"
 import { validatePriceListDates } from "@utils"
+import { setPricingStoreDatabaseContext } from "../database-context"
 import { joinerConfig } from "../joiner-config"
-import { PricingStoreOwnership } from "../store-ownership"
+import {
+  GeneratedCrudHookInput,
+  GeneratedCrudResultHookInput,
+  PricingStoreOwnership,
+} from "../store-ownership"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -122,6 +128,7 @@ export default class PricingModuleService
     InferEntityType<typeof PricePreference>
   >
   protected readonly storeOwnership_: PricingStoreOwnership
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -148,11 +155,66 @@ export default class PricingModuleService
     this.pricePreferenceService_ = pricePreferenceService
     this.priceListService_ = priceListService
     this.priceListRuleService_ = priceListRuleService
-    this.storeOwnership_ = new PricingStoreOwnership(moduleDeclaration)
+    this.storeOwnership_ = new PricingStoreOwnership(moduleDeclaration, {
+      PriceSet: priceSetService,
+      Price: priceService,
+      PriceRule: priceRuleService,
+      PriceList: priceListService,
+      PriceListRule: priceListRuleService,
+      PricePreference: pricePreferenceService,
+    })
   }
 
   __joinerConfig(): ModuleJoinerConfig {
     return joinerConfig
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeOwnership_.resolveStoreId(context)
+    const execute = async (
+      transactionManager: SqlEntityManager,
+      scopedContext: Context
+    ) => {
+      const activeStoreId = this.databaseStoreContexts_.get(transactionManager)
+      if (activeStoreId && activeStoreId !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Pricing transaction is already bound to another Store"
+        )
+      }
+
+      if (!activeStoreId) {
+        await setPricingStoreDatabaseContext(
+          transactionManager,
+          storeId,
+          this.storeOwnership_.isShared
+        )
+        this.databaseStoreContexts_.set(transactionManager, storeId)
+      }
+
+      return await task(scopedContext)
+    }
+
+    const transactionManager = context.transactionManager as
+      SqlEntityManager | undefined
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+
+    const transactionOptions = {
+      manager: context.manager as SqlEntityManager | undefined,
+      isolationLevel: context.isolationLevel,
+      enableNestedTransactions: context.enableNestedTransactions,
+    }
+
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      transactionOptions
+    )
   }
 
   private setupCalculatedPriceConfig_(
@@ -173,6 +235,18 @@ export default class PricingModuleService
     config.relations?.splice(fieldIdx, 1)
 
     return pricingContext
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: GeneratedCrudHookInput
+  ): Promise<unknown[]> {
+    return this.storeOwnership_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: GeneratedCrudResultHookInput
+  ): Promise<void> {
+    this.storeOwnership_.validateGeneratedMethodResult(input)
   }
 
   @InjectTransactionManager()
@@ -455,7 +529,10 @@ export default class PricingModuleService
     const results = await this.pricingRepository_.calculatePrices(
       pricingFilters,
       pricingContext,
-      sharedContext
+      {
+        ...sharedContext,
+        storeId: this.storeOwnership_.resolveStoreId(sharedContext),
+      }
     )
 
     const pricesSetPricesMap = groupBy(results, "price_set_id")
@@ -1624,7 +1701,7 @@ export default class PricingModuleService
           entry.rules_count = numberOfRules
         }
 
-        return entry
+        return this.storeOwnership_.stamp(entry, sharedContext)
       }
     )
 
@@ -1632,7 +1709,8 @@ export default class PricingModuleService
       normalizedData,
       {
         relations: ["price_list_rules"],
-      }
+      },
+      sharedContext
     )
 
     return entities
@@ -1641,7 +1719,7 @@ export default class PricingModuleService
   @InjectTransactionManager()
   protected async updatePriceListPrices_(
     data: PricingTypes.UpdatePriceListPricesDTO[],
-    sharedContext: Context = {}
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Price>[]> {
     const priceListIds = data.map((p) => p.price_list_id)
     const prices = data.flatMap((p) => p.prices)
@@ -1719,7 +1797,7 @@ export default class PricingModuleService
   @InjectTransactionManager()
   protected async removePrices_(
     ids: string[],
-    sharedContext: Context = {}
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<void> {
     await this.storeOwnership_.assertOwnedIds(
       this.priceService_,
@@ -1733,7 +1811,7 @@ export default class PricingModuleService
   @InjectTransactionManager()
   protected async addPriceListPrices_(
     data: PricingTypes.AddPriceListPricesDTO[],
-    sharedContext: Context = {}
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof Price>[]> {
     const priceListIds = data.map((p) => p.price_list_id)
     const prices = data.flatMap((p) => p.prices)
@@ -1810,7 +1888,7 @@ export default class PricingModuleService
   @InjectTransactionManager()
   protected async setPriceListRules_(
     data: PricingTypes.SetPriceListRulesDTO[],
-    sharedContext: Context = {}
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof PriceList>[]> {
     // TODO: re think this method
     const priceLists = await this.storeOwnership_.listOwned(
@@ -1874,7 +1952,7 @@ export default class PricingModuleService
   @InjectTransactionManager()
   protected async removePriceListRules_(
     data: PricingTypes.RemovePriceListRulesDTO[],
-    sharedContext: Context = {}
+    @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof PriceList>[]> {
     // TODO: re think this method
     const priceLists = await this.storeOwnership_.listOwned(
@@ -1921,10 +1999,15 @@ export default class PricingModuleService
           ...priceList,
           rules_count: allRules.size,
           price_list_rules: Array.from(allRules)
-            .map(([attribute, value]) => ({
-              attribute,
-              value,
-            }))
+            .map(([attribute, value]) =>
+              this.storeOwnership_.stamp(
+                {
+                  attribute,
+                  value,
+                },
+                sharedContext
+              )
+            )
             .filter((r) => !!r.value),
         }
       })

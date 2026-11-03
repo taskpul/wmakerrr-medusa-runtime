@@ -3,6 +3,7 @@ import {
   MedusaError,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { assertPriceSetStoreContext } from "../../common/utils/assert-price-set-store-context"
 
 /**
  * The data to validate that the specified variants have prices.
@@ -37,7 +38,7 @@ export const validateVariantPriceLinksStepId = "validate-variant-price-links"
  */
 export const validateVariantPriceLinksStep = createStep(
   validateVariantPriceLinksStepId,
-  async (data: ValidateVariantPriceLinksStepInput, { container }) => {
+  async (data: ValidateVariantPriceLinksStepInput, { container, context }) => {
     const remoteQuery = container.resolve(
       ContainerRegistrationKeys.REMOTE_QUERY
     )
@@ -56,6 +57,13 @@ export const validateVariantPriceLinksStep = createStep(
       fields: ["variant_id", "price_set_id"],
       variables: { variant_id: variantIds },
     })
+
+    await assertPriceSetStoreContext({
+      priceSetIds: links.map((link) => link.price_set_id),
+      container,
+      context,
+    })
+
     const variantPriceSetMap: Record<string, string> = {}
 
     for (const link of links) {

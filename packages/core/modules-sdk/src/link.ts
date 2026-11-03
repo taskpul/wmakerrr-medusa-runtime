@@ -16,6 +16,7 @@ import {
   toPascalCase,
 } from "@medusajs/utils"
 import { MedusaModule } from "./medusa-module"
+import { assertStoreSafeLinks } from "./store-link-ownership"
 import { convertRecordsToLinkDefinition } from "./utils/convert-data-to-link-definition"
 import { linkingErrorMessage } from "./utils/linking-error"
 
@@ -398,6 +399,7 @@ export class Link {
     @MedusaContext() sharedContext: Context = {}
   ): Promise<unknown[]> {
     const allLinks = Array.isArray(link) ? link : [link]
+    await assertStoreSafeLinks(this.modulesMap, allLinks, sharedContext)
     const serviceLinks = new Map<
       string,
       {
@@ -591,6 +593,7 @@ export class Link {
     @MedusaContext() sharedContext: Context = {}
   ): Promise<unknown[]> {
     const allLinks = Array.isArray(link) ? link : [link]
+    await assertStoreSafeLinks(this.modulesMap, allLinks, sharedContext)
     const serviceLinks = new Map<string, [string | string[], string][]>()
 
     for (const link of allLinks) {
@@ -647,6 +650,7 @@ export class Link {
     @MedusaContext() sharedContext: Context = {}
   ): Promise<(object | LinkDefinition)[]> {
     const allLinks = Array.isArray(link) ? link : [link]
+    await assertStoreSafeLinks(this.modulesMap, allLinks, sharedContext)
     const serviceLinks = new Map<string, object[]>()
 
     for (const link of allLinks) {

@@ -8,12 +8,13 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 /**
  * The price preferences to create.
  */
-export type CreatePricePreferencesStepInput = PricingWorkflow.CreatePricePreferencesWorkflowInput[]
+export type CreatePricePreferencesStepInput =
+  PricingWorkflow.CreatePricePreferencesWorkflowInput[]
 
 export const createPricePreferencesStepId = "create-price-preferences"
 /**
  * This step creates one or more price preferences.
- * 
+ *
  * @example
  * const data = createPricePreferencesStep([{
  *   attribute: "region_id",
@@ -23,22 +24,22 @@ export const createPricePreferencesStepId = "create-price-preferences"
  */
 export const createPricePreferencesStep = createStep(
   createPricePreferencesStepId,
-  async (
-    data: CreatePricePreferencesStepInput,
-    { container }
-  ) => {
+  async (data: CreatePricePreferencesStepInput, { container, context }) => {
     const pricingModule = container.resolve<IPricingModuleService>(
       Modules.PRICING
     )
 
-    const pricePreferences = await pricingModule.createPricePreferences(data)
+    const pricePreferences = await pricingModule.createPricePreferences(
+      data,
+      context
+    )
 
     return new StepResponse(
       pricePreferences,
       pricePreferences.map((pricePreference) => pricePreference.id)
     )
   },
-  async (pricePreferences, { container }) => {
+  async (pricePreferences, { container, context }) => {
     if (!pricePreferences?.length) {
       return
     }
@@ -47,6 +48,6 @@ export const createPricePreferencesStep = createStep(
       Modules.PRICING
     )
 
-    await pricingModule.deletePricePreferences(pricePreferences)
+    await pricingModule.deletePricePreferences(pricePreferences, context)
   }
 )

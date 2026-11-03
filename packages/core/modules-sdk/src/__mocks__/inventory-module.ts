@@ -22,5 +22,15 @@ export const InventoryModule = {
   },
 
   list: jest.fn(async () => []),
+  listInventoryItems: jest.fn(async (filters) =>
+    (filters.id ?? []).map((id) => ({ id }))
+  ),
+  listInventoryLevels: jest.fn(async (filters) =>
+    (filters.id ?? []).map((id) => ({ id }))
+  ),
+  listReservationItems: jest.fn(async (filters) =>
+    (filters.id ?? []).map((id) => ({ id }))
+  ),
+  __storeIsolationMode: jest.fn(() => "dedicated"),
   softDelete: jest.fn(() => {}),
 }

@@ -11,7 +11,7 @@ import { StepResponse, createStep } from "@medusajs/framework/workflows-sdk"
 export const updatePricePreferencesStepId = "update-price-preferences"
 /**
  * This step updates price preferences matching the specified filters.
- * 
+ *
  * @example
  * const data = updatePricePreferencesStep({
  *   selector: {
@@ -26,7 +26,7 @@ export const updatePricePreferencesStep = createStep(
   updatePricePreferencesStepId,
   async (
     input: PricingWorkflow.UpdatePricePreferencesWorkflowInput,
-    { container }
+    { container, context }
   ) => {
     const service = container.resolve<IPricingModuleService>(Modules.PRICING)
 
@@ -34,25 +34,30 @@ export const updatePricePreferencesStep = createStep(
       input.update,
     ])
 
-    const prevData = await service.listPricePreferences(input.selector, {
-      select: selects,
-      relations,
-    })
+    const prevData = await service.listPricePreferences(
+      input.selector,
+      {
+        select: selects,
+        relations,
+      },
+      context
+    )
 
     const updatedPricePreferences = await service.updatePricePreferences(
       input.selector,
-      input.update
+      input.update,
+      context
     )
 
     return new StepResponse(updatedPricePreferences, prevData)
   },
-  async (prevData, { container }) => {
+  async (prevData, { container, context }) => {
     if (!prevData?.length) {
       return
     }
 
     const service = container.resolve<IPricingModuleService>(Modules.PRICING)
 
-    await service.upsertPricePreferences(prevData)
+    await service.upsertPricePreferences(prevData, context)
   }
 )

@@ -38,19 +38,19 @@ Fulfillment Module for Medusa: manages fulfillment sets, service zones, geo zone
 
 ## At a glance
 
-| | |
-| --- | --- |
-| Package | `@medusajs/fulfillment` |
-| Type | Commerce Module |
-| Module key | `Modules.FULFILLMENT` (`"fulfillment"`) |
-| Registered by default | Yes (with the Manual provider) |
+|                       |                                         |
+| --------------------- | --------------------------------------- |
+| Package               | `@medusajs/fulfillment`                 |
+| Type                  | Commerce Module                         |
+| Module key            | `Modules.FULFILLMENT` (`"fulfillment"`) |
+| Registered by default | Yes (with the Manual provider)          |
 
 ## Providers
 
 The module accepts multiple providers. Official providers:
 
-| Package | Register with |
-| --- | --- |
+| Package                                                           | Register with                         |
+| ----------------------------------------------------------------- | ------------------------------------- |
 | [`@medusajs/fulfillment-manual`](../providers/fulfillment-manual) | `@medusajs/medusa/fulfillment-manual` |
 
 ## Installation
@@ -84,9 +84,16 @@ module.exports = defineConfig({
 
 ## Configuration
 
-| Option | Type | Description | Default |
-| --- | --- | --- | --- |
+| Option      | Type                                                                   | Description                                                                                                  | Default                          |
+| ----------- | ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------ | -------------------------------- |
 | `providers` | `{ resolve: string, id: string, options?: Record<string, unknown> }[]` | Fulfillment providers to register. Providers removed from this list are disabled in the database on startup. | Manual provider (`id: "manual"`) |
+
+The controlled runtime also accepts `store_isolation`. Shared placement must
+receive a verified `Context.storeId` for every Store-owned operation. Dedicated
+placement uses the immutable configured Store and rejects a conflicting request
+context. Fulfillment Provider registrations remain cell-level references; they
+do not grant Store access without an owned Shipping Option or a certified Stock
+Location association.
 
 ## Resources
 

@@ -1,8 +1,10 @@
 import { model } from "@medusajs/framework/utils"
+import { ORDER_DEDICATED_STORE_ID } from "../store-isolation"
 
 const _ReturnReason = model
   .define("ReturnReason", {
     id: model.id({ prefix: "rr" }).primaryKey(),
+    store_id: model.text().default(ORDER_DEDICATED_STORE_ID),
     value: model.text().searchable(),
     label: model.text().searchable().translatable(),
     description: model.text().translatable().nullable(),

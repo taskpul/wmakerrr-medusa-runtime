@@ -2,6 +2,7 @@ import { PromotionUtils, model } from "@medusajs/framework/utils"
 import ApplicationMethod from "./application-method"
 import Promotion from "./promotion"
 import PromotionRuleValue from "./promotion-rule-value"
+import { PROMOTION_DEDICATED_STORE_ID } from "../store-ownership"
 
 const PromotionRule = model
   .define(
@@ -11,6 +12,7 @@ const PromotionRule = model
     },
     {
       id: model.id({ prefix: "prorul" }).primaryKey(),
+      store_id: model.text().default(PROMOTION_DEDICATED_STORE_ID),
       description: model.text().nullable(),
       attribute: model.text().index("IDX_promotion_rule_attribute"),
       operator: model
@@ -31,6 +33,11 @@ const PromotionRule = model
     }
   )
   .indexes([
+    {
+      name: "IDX_promotion_rule_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+    },
     {
       on: ["attribute", "operator"],
       unique: false,

@@ -273,7 +273,12 @@ moduleIntegrationTestRunner<IProductModuleService>({
           )
 
           // Should emit option values link event for new option
-          expect(emittedEvents.filter(e => e.name === ProductEvents.PRODUCT_PRODUCT_OPTION_VALUE_CREATED).length).toEqual(2)
+          expect(
+            emittedEvents.filter(
+              (e) =>
+                e.name === ProductEvents.PRODUCT_PRODUCT_OPTION_VALUE_CREATED
+            ).length
+          ).toEqual(2)
           expect(emittedEvents).toEqual(
             expect.arrayContaining([
               composeMessage(

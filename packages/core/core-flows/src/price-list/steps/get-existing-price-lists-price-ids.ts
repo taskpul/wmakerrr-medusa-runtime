@@ -24,7 +24,10 @@ export const getExistingPriceListsPriceIdsStepId =
  */
 export const getExistingPriceListsPriceIdsStep = createStep(
   getExistingPriceListsPriceIdsStepId,
-  async (data: GetExistingPriceListsPriceIdsStepInput, { container }) => {
+  async (
+    data: GetExistingPriceListsPriceIdsStepInput,
+    { container, context }
+  ) => {
     const { price_list_ids: priceListIds = [] } = data
     const priceListPriceIdsMap: GetExistingPriceListsPriceIdsStepOutput = {}
     const pricingModule = container.resolve<IPricingModuleService>(
@@ -34,7 +37,8 @@ export const getExistingPriceListsPriceIdsStep = createStep(
     const existingPrices = priceListIds.length
       ? await pricingModule.listPrices(
           { price_list_id: priceListIds },
-          { relations: ["price_list"] }
+          { relations: ["price_list"] },
+          context
         )
       : []
 

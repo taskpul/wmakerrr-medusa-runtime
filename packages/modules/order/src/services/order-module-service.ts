@@ -43,7 +43,11 @@ import {
   promiseAll,
   toMikroORMEntity,
   transformPropertiesToBigNumber,
+  StoreIsolationGeneratedCrudInput,
+  StoreIsolationGeneratedCrudResult,
+  StoreIsolationManager,
 } from "@medusajs/framework/utils"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
   Order,
   OrderAddress,
@@ -91,6 +95,7 @@ import {
 } from "../utils"
 import * as BundledActions from "./actions"
 import OrderService from "./order-service"
+import { setOrderStoreDatabaseContext } from "../database-context"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -294,6 +299,8 @@ export default class OrderModuleService
   protected orderCreditLineService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof OrderCreditLine>
   >
+  protected readonly storeIsolation_: StoreIsolationManager<any>
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -351,6 +358,39 @@ export default class OrderModuleService
     this.orderClaimService_ = orderClaimService
     this.orderExchangeService_ = orderExchangeService
     this.orderCreditLineService_ = orderCreditLineService
+    this.storeIsolation_ = new StoreIsolationManager({
+      domain: "Order",
+      moduleOptions: options,
+      services: {
+        Order: orderService,
+        OrderAddress: orderAddressService,
+        ReturnReason: returnReasonService,
+        Return: returnService,
+        OrderClaim: orderClaimService,
+        OrderExchange: orderExchangeService,
+      },
+      // These child models inherit Store ownership from their aggregate root.
+      // Their migrations enforce the boundary through parent-derived RLS.
+      unscopedModels: [
+        "OrderLineItem",
+        "OrderLineItemAdjustment",
+        "OrderLineItemTaxLine",
+        "OrderShippingMethod",
+        "OrderShippingMethodAdjustment",
+        "OrderShippingMethodTaxLine",
+        "OrderTransaction",
+        "OrderChange",
+        "OrderChangeAction",
+        "OrderItem",
+        "OrderSummary",
+        "OrderShipping",
+        "ReturnItem",
+        "OrderClaimItem",
+        "OrderClaimItemImage",
+        "OrderExchangeItem",
+        "OrderCreditLine",
+      ],
+    })
 
     this.generateCustomDisplayId_ =
       options?.generateCustomDisplayId ?? this.generateCustomDisplayId_
@@ -358,6 +398,58 @@ export default class OrderModuleService
 
   __joinerConfig(): ModuleJoinerConfig {
     return joinerConfig
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeIsolation_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeIsolation_.resolveStoreId(context)
+    const execute = async (manager: SqlEntityManager, scoped: Context) => {
+      scoped.storeId ??= storeId
+      const activeStoreId = this.databaseStoreContexts_.get(manager)
+      if (activeStoreId && activeStoreId !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Order transaction is already bound to another Store"
+        )
+      }
+      if (!activeStoreId) {
+        await setOrderStoreDatabaseContext(
+          manager,
+          storeId,
+          this.storeIsolation_.isShared
+        )
+        this.databaseStoreContexts_.set(manager, storeId)
+      }
+      return await task(scoped)
+    }
+    const transactionManager = context.transactionManager as
+      SqlEntityManager | undefined
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      { manager: context.manager as SqlEntityManager | undefined } as any
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: StoreIsolationGeneratedCrudInput
+  ): Promise<unknown[]> {
+    return this.storeIsolation_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: StoreIsolationGeneratedCrudResult
+  ): Promise<void> {
+    this.storeIsolation_.validateGeneratedMethodResult(input)
   }
 
   private shouldIncludeTotals(config: FindConfig<any>): boolean {
@@ -741,8 +833,7 @@ export default class OrderModuleService
     )
 
     return (Array.isArray(data) ? result : result[0]) as
-      | OrderTypes.OrderDTO
-      | OrderTypes.OrderDTO[]
+      OrderTypes.OrderDTO | OrderTypes.OrderDTO[]
   }
 
   @InjectTransactionManager()
@@ -797,7 +888,7 @@ export default class OrderModuleService
       if (ord.currency_code) {
         ord.currency_code = normalizeCurrencyCode(ord.currency_code)
       }
-      
+
       ord.custom_display_id = await this.generateCustomDisplayId_.bind(this)(
         data_,
         sharedContext
@@ -1001,9 +1092,8 @@ export default class OrderModuleService
       sharedContext
     )
 
-    const serializedResult = await this.baseRepository_.serialize<
-      OrderTypes.OrderDTO[]
-    >(result)
+    const serializedResult =
+      await this.baseRepository_.serialize<OrderTypes.OrderDTO[]>(result)
 
     return isString(dataOrIdOrSelector) ? serializedResult[0] : serializedResult
   }
@@ -1070,8 +1160,7 @@ export default class OrderModuleService
       | OrderTypes.CreateOrderLineItemForOrderDTO[]
       | OrderTypes.CreateOrderLineItemForOrderDTO,
     data?:
-      | OrderTypes.CreateOrderLineItemDTO[]
-      | OrderTypes.CreateOrderLineItemDTO,
+      OrderTypes.CreateOrderLineItemDTO[] | OrderTypes.CreateOrderLineItemDTO,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<OrderTypes.OrderLineItemDTO[]> {
     let items: InferEntityType<typeof OrderLineItem>[] = []
@@ -1312,8 +1401,7 @@ export default class OrderModuleService
       | OrderTypes.UpdateOrderItemWithSelectorDTO[]
       | Partial<OrderTypes.OrderItemDTO>,
     data?:
-      | OrderTypes.UpdateOrderItemDTO
-      | Partial<OrderTypes.UpdateOrderItemDTO>,
+      OrderTypes.UpdateOrderItemDTO | Partial<OrderTypes.UpdateOrderItemDTO>,
     @MedusaContext() sharedContext: Context = {}
   ): Promise<OrderTypes.OrderItemDTO[] | OrderTypes.OrderItemDTO> {
     let items: InferEntityType<typeof OrderItem>[] = []
@@ -1511,7 +1599,7 @@ export default class OrderModuleService
 
   @InjectTransactionManager()
   protected async softDeleteOrderShippingMethods_<
-    TReturnableLinkableKeys extends string
+    TReturnableLinkableKeys extends string,
   >(
     ids: string | object | string[] | object[],
     config?: SoftDeleteReturn<TReturnableLinkableKeys>,
@@ -1549,7 +1637,7 @@ export default class OrderModuleService
 
   @InjectTransactionManager()
   protected async restoreOrderShippingMethods_<
-    TReturnableLinkableKeys extends string
+    TReturnableLinkableKeys extends string,
   >(
     ids: string | object | string[] | object[],
     config?: RestoreReturn<TReturnableLinkableKeys>,
@@ -2402,8 +2490,7 @@ export default class OrderModuleService
   // @ts-expect-error
   async createOrderExchanges(
     data:
-      | OrderTypes.CreateOrderExchangeDTO
-      | OrderTypes.CreateOrderExchangeDTO[],
+      OrderTypes.CreateOrderExchangeDTO | OrderTypes.CreateOrderExchangeDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<OrderTypes.OrderExchangeDTO | OrderTypes.OrderExchangeDTO[]> {
     const created = await this.createOrderRelatedEntity_(
@@ -2914,8 +3001,7 @@ export default class OrderModuleService
   @EmitEvents()
   async registerOrderChange(
     data:
-      | OrderTypes.RegisterOrderChangeDTO
-      | OrderTypes.RegisterOrderChangeDTO[],
+      OrderTypes.RegisterOrderChangeDTO | OrderTypes.RegisterOrderChangeDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<OrderTypes.OrderChangeDTO | OrderTypes.OrderChangeDTO[]> {
     const result = await this.registerOrderChange_(data, sharedContext)
@@ -2928,8 +3014,7 @@ export default class OrderModuleService
   @InjectTransactionManager()
   protected async registerOrderChange_(
     data:
-      | OrderTypes.RegisterOrderChangeDTO
-      | OrderTypes.RegisterOrderChangeDTO[],
+      OrderTypes.RegisterOrderChangeDTO | OrderTypes.RegisterOrderChangeDTO[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<
     InferEntityType<typeof OrderChange> | InferEntityType<typeof OrderChange>[]
@@ -3496,12 +3581,10 @@ export default class OrderModuleService
 
     for (const orderChange of orderChanges) {
       const notAllowed: string[] = []
-      if (
-        !(
-          orderChange.status === OrderChangeStatus.PENDING ||
-          orderChange.status === OrderChangeStatus.REQUESTED
-        )
-      ) {
+      if (!(
+        orderChange.status === OrderChangeStatus.PENDING ||
+        orderChange.status === OrderChangeStatus.REQUESTED
+      )) {
         notAllowed.push(orderChange.id)
       }
 
@@ -3836,7 +3919,7 @@ export default class OrderModuleService
 
   @InjectTransactionManager()
   private async softDeleteOrderTransactions_<
-    TReturnableLinkableKeys extends string
+    TReturnableLinkableKeys extends string,
   >(
     transactionIds: string | object | string[] | object[],
     config?: SoftDeleteReturn<TReturnableLinkableKeys>,
@@ -3886,7 +3969,7 @@ export default class OrderModuleService
 
   @InjectTransactionManager()
   private async restoreOrderTransactions_<
-    TReturnableLinkableKeys extends string
+    TReturnableLinkableKeys extends string,
   >(
     transactionIds: string | object | string[] | object[],
     config?: RestoreReturn<TReturnableLinkableKeys>,

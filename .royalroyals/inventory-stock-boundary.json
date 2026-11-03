@@ -1,0 +1,177 @@
+{
+  "contractVersion": 1,
+  "phase": "7G-7",
+  "status": "local-complete",
+  "upstreamVersion": "2.22.2",
+  "authority": {
+    "inventoryModule": "@medusajs/inventory",
+    "stockLocationModule": "@medusajs/stock-location",
+    "storeContextSource": "verified Context.storeId",
+    "sharedMode": "fail closed without transaction-bound Store context",
+    "dedicatedMode": "derive context from immutable placement configuration"
+  },
+  "inventory": {
+    "directStoreOwnedTables": 5,
+    "modelFiles": 5,
+    "declaredServiceMethods": 66,
+    "coreFlowFiles": 65,
+    "httpRoutes": 8,
+    "linkDefinitionFiles": 4,
+    "backgroundPaths": 0
+  },
+  "schema": {
+    "directStoreOwnedTables": [
+      "inventory_item",
+      "inventory_level",
+      "reservation_item",
+      "stock_location",
+      "stock_location_address"
+    ],
+    "storeScopedBusinessKeys": [
+      "inventory_item(store_id, sku)",
+      "inventory_level(store_id, inventory_item_id, location_id)"
+    ],
+    "sameStoreRelationships": [
+      "inventory_level.inventory_item_id -> inventory_item.id",
+      "reservation_item.inventory_item_id -> inventory_item.id",
+      "stock_location.address_id -> stock_location_address.id"
+    ],
+    "requestRoles": [
+      "medusa_inventory_request",
+      "medusa_stock_location_request"
+    ]
+  },
+  "invariants": [
+    "The existing Inventory and Stock Location modules remain the only domain owners.",
+    "Store ownership is immutable and cannot be accepted from public input.",
+    "SKU and inventory-level uniqueness are scoped to one Store.",
+    "Inventory items, levels, reservations, locations, and addresses are filtered before pagination and aggregation.",
+    "Reservation quantity changes remain atomic with their owned inventory level.",
+    "Product-Inventory, Inventory-Location, and Fulfillment-Location links validate both Store-owned endpoints.",
+    "A shared request without verified Store context fails closed in services and PostgreSQL.",
+    "Dedicated placement works without request Store input and rejects mismatched context.",
+    "No Inventory or Stock Location background path exists in the pinned source; future paths require explicit Store restoration.",
+    "Shared production remains disabled until every Phase 7 resource group and admission gate is complete."
+  ],
+  "implementationSlices": [
+    {
+      "id": "7G-7A",
+      "name": "design and inventory freeze",
+      "status": "local-complete"
+    },
+    {
+      "id": "7G-7B",
+      "name": "schema, persistence, RLS, upgrade and rollback",
+      "status": "local-complete"
+    },
+    {
+      "id": "7G-7C",
+      "name": "services, repositories, workflows and reservations",
+      "status": "local-complete"
+    },
+    {
+      "id": "7G-7D",
+      "name": "links, Query, events and background inventory",
+      "status": "local-complete"
+    },
+    {
+      "id": "7G-7E",
+      "name": "dedicated and shared attack proof",
+      "status": "local-complete"
+    }
+  ],
+  "attackMatrix": [
+    {
+      "id": "IS-01",
+      "proof": "Shared operations without Store context are denied."
+    },
+    { "id": "IS-02", "proof": "Client-supplied store_id is overwritten." },
+    {
+      "id": "IS-03",
+      "proof": "Foreign inventory items cannot be read, updated, or deleted."
+    },
+    {
+      "id": "IS-04",
+      "proof": "Foreign stock locations cannot be read, updated, or deleted."
+    },
+    { "id": "IS-05", "proof": "The same SKU can exist in different Stores." },
+    { "id": "IS-06", "proof": "A duplicate SKU in one Store is denied." },
+    {
+      "id": "IS-07",
+      "proof": "An inventory level cannot reference a foreign inventory item."
+    },
+    {
+      "id": "IS-08",
+      "proof": "A reservation cannot reference a foreign inventory item or level."
+    },
+    {
+      "id": "IS-09",
+      "proof": "A stock location cannot reference a foreign address."
+    },
+    {
+      "id": "IS-10",
+      "proof": "Owner reassignment is denied by immutable-owner triggers."
+    },
+    {
+      "id": "IS-11",
+      "proof": "RLS denies direct SQL without transaction Store context."
+    },
+    {
+      "id": "IS-12",
+      "proof": "Aggregate quantities ignore foreign Store rows."
+    },
+    {
+      "id": "IS-13",
+      "proof": "Reservation adjustments change only the owned inventory level."
+    },
+    {
+      "id": "IS-14",
+      "proof": "Product-to-Inventory links reject a foreign endpoint."
+    },
+    {
+      "id": "IS-15",
+      "proof": "Inventory-to-Location hydration rejects a foreign endpoint."
+    },
+    {
+      "id": "IS-16",
+      "proof": "Fulfillment-to-Location links reject a foreign endpoint."
+    },
+    {
+      "id": "IS-17",
+      "proof": "Sales Channel links remain unavailable until Sales Channel certification."
+    },
+    {
+      "id": "IS-18",
+      "proof": "Inventory level create and batch workflows validate owned locations."
+    },
+    {
+      "id": "IS-19",
+      "proof": "Inventory level update workflows validate owned locations."
+    },
+    {
+      "id": "IS-20",
+      "proof": "Query and pagination use module-scoped filters."
+    },
+    {
+      "id": "IS-21",
+      "proof": "Concurrent Store operations cannot rebind one transaction."
+    },
+    {
+      "id": "IS-22",
+      "proof": "Dedicated placement derives and binds its configured Store."
+    },
+    {
+      "id": "IS-23",
+      "proof": "Generated additive migrations backfill legacy rows to dedicated ownership."
+    },
+    {
+      "id": "IS-24",
+      "proof": "Rollback refuses unsafe collapse of Store-scoped SKUs."
+    }
+  ],
+  "admission": {
+    "candidateGatesChanged": [],
+    "sharedProduction": "disabled",
+    "dedicatedProduction": "unchanged"
+  }
+}

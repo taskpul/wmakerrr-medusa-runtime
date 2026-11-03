@@ -23,6 +23,7 @@ import { DmlEntity } from "../dml"
 import { CommonEvents } from "../event-bus"
 import { createMedusaMikroOrmEventSubscriber } from "./create-medusa-mikro-orm-event-subscriber"
 import { EmitEvents, InjectManager, MedusaContext } from "./decorators"
+import { ManagerContextTask } from "./decorators/run-manager-context"
 import { Modules } from "./definition"
 import { moduleEventBuilderFactory } from "./event-builder-factory"
 import { buildModelsNameToLinkableKeysMap } from "./joiner-config-builder"
@@ -46,6 +47,18 @@ const writeMethods = [
 ] as BaseMethods[]
 
 const methods: BaseMethods[] = [...readMethods, ...writeMethods]
+
+type GeneratedMethodHookInput = {
+  method: BaseMethods
+  methodName: string
+  modelName: string
+  args: unknown[]
+  context: Context
+}
+
+type GeneratedMethodResultHookInput = GeneratedMethodHookInput & {
+  result: unknown
+}
 
 /**
  * @internal
@@ -145,6 +158,24 @@ export function MedusaService<
     modelName: string
   ): void {
     const serviceRegistrationName = `${lowerCaseFirst(modelName)}Service`
+    const hookInput = (
+      args: unknown[],
+      context: Context
+    ): GeneratedMethodHookInput => ({
+      method: method as BaseMethods,
+      methodName,
+      modelName,
+      args,
+      context,
+    })
+    const resultHookInput = (
+      args: unknown[],
+      context: Context,
+      result: unknown
+    ): GeneratedMethodResultHookInput => ({
+      ...hookInput(args, context),
+      result,
+    })
 
     const applyMethod = function (impl: Function, contextIndex) {
       klassPrototype[methodName] = impl
@@ -173,9 +204,17 @@ export function MedusaService<
           config?: FindConfig<any>,
           sharedContext: Context = {}
         ): Promise<T> {
+          ;[id, config] = (await this.prepareGeneratedMethodArgs_(
+            hookInput([id, config], sharedContext)
+          )) as [string, FindConfig<any> | undefined]
+
           const models = await this.__container__[
             serviceRegistrationName
           ].retrieve(id, config, sharedContext)
+
+          await this.validateGeneratedMethodResult_(
+            resultHookInput([id, config], sharedContext, models)
+          )
 
           return await this.baseRepository_.serialize<T>(models)
         }
@@ -189,8 +228,16 @@ export function MedusaService<
           data = [],
           sharedContext: Context = {}
         ): Promise<T | T[]> {
+          ;[data] = (await this.prepareGeneratedMethodArgs_(
+            hookInput([data], sharedContext)
+          )) as [any]
+
           const service = this.__container__[serviceRegistrationName]
           const models_ = await service.create(data, sharedContext)
+
+          await this.validateGeneratedMethodResult_(
+            resultHookInput([data], sharedContext, models_)
+          )
 
           return await this.baseRepository_.serialize<T | T[]>(models_)
         }
@@ -204,8 +251,16 @@ export function MedusaService<
           data = [],
           sharedContext: Context = {}
         ): Promise<T | T[]> {
+          ;[data] = (await this.prepareGeneratedMethodArgs_(
+            hookInput([data], sharedContext)
+          )) as [any]
+
           const service = this.__container__[serviceRegistrationName]
           const response = await service.update(data, sharedContext)
+
+          await this.validateGeneratedMethodResult_(
+            resultHookInput([data], sharedContext, response)
+          )
 
           return await this.baseRepository_.serialize<T | T[]>(response)
         }
@@ -220,8 +275,16 @@ export function MedusaService<
           config: FindConfig<any> = {},
           sharedContext: Context = {}
         ): Promise<T[]> {
+          ;[filters, config] = (await this.prepareGeneratedMethodArgs_(
+            hookInput([filters, config], sharedContext)
+          )) as [object, FindConfig<any>]
+
           const service = this.__container__[serviceRegistrationName]
           const models = await service.list(filters, config, sharedContext)
+
+          await this.validateGeneratedMethodResult_(
+            resultHookInput([filters, config], sharedContext, models)
+          )
 
           return await this.baseRepository_.serialize<T[]>(models)
         }
@@ -236,9 +299,17 @@ export function MedusaService<
           config: FindConfig<any> = {},
           sharedContext: Context = {}
         ): Promise<T[]> {
+          ;[filters, config] = (await this.prepareGeneratedMethodArgs_(
+            hookInput([filters, config], sharedContext)
+          )) as [object, FindConfig<any>]
+
           const [models, count] = await this.__container__[
             serviceRegistrationName
           ].listAndCount(filters, config, sharedContext)
+
+          await this.validateGeneratedMethodResult_(
+            resultHookInput([filters, config], sharedContext, models)
+          )
 
           return [await this.baseRepository_.serialize<T[]>(models), count]
         }
@@ -252,6 +323,10 @@ export function MedusaService<
           primaryKeyValues: string | object | string[] | object[],
           sharedContext: Context = {}
         ): Promise<void> {
+          ;[primaryKeyValues] = (await this.prepareGeneratedMethodArgs_(
+            hookInput([primaryKeyValues], sharedContext)
+          )) as [string | object | string[] | object[]]
+
           const primaryKeyValues_ = Array.isArray(primaryKeyValues)
             ? primaryKeyValues
             : [primaryKeyValues]
@@ -272,6 +347,13 @@ export function MedusaService<
           config: SoftDeleteReturn<string> = {},
           sharedContext: Context = {}
         ): Promise<Record<string, string[]> | void> {
+          ;[primaryKeyValues, config] = (await this.prepareGeneratedMethodArgs_(
+            hookInput([primaryKeyValues, config], sharedContext)
+          )) as [
+            string | object | string[] | object[],
+            SoftDeleteReturn<string>,
+          ]
+
           const primaryKeyValues_ = Array.isArray(primaryKeyValues)
             ? primaryKeyValues
             : [primaryKeyValues]
@@ -303,6 +385,10 @@ export function MedusaService<
           config: RestoreReturn<string> = {},
           sharedContext: Context = {}
         ): Promise<Record<string, string[]> | void> {
+          ;[primaryKeyValues, config] = (await this.prepareGeneratedMethodArgs_(
+            hookInput([primaryKeyValues, config], sharedContext)
+          )) as [string | object | string[] | object[], RestoreReturn<string>]
+
           const primaryKeyValues_ = Array.isArray(primaryKeyValues)
             ? primaryKeyValues
             : [primaryKeyValues]
@@ -348,6 +434,36 @@ export function MedusaService<
     readonly eventBusModuleService_: IEventBusModuleService
 
     __joinerConfig?(): ModuleJoinerConfig
+
+    /**
+     * Runs a generated or custom service method inside an optional module-owned
+     * manager boundary. Modules can override this to install transaction-local
+     * database context without replacing every generated method.
+     */
+    protected async withManagerContext_<T>(
+      context: Context,
+      task: ManagerContextTask<T>
+    ): Promise<T> {
+      return await task(context)
+    }
+
+    /**
+     * Allows a module service to enforce a domain boundary on every generated
+     * CRUD method without replacing each generated method individually.
+     */
+    protected async prepareGeneratedMethodArgs_(
+      input: GeneratedMethodHookInput
+    ): Promise<unknown[]> {
+      return input.args
+    }
+
+    /**
+     * Allows a module service to validate records returned by generated CRUD
+     * methods before they are serialized for the caller.
+     */
+    protected async validateGeneratedMethodResult_(
+      _input: GeneratedMethodResultHookInput
+    ): Promise<void> {}
 
     constructor(container: Record<any, any>) {
       this.__container__ = container

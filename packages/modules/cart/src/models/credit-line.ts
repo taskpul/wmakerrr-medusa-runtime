@@ -1,9 +1,11 @@
 import { model } from "@medusajs/framework/utils"
 import Cart from "./cart"
+import { CART_DEDICATED_STORE_ID } from "../store-isolation"
 
 const CreditLine = model
   .define("CreditLine", {
     id: model.id({ prefix: "cacl" }).primaryKey(),
+    store_id: model.text().default(CART_DEDICATED_STORE_ID),
     cart: model.belongsTo(() => Cart, {
       mappedBy: "credit_lines",
     }),

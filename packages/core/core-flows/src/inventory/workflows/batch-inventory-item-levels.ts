@@ -13,7 +13,11 @@ import {
 } from "@medusajs/framework/types"
 import { InventoryLevelWorkflowEvents } from "@medusajs/framework/utils"
 import { emitEventStep } from "../../common"
-import { createInventoryLevelsStep, updateInventoryLevelsStep } from "../steps"
+import {
+  createInventoryLevelsStep,
+  updateInventoryLevelsStep,
+  validateInventoryLocationsStep,
+} from "../steps"
 import { deleteInventoryLevelsWorkflow } from "./delete-inventory-levels"
 
 /**
@@ -100,6 +104,11 @@ export const batchInventoryItemLevelsWorkflow = createWorkflow(
         }
       }
     )
+
+    validateInventoryLocationsStep(createInput)
+    validateInventoryLocationsStep(updateInput).config({
+      name: "validate-updated-inventory-locations",
+    })
 
     const res = parallelize(
       createInventoryLevelsStep(createInput),

@@ -24,7 +24,9 @@ describe("ProductModuleService", () => {
       {} as any
     )
     const context = {
-      transactionManager: {},
+      transactionManager: {
+        execute: jest.fn().mockResolvedValue(undefined),
+      },
     }
 
     await (service as any).updateVariants_(
@@ -47,6 +49,7 @@ describe("ProductModuleService", () => {
           metadata: {
             keep: "value",
           },
+          store_id: "__medusa_dedicated__",
         },
       ],
       {

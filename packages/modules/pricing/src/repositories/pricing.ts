@@ -23,7 +23,7 @@ export class PricingRepository
   extends MikroOrmBase
   implements PricingRepositoryService
 {
-  #availableAttributes: Set<string> = new Set()
+  #availableAttributes = new Map<string, Set<string>>()
 
   constructor() {
     // @ts-ignore
@@ -35,7 +35,7 @@ export class PricingRepository
     this.#availableAttributes.clear()
   }
 
-  async #cacheAvailableAttributes() {
+  async #cacheAvailableAttributes(storeId: string) {
     const manager = this.getActiveManager<SqlEntityManager>()
     const knex = manager.getKnex()
 
@@ -44,22 +44,26 @@ export class PricingRepository
       SELECT DISTINCT attribute 
       FROM (
         SELECT attribute 
-        FROM price_rule 
+        FROM price_rule
+        WHERE store_id = ?
         UNION ALL
         SELECT attribute 
         FROM price_list_rule
+        WHERE store_id = ?
       ) as combined_rules_attributes
-    `
+    `,
+      [storeId, storeId]
     )
-    this.#availableAttributes.clear()
+    const attributes = new Set<string>()
     rows.forEach(({ attribute }: { attribute: string }) => {
-      this.#availableAttributes.add(attribute)
+      attributes.add(attribute)
     })
+    this.#availableAttributes.set(storeId, attributes)
   }
 
-  async #cacheAvailableAttributesIfNecessary() {
-    if (this.#availableAttributes.size === 0) {
-      await this.#cacheAvailableAttributes()
+  async #cacheAvailableAttributesIfNecessary(storeId: string) {
+    if (!this.#availableAttributes.has(storeId)) {
+      await this.#cacheAvailableAttributes(storeId)
     }
   }
 
@@ -71,6 +75,14 @@ export class PricingRepository
     const manager = this.getActiveManager<SqlEntityManager>(sharedContext)
     const knex = manager.getKnex()
     const context = { ...(pricingContext.context || {}) }
+    const storeId = (sharedContext as Context & { storeId?: string }).storeId
+
+    if (!storeId) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Pricing calculation requires a resolved Store context"
+      )
+    }
 
     // Extract quantity and currency from context
     const quantity = context.quantity as number | undefined
@@ -101,9 +113,10 @@ export class PricingRepository
     )
 
     if (flattenedContext.length > 10) {
-      await this.#cacheAvailableAttributesIfNecessary()
+      await this.#cacheAvailableAttributesIfNecessary(storeId)
+      const availableAttributes = this.#availableAttributes.get(storeId)!
       flattenedContext = flattenedContext.filter(([key]) =>
-        this.#availableAttributes.has(key)
+        availableAttributes.has(key)
       )
     }
 
@@ -125,6 +138,7 @@ export class PricingRepository
       })
       .from("price")
       .whereIn("price.price_set_id", pricingFilters.id)
+      .andWhere("price.store_id", storeId)
       .andWhere(
         "price.currency_code",
         normalizeCurrencyCode(currencyCode ?? "")
@@ -222,6 +236,7 @@ export class PricingRepository
             SELECT pl.id, pl.type, pl.rules_count
             FROM price_list pl
             WHERE pl.status = ?
+              AND pl.store_id = ?
               AND pl.deleted_at IS NULL
               AND (pl.starts_at IS NULL OR pl.starts_at <= now())
               AND (pl.ends_at IS NULL OR pl.ends_at >= now())
@@ -231,11 +246,12 @@ export class PricingRepository
                   SELECT COUNT(*) FILTER (WHERE ${priceListRuleMatchConditions})
                   FROM price_list_rule plr
                   WHERE plr.price_list_id = pl.id
+                    AND plr.store_id = pl.store_id
                     AND plr.deleted_at IS NULL
                 )
               )
           ) as pl`,
-          [PriceListStatus.ACTIVE, ...priceListRuleMatchParams]
+          [PriceListStatus.ACTIVE, storeId, ...priceListRuleMatchParams]
         ),
         "pl.id",
         "price.price_list_id"
@@ -250,6 +266,7 @@ export class PricingRepository
               COUNT(*) as total_count
             FROM price_rule pr
             WHERE pr.price_id = price.id
+              AND pr.store_id = price.store_id
               AND pr.deleted_at IS NULL
           ) pr_stats`,
           priceRuleMatchParams
@@ -281,6 +298,7 @@ export class PricingRepository
     } else {
       query.leftJoin("price_list as pl", function (this: Knex.JoinClause) {
         this.on("pl.id", "=", "price.price_list_id")
+          .andOn("pl.store_id", "=", "price.store_id")
           .andOn("pl.status", "=", knex.raw("?", [PriceListStatus.ACTIVE]))
           .andOn(function (this: Knex.JoinClause) {
             this.onNull("pl.deleted_at")
@@ -301,7 +319,9 @@ export class PricingRepository
         this.where(function (this: Knex.QueryBuilder) {
           this.whereNull("price.price_list_id").where("price.rules_count", 0)
         }).orWhere(function (this: Knex.QueryBuilder) {
-          this.whereNotNull("price.price_list_id").where("price.rules_count", 0).where("pl.rules_count", 0)
+          this.whereNotNull("price.price_list_id")
+            .where("price.rules_count", 0)
+            .where("pl.rules_count", 0)
         })
       })
     }

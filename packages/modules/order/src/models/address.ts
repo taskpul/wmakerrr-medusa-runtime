@@ -1,8 +1,10 @@
 import { model } from "@medusajs/framework/utils"
+import { ORDER_DEDICATED_STORE_ID } from "../store-isolation"
 
 const _OrderAddress = model
   .define("OrderAddress", {
     id: model.id({ prefix: "ordaddr" }).primaryKey(),
+    store_id: model.text().default(ORDER_DEDICATED_STORE_ID),
     customer_id: model.text().nullable(),
     company: model.text().searchable().nullable(),
     first_name: model.text().searchable().nullable(),

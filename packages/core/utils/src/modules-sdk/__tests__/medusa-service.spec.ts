@@ -188,6 +188,92 @@ describe("Abstract Module Service Factory", () => {
     })
   })
 
+  describe("Generated method boundary hooks", () => {
+    const prepare = jest.fn(async (input) => {
+      if (input.method === "list") {
+        return [{ ...input.args[0], store_id: "store_test" }, input.args[1]]
+      }
+
+      return input.args
+    })
+    const validate = jest.fn(async (_input: any) => undefined)
+
+    class HookedService extends medusaService {
+      protected async prepareGeneratedMethodArgs_(input: any) {
+        return await prepare(input)
+      }
+
+      protected async validateGeneratedMethodResult_(input: any) {
+        await validate(input)
+      }
+    }
+
+    beforeEach(() => {
+      jest.clearAllMocks()
+    })
+
+    it("prepares arguments and validates results for generated methods", async () => {
+      const instance = new (HookedService as any)(containerMock)
+      ;(instance as any).__joinerConfig = {
+        serviceName: "serviceName",
+      }
+
+      await instance.listMainModelMocks({ id: "1" })
+
+      expect(prepare).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: "list",
+          methodName: "listMainModelMocks",
+          modelName: "MainModelMock",
+          args: [{ id: "1" }, {}],
+        })
+      )
+      expect(containerMock.mainModelMockService.list).toHaveBeenCalledWith(
+        { id: "1", store_id: "store_test" },
+        {},
+        defaultContext
+      )
+      expect(validate).toHaveBeenCalledWith(
+        expect.objectContaining({
+          method: "list",
+          result: [{ id: "1", name: "Item" }],
+        })
+      )
+    })
+
+    it("runs generated methods inside the module manager context", async () => {
+      const runWithContext = jest.fn(async (context, task) => {
+        return await task({ ...context, storeId: "store_test" })
+      })
+
+      class ManagerContextService extends medusaService {
+        protected async withManagerContext_(context: any, task: any) {
+          return await runWithContext(context, task)
+        }
+      }
+
+      const instance = new (ManagerContextService as any)(containerMock)
+      ;(instance as any).__joinerConfig = {
+        serviceName: "serviceName",
+      }
+
+      await instance.listMainModelMocks()
+
+      expect(runWithContext).toHaveBeenCalledTimes(1)
+      expect(runWithContext).toHaveBeenCalledWith(
+        expect.objectContaining({
+          __type: "MedusaContext",
+        }),
+        expect.any(Function)
+      )
+      expect(containerMock.mainModelMockService.list).toHaveBeenCalledWith(
+        {},
+        {},
+        expect.objectContaining({ storeId: "store_test" })
+      )
+    })
+  })
+
   describe("Custom configuration using DML", () => {
     const containerMock = {
       baseRepository: baseRepoMock,

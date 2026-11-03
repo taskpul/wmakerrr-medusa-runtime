@@ -58,6 +58,96 @@ const afterEach_ = () => {
 describe("Workflow composer", function () {
   afterEach(afterEach_)
 
+  describe("Store context continuation", function () {
+    it("derives Store context from the verified workflow scope", async () => {
+      const container = createMedusaContainer()
+      container.register({
+        storeContext: asValue({ storeId: "store_scope" }),
+      })
+      let observedStoreId: string | undefined
+      const observeStep = createStep(
+        "observe-store-context",
+        async (_, ctx) => {
+          observedStoreId = ctx.context.storeId
+        }
+      )
+      const workflow = createWorkflow("scoped-store-context", function () {
+        return new WorkflowResponse(observeStep())
+      })
+
+      await workflow(container).run()
+      expect(observedStoreId).toBe("store_scope")
+      await expect(
+        workflow(container).run({ context: { storeId: "store_foreign" } })
+      ).rejects.toThrow(
+        "Workflow Store context does not match the request scope"
+      )
+    })
+
+    it("restores Store context when an async workflow continues", async () => {
+      let idempotencyKey = ""
+      const contexts: (string | undefined)[] = []
+      const backgroundStep = createStep(
+        { name: "background-step", async: true },
+        async (_, stepContext) => {
+          idempotencyKey = stepContext.idempotencyKey
+          contexts.push(stepContext.context.storeId)
+        }
+      )
+      const continuationStep = createStep(
+        "continuation-step",
+        async (_, stepContext) => {
+          contexts.push(stepContext.context.storeId)
+          return new StepResponse("done")
+        }
+      )
+      const workflow = createWorkflow(
+        "store-context-continuation",
+        function () {
+          backgroundStep()
+          return new WorkflowResponse(continuationStep())
+        }
+      )
+
+      await workflow().run({ context: { storeId: "store_a" } })
+      await workflow().registerStepSuccess({
+        idempotencyKey,
+        response: "complete",
+      })
+
+      expect(contexts).toEqual(["store_a", "store_a"])
+    })
+
+    it("rejects rebinding Store context during continuation", async () => {
+      let idempotencyKey = ""
+      const backgroundStep = createStep(
+        { name: "background-step", async: true },
+        async (_, stepContext) => {
+          idempotencyKey = stepContext.idempotencyKey
+        }
+      )
+      const continuationStep = createStep("continuation-step", async () => {
+        return new StepResponse("done")
+      })
+      const workflow = createWorkflow("store-context-rebinding", function () {
+        backgroundStep()
+        return new WorkflowResponse(continuationStep())
+      })
+
+      await workflow().run({ context: { storeId: "store_a" } })
+
+      await expect(
+        workflow().registerStepSuccess({
+          idempotencyKey,
+          response: "complete",
+          context: { storeId: "store_b" },
+        })
+      ).rejects.toThrow(
+        "Workflow Store context cannot be rebound during continuation"
+      )
+    })
+  })
+
   describe("Using steps returning plain values", function () {
     afterEach(afterEach_)
 

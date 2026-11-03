@@ -1,12 +1,14 @@
 import { PromotionUtils, model } from "@medusajs/framework/utils"
 import Campaign from "./campaign"
 import CampaignBudgetUsage from "./campaign-budget-usage"
+import { PROMOTION_DEDICATED_STORE_ID } from "../store-ownership"
 
 const CampaignBudget = model
   .define(
     { name: "CampaignBudget", tableName: "promotion_campaign_budget" },
     {
       id: model.id({ prefix: "probudg" }).primaryKey(),
+      store_id: model.text().default(PROMOTION_DEDICATED_STORE_ID),
       type: model
         .enum(PromotionUtils.CampaignBudgetType)
         .index("IDX_campaign_budget_type"),
@@ -34,5 +36,12 @@ const CampaignBudget = model
   .cascades({
     delete: ["usages"],
   })
+  .indexes([
+    {
+      name: "IDX_promotion_campaign_budget_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+    },
+  ])
 
 export default CampaignBudget

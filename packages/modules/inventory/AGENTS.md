@@ -51,6 +51,15 @@ yarn migration:create          # after any change in src/models
 
 ## Gotchas
 
+- Controlled runtime Store isolation is owned by `src/store-ownership.ts` and
+  transaction binding by `src/database-context.ts`. Extend these canonical
+  paths; do not add route-local Store filtering.
+- Inventory Item, Level, and Reservation rows have immutable `store_id`.
+  Aggregate repository queries must include the active Store, and shared mode
+  must use the non-bypass `medusa_inventory_request` role.
+- SKU and level uniqueness are Store-scoped. Cross-Store parent IDs must be
+  rejected before mutation and again by database constraints/RLS.
+
 - `reserved_quantity` cannot be set through `createInventoryLevels` / `updateInventoryLevels`; it is stripped from input. It only moves when reservations are created, updated (quantity or location change), deleted, soft-deleted or restored.
 - `location_levels` is stripped from `createInventoryItems` / `updateInventoryItems` input; create levels separately.
 - `createReservationItems` throws `NOT_FOUND` if the item is not stocked at the location and `NOT_ALLOWED` ("Not enough stock available") when `available_quantity < quantity`, unless `allow_backorder` is true.

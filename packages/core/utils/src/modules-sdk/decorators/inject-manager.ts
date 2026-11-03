@@ -1,6 +1,13 @@
 import { Context } from "@medusajs/types"
 import { isPresent } from "../../common"
-import { MedusaContextType } from "./context-parameter"
+import { MessageAggregator } from "../../event-bus"
+import {
+  MedusaContextType,
+  mergeActiveMedusaContext,
+} from "./context-parameter"
+import { runManagerContext } from "./run-manager-context"
+
+const FlushEmittedEventsSymbol = Symbol.for("MedusaFlushEmittedEvents")
 
 export function InjectManager(managerProperty?: string): MethodDecorator {
   return function (
@@ -19,8 +26,8 @@ export function InjectManager(managerProperty?: string): MethodDecorator {
     const originalMethod = descriptor.value
     const argIndex = target.MedusaContextIndex_[propertyKey]
 
-    descriptor.value = function (...args: any[]) {
-      const originalContext = args[argIndex] ?? {}
+    descriptor.value = async function (...args: any[]) {
+      const originalContext = mergeActiveMedusaContext(args[argIndex] ?? {})
       const copiedContext = {} as Context
       for (const key in originalContext) {
         if (key === "transactionManager") {
@@ -60,9 +67,27 @@ export function InjectManager(managerProperty?: string): MethodDecorator {
 
       copiedContext.__type = MedusaContextType
 
+      const flushEvents = originalMethod[FlushEmittedEventsSymbol]
+      if (flushEvents) {
+        copiedContext.messageAggregator ??= new MessageAggregator()
+      }
+
       args[argIndex] = copiedContext
 
-      return originalMethod.apply(this, args)
+      const result = await runManagerContext(
+        this,
+        copiedContext,
+        async (context) => {
+          args[argIndex] = context
+          return await originalMethod.apply(this, args)
+        }
+      )
+
+      if (flushEvents) {
+        await flushEvents(this, copiedContext)
+      }
+
+      return result
     }
   }
 }

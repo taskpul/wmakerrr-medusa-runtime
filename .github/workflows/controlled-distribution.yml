@@ -1,0 +1,97 @@
+name: Controlled distribution
+
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      candidate_ref:
+        description: Exact candidate commit to verify
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: controlled-distribution-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  evidence:
+    name: Immutable candidate evidence
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      UPSTREAM_REVISION: cfff3f57381873097dcc77851038d5dbe8f5839c
+    steps:
+      - name: Check out governance tooling
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          path: governance
+          persist-credentials: false
+
+      - name: Check out candidate
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          path: candidate
+          persist-credentials: false
+          ref: ${{ inputs.candidate_ref || github.sha }}
+
+      - name: Resolve immutable candidate revision
+        id: candidate
+        working-directory: candidate
+        shell: bash
+        run: echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version-file: candidate/.nvmrc
+
+      - name: Fetch pinned upstream revision
+        working-directory: candidate
+        shell: bash
+        run: |
+          git remote add upstream https://github.com/medusajs/medusa.git
+          git fetch --depth=1 --filter=blob:none upstream "$UPSTREAM_REVISION"
+
+      - name: Install immutable dependencies
+        working-directory: candidate
+        run: node .yarn/releases/yarn-3.2.1.cjs install --immutable
+
+      - name: Build complete public workspace
+        working-directory: candidate
+        run: node .yarn/releases/yarn-3.2.1.cjs build
+
+      - name: Verify provenance and compatibility
+        working-directory: candidate
+        run: |
+          node .royalroyals/verify-bootstrap.mjs
+          node .royalroyals/verify-baseline.mjs
+          node .royalroyals/verify-public-api.mjs
+
+      - name: Create immutable evidence record
+        env:
+          CANDIDATE_ROOT: ${{ github.workspace }}/candidate
+          CANDIDATE_REVISION: ${{ steps.candidate.outputs.revision }}
+          EVIDENCE_OUTPUT: ${{ github.workspace }}/controlled-distribution-evidence.json
+        run: node governance/.royalroyals/create-ci-evidence.mjs
+
+      - name: Upload immutable evidence
+        id: evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: controlled-distribution-${{ steps.candidate.outputs.revision }}
+          path: controlled-distribution-evidence.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Report evidence digest
+        env:
+          ARTIFACT_DIGEST: ${{ steps.evidence.outputs.artifact-digest }}
+        run: echo "Evidence artifact SHA-256 ${ARTIFACT_DIGEST}"

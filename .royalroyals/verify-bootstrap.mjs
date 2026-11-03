@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto"
 import { execFileSync } from "node:child_process"
-import { access, readFile } from "node:fs/promises"
+import { access, readFile, readdir } from "node:fs/promises"
 import { dirname, join } from "node:path"
 import { fileURLToPath } from "node:url"
 
@@ -20,6 +20,7 @@ const repositoryExclusions = (
 )
   .split(/\r?\n/)
   .filter(Boolean)
+const allowedWorkflows = new Set(["controlled-distribution.yml"])
 const enterpriseNotice = await readFile(
   join(root, "ENTERPRISE-LICENSE.md"),
   "utf8"
@@ -82,6 +83,23 @@ for (const path of exclusions) {
   }
 }
 for (const path of repositoryExclusions) {
+  if (path === ".github/workflows/") {
+    let workflows
+    try {
+      workflows = await readdir(join(root, path))
+    } catch (error) {
+      if (error?.code === "ENOENT") continue
+      throw error
+    }
+
+    for (const workflow of workflows) {
+      if (!allowedWorkflows.has(workflow)) {
+        errors.push(`unapproved repository workflow is present: ${workflow}`)
+      }
+    }
+    continue
+  }
+
   try {
     await access(join(root, path))
     errors.push(`excluded upstream repository automation is present: ${path}`)

@@ -82,12 +82,13 @@ set.
 
 The upstream Medusa workflows and Dependabot configuration are excluded from
 this repository. They target Medusa organization secrets, applications, and
-external services and must never run under the Royalroyals account. GitHub
-Actions is also disabled at repository level. Royalroyals CI will be introduced
-as a separate reviewed phase before Actions is enabled.
+external services and must never run under the Royalroyals account. The
+bootstrap verifier permits only `controlled-distribution.yml` in the workflows
+directory and rejects every other workflow.
 
-`main` is maintained through pull requests. GitHub branch protection is not
-available for this private repository on the account's current plan; the API
-returns HTTP 403 unless the account upgrades or the repository becomes public.
-Privacy takes priority, so this limitation remains an explicit admission
-blocker rather than making the repository public.
+The repository is public so GitHub can protect `main` and require the controlled
+distribution check without a paid account. The workflow has read-only contents
+permission, uses only SHA-pinned GitHub-owned actions, consumes no secrets, and
+cannot publish, sign, release, or activate packages. It runs the immutable
+install, complete build, and three provenance/compatibility verifiers before
+uploading a content-addressed evidence record.

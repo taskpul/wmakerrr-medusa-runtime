@@ -14,5 +14,10 @@
     "excludedPathCount": 44
   },
   "packageManager": "yarn@3.2.1",
-  "lockfileSha256": "25348a84b0e6f5afc673f51789714e93b9cfad760a1d4df6ca1199172fd547e4"
+  "lockfileSha256": "25348a84b0e6f5afc673f51789714e93b9cfad760a1d4df6ca1199172fd547e4",
+  "repositoryGovernance": {
+    "upstreamAutomationExcluded": true,
+    "githubActionsEnabled": false,
+    "branchProtection": "unavailable-on-current-private-repository-plan"
+  }
 }

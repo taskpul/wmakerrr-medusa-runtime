@@ -1,4 +1,5 @@
 import { model } from "@medusajs/framework/utils"
+import { DEDICATED_STORE_ID } from "../store-ownership"
 import PriceList from "./price-list"
 import PriceRule from "./price-rule"
 import PriceSet from "./price-set"
@@ -6,6 +7,7 @@ import PriceSet from "./price-set"
 const Price = model
   .define("Price", {
     id: model.id({ prefix: "price" }).primaryKey(),
+    store_id: model.text().default(DEDICATED_STORE_ID),
     title: model.text().nullable(),
     currency_code: model.text(),
     amount: model.bigNumber(),
@@ -28,6 +30,12 @@ const Price = model
     delete: ["price_rules"],
   })
   .indexes([
+    {
+      name: "IDX_price_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+      where: "deleted_at IS NULL",
+    },
     {
       on: ["price_set_id"],
       where: "deleted_at IS NULL",

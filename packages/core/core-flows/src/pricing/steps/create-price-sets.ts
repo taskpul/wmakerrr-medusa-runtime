@@ -13,7 +13,7 @@ export type CreatePriceSetWorkflowInput = CreatePriceSetDTO[]
 export const createPriceSetsStepId = "create-price-sets"
 /**
  * This step creates one or more price sets.
- * 
+ *
  * @example
  * const data = createPriceSetsStep([{
  *   prices: [
@@ -26,19 +26,19 @@ export const createPriceSetsStepId = "create-price-sets"
  */
 export const createPriceSetsStep = createStep(
   createPriceSetsStepId,
-  async (data: CreatePriceSetWorkflowInput, { container }) => {
+  async (data: CreatePriceSetWorkflowInput, { container, context }) => {
     const pricingModule = container.resolve<IPricingModuleService>(
       Modules.PRICING
     )
 
-    const priceSets = await pricingModule.createPriceSets(data)
+    const priceSets = await pricingModule.createPriceSets(data, context)
 
     return new StepResponse(
       priceSets,
       priceSets.map((priceSet) => priceSet.id)
     )
   },
-  async (priceSets, { container }) => {
+  async (priceSets, { container, context }) => {
     if (!priceSets?.length) {
       return
     }
@@ -47,6 +47,6 @@ export const createPriceSetsStep = createStep(
       Modules.PRICING
     )
 
-    await pricingModule.deletePriceSets(priceSets)
+    await pricingModule.deletePriceSets(priceSets, context)
   }
 )

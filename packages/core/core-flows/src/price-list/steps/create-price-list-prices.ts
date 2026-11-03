@@ -31,7 +31,10 @@ export const createPriceListPricesStepId = "create-price-list-prices"
  */
 export const createPriceListPricesStep = createStep(
   createPriceListPricesStepId,
-  async (stepInput: CreatePriceListPricesWorkflowStepDTO, { container }) => {
+  async (
+    stepInput: CreatePriceListPricesWorkflowStepDTO,
+    { container, context }
+  ) => {
     const { data, variant_price_map: variantPriceSetMap } = stepInput
     const priceListPricesToCreate: AddPriceListPricesDTO[] = []
     const pricingModule = container.resolve<IPricingModuleService>(
@@ -64,7 +67,8 @@ export const createPriceListPricesStep = createStep(
     }
 
     const createdPrices = await pricingModule.addPriceListPrices(
-      priceListPricesToCreate
+      priceListPricesToCreate,
+      context
     )
 
     return new StepResponse(
@@ -72,7 +76,7 @@ export const createPriceListPricesStep = createStep(
       createdPrices.map((p) => p.id)
     )
   },
-  async (createdIds, { container }) => {
+  async (createdIds, { container, context }) => {
     if (!createdIds?.length) {
       return
     }
@@ -82,7 +86,7 @@ export const createPriceListPricesStep = createStep(
     )
 
     if (createdIds.length) {
-      await pricingModule.removePrices(createdIds)
+      await pricingModule.removePrices(createdIds, context)
     }
   }
 )

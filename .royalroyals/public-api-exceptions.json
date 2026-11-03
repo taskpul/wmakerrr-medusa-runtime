@@ -170,10 +170,52 @@
       "upstreamSha256": "0e5eb0d9ed53b2cdeee0c174d6ba1a88f3c7c6c2f7ac5c5bc9787193e5e79932",
       "currentSha256": "af1d2b8cfc7838eed74c5dd06f9ed4e3582cc5501e4e079f73a37d854aa1698f",
       "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/core-flows/src/cart/steps/get-variant-price-sets.ts",
+      "upstreamSha256": "faf1f248038c1be9aea7862fc7bcd0132f544841c2091f672187e93ae7091f1e",
+      "currentSha256": "25ba18c1b3a43057d0ddc7bf79176c2d71e28c48566662e889a168e3fcd739b7",
+      "reason": "Controlled-distribution propagation of verified Store context into Pricing calculation."
+    },
+    {
+      "path": "packages/core/core-flows/src/fulfillment/steps/add-shipping-options-prices.ts",
+      "upstreamSha256": "6e1b57b07c58631c547f0cc56dc5aef48e836c4183dd33ab0640b4024f053063",
+      "currentSha256": "beb1a8eecf9d167b53e42dc05f145bc4065137524eab8fe4397a45415d00ec0a",
+      "reason": "Controlled-distribution propagation of verified Store context into shipping price creation."
+    },
+    {
+      "path": "packages/core/core-flows/src/fulfillment/steps/set-shipping-options-prices.ts",
+      "upstreamSha256": "403e94a1d660d626ca5eb444f52ed8293cf2e11b379de674f112795c814fd1e9",
+      "currentSha256": "099011508f88cf2f9b519e950eb1522c2f31af0745f49019b4482cd4b6ac0010",
+      "reason": "Controlled-distribution propagation of verified Store context into shipping price updates and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/price-list/steps/create-price-list-prices.ts",
+      "upstreamSha256": "9cc407aebfd207d484333aea88f863512bcc81d3494dc795ebe0467155b22d8d",
+      "currentSha256": "d6ecb2d31fbb55c551175d92a4e59ee2139c3b5901724ef5a5bfe44d454b1b8b",
+      "reason": "Controlled-distribution propagation of verified Store context into price-list price creation and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/price-list/steps/create-price-lists.ts",
+      "upstreamSha256": "8b9ccb24dbac592e15cacfd1e92d2463ee587a075bd7c4cab1bc4becfbb26433",
+      "currentSha256": "c32665f588bd964c74af8c7dc556a1bc02e537cc5d82728fc65057440587e0fb",
+      "reason": "Controlled-distribution propagation of verified Store context into price-list creation and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/pricing/steps/create-price-sets.ts",
+      "upstreamSha256": "f33c65c7e96992241659f66fae5f3d535901169978f9877762397847588d0739",
+      "currentSha256": "3e5a433e095effea4c904864f13542859fab0528c32669bd3c503e53c50393da",
+      "reason": "Controlled-distribution propagation of verified Store context into price-set creation and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/pricing/steps/update-price-sets.ts",
+      "upstreamSha256": "5c279c9e8e2a466fe9588c11f8d44bdf7dd0890c221df2532eb03dc7e1505ad7",
+      "currentSha256": "b0b2ec624da586318b82ec21a3bf21c8aeab8351067d99494ad77590dc5c855e",
+      "reason": "Controlled-distribution propagation of verified Store context into price-set reads, updates, and compensation."
     }
   ],
   "evidence": {
     "publicFileCount": 1321,
-    "verifierSha256": "8c734179927d26e04f50d30b65c87e193370f4ed6810fdcb85ce6b98f59b7cd1"
+    "verifierSha256": "bb33f58bda3963a772370deb34a179c0fcf403b281fb2e0bc19a55927ada104b"
   }
 }

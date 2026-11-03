@@ -55,8 +55,8 @@ remaining isolation gates are still required before release.
 The compatibility verifier compares every public manifest field and recursively
 follows local re-exports from all 79 public package entry points. It checks 1,321
 public source files against the exact upstream commit and accepts only the 28
-license-driven changes whose before/after hashes are pinned in
-`public-api-exceptions.json`.
+license-driven changes and reviewed controlled-distribution extensions whose
+before/after hashes and reasons are pinned in `public-api-exceptions.json`.
 
 The exact upstream commit must exist in the local Git object database. It can be
 fetched without checking out Enterprise source into this repository:
@@ -71,6 +71,27 @@ remains pending until the same command, immutable install, and complete build
 run through a trusted protected review/CI path and produce immutable evidence.
 
 ## Admission state
+
+### Pricing Store-ownership slice
+
+The first controlled-distribution slice adds a non-null `store_id` to every
+Pricing table, Store-aware unique indexes, a reversible generated migration,
+and dedicated/shared placement options. The existing high-level price-set,
+price-list, price-preference, and calculation paths stamp and filter the active
+Store. Shared mode rejects missing Store context and price-list relationships
+to another Store's price set before mutation.
+
+Protected CI runs the focused Pricing Store-ownership integration suite against
+PostgreSQL before it can produce the immutable candidate evidence artifact.
+That suite proves fail-closed context, filtering before pagination, foreign
+calculation denial, and cross-Store relationship denial.
+
+This slice does not complete an admission gate. The current DML relationship
+contract cannot generate Store-aware composite foreign keys or PostgreSQL RLS
+policies, and generated CRUD methods, workflow/background context provenance,
+cross-module links, upgrade rehearsal, and repair evidence still require
+certification. The candidate therefore remains unsigned, unpublished,
+unconsumed, and forbidden for shared production.
 
 `candidate-manifest.json` deliberately contains pending gates and no artifact
 or package digest. The source now compiles as a license-safe baseline, but a
@@ -89,6 +110,7 @@ directory and rejects every other workflow.
 The repository is public so GitHub can protect `main` and require the controlled
 distribution check without a paid account. The workflow has read-only contents
 permission, uses only SHA-pinned GitHub-owned actions, consumes no secrets, and
-cannot publish, sign, release, or activate packages. It runs the immutable
-install, complete build, and three provenance/compatibility verifiers before
-uploading a content-addressed evidence record.
+cannot publish, sign, release, or activate packages. It runs the focused
+PostgreSQL Store-ownership suite, immutable install, complete build, and three
+provenance/compatibility verifiers before uploading a content-addressed evidence
+record.

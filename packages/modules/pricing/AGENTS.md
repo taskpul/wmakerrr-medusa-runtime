@@ -4,7 +4,10 @@ Pricing Module (`Modules.PRICING`): price sets with rule-based and quantity-base
 
 ## Using this package
 
-- Registered by default; consumers import it as `@medusajs/medusa/pricing`. No module options.
+- Registered by default; consumers import it as `@medusajs/medusa/pricing`.
+  The controlled distribution accepts `store_isolation` options. Dedicated
+  mode is backward compatible; shared mode requires server-verified
+  `Context.storeId` and fails closed when it is absent.
 - Resolve: `container.resolve(Modules.PRICING)` (`IPricingModuleService`). Prefer core-flows workflows (price lists, product variants, shipping options) for writes so links stay in sync.
 
 ```ts
@@ -17,7 +20,14 @@ const [price] = await pricingModuleService.calculatePrices(
 
 - Through Query, request the virtual `calculated_price` relation with a `context` filter; `listPriceSets` strips it from `relations` and fills it via `calculatePrices`.
 
-**Data models** (`src/models`): `PriceSet` (`pset_`) -> `Price` (`price_`: `currency_code`, `amount`, `min_quantity`, `max_quantity`, `rules_count`, optional `price_list`) -> `PriceRule` (`attribute`, `value`, `operator` eq/gt/gte/lt/lte, `priority`). `PriceList` (`plist_`: `status` draft/active, `type` sale/override, `starts_at`, `ends_at`, `rules_count`) -> `PriceListRule` (`attribute`, JSON `value`). `PricePreference` (`attribute` `region_id` or `currency_code`, `value`, `is_tax_inclusive`).
+**Data models** (`src/models`): every Pricing record has a `store_id` owner.
+`PriceSet` (`pset_`) -> `Price` (`price_`: `currency_code`, `amount`,
+`min_quantity`, `max_quantity`, `rules_count`, optional `price_list`) ->
+`PriceRule` (`attribute`, `value`, `operator` eq/gt/gte/lt/lte, `priority`).
+`PriceList` (`plist_`: `status` draft/active, `type` sale/override,
+`starts_at`, `ends_at`, `rules_count`) -> `PriceListRule` (`attribute`, JSON
+`value`). `PricePreference` (`attribute` `region_id` or `currency_code`,
+`value`, `is_tax_inclusive`).
 
 **Custom service methods** (`src/services/pricing-module.ts`): `calculatePrices`, `addPrices`, `removePrices`, `createPriceLists`, `updatePriceLists`, `addPriceListPrices`, `updatePriceListPrices`, `setPriceListRules`, `removePriceListRules`, `create/upsert/updatePricePreferences`; `create/update/upsertPriceSets` and `listPriceSets` / `retrievePriceSet` are overridden. Price rules are passed as an object: `prices: [{ amount, currency_code, rules: { region_id: "reg_123" } }]`.
 
@@ -52,4 +62,9 @@ yarn migration:create          # after any change in src/models
 - A price with rules only matches when every rule matches the context; extra context keys are ignored. With more than 10 context keys, keys not used by any `price_rule` / `price_list_rule` attribute are dropped using an in-process cache that is only cleared by `create/updatePriceRules` and `create/updatePriceListRules` on this instance.
 - Price sets without a matching price are omitted from the `calculatePrices` result (not returned as null).
 - `updatePriceSets` with `prices` replaces the set's prices: existing prices whose IDs are not in the payload are deleted.
+- Never accept `Context.storeId` from an unverified request body or header. It
+  must come from the platform's authenticated Store-resolution boundary.
+- Shared placement is not admitted merely because Pricing Store ownership
+  tests pass. Database policies, every generated CRUD path, workflows,
+  background work, upgrades, and cross-module links remain separate gates.
 - A price list only applies when `status: "active"`, not soft-deleted, and `now()` (database time) is within `starts_at` / `ends_at`; lists default to `draft`.

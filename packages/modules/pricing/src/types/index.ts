@@ -5,3 +5,4 @@ export type InitializeModuleInjectableDependencies = {
 }
 
 export * as ServiceTypes from "./services"
+export * from "./store-ownership"

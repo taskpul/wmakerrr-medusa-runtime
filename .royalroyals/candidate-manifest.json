@@ -24,13 +24,14 @@
       "packageCount": 79,
       "publicSourceFileCount": 1321,
       "approvedLicenseExceptions": 28,
+      "approvedControlledDistributionExtensions": 7,
       "verifier": {
         "path": ".royalroyals/verify-public-api.mjs",
-        "sha256": "8c734179927d26e04f50d30b65c87e193370f4ed6810fdcb85ce6b98f59b7cd1"
+        "sha256": "bb33f58bda3963a772370deb34a179c0fcf403b281fb2e0bc19a55927ada104b"
       },
       "exceptionLedger": {
         "path": ".royalroyals/public-api-exceptions.json",
-        "sha256": "026abbacab8efbe8b0ea0befd5a2306d19355c14644a6f855b6ea089cba1d456"
+        "sha256": "d2f6d1e556541d93ab214fff0372a845fb824e8c82e7dbef935379286381acdc"
       }
     },
     "commands": [
@@ -38,7 +39,8 @@
       "yarn build",
       "node .royalroyals/verify-bootstrap.mjs",
       "node .royalroyals/verify-baseline.mjs",
-      "node .royalroyals/verify-public-api.mjs"
+      "node .royalroyals/verify-public-api.mjs",
+      "yarn workspace @medusajs/pricing test:integration --runTestsByPath integration-tests/__tests__/services/pricing-module/store-ownership.spec.ts --runInBand"
     ],
     "admissionNote": "Local reproducibility evidence only. Protected CI and review evidence are still required before any admission gate can pass."
   },

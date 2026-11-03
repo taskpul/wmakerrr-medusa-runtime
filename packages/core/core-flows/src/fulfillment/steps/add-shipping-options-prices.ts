@@ -14,7 +14,7 @@ import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
 export interface ShippingOptionsPriceCurrencyCode {
   /**
    * The currency code of the price.
-   * 
+   *
    * @example
    * usd
    */
@@ -125,17 +125,20 @@ export const createShippingOptionsPriceSetsStepId =
   "add-shipping-options-prices-step"
 /**
  * This step creates price sets for one or more shipping options.
- * 
+ *
  * :::note
- * 
- * Learn more about adding rules to the shipping option's prices in the Pricing Module's 
+ *
+ * Learn more about adding rules to the shipping option's prices in the Pricing Module's
  * [Price Rules](https://docs.medusajs.com/resources/commerce-modules/pricing/price-rules) documentation.
- * 
+ *
  * :::
  */
 export const createShippingOptionsPriceSetsStep = createStep(
   createShippingOptionsPriceSetsStepId,
-  async (data: CreateShippingOptionsPriceSetsStepInput, { container }) => {
+  async (
+    data: CreateShippingOptionsPriceSetsStepInput,
+    { container, context }
+  ) => {
     if (!data?.length) {
       return new StepResponse([], [])
     }
@@ -176,7 +179,10 @@ export const createShippingOptionsPriceSetsStep = createStep(
       Modules.PRICING
     )
 
-    const priceSets = await pricingService.createPriceSets(priceSetsData)
+    const priceSets = await pricingService.createPriceSets(
+      priceSetsData,
+      context
+    )
 
     const shippingOptionPriceSetLinData = data.map((input, index) => {
       return {
@@ -190,7 +196,7 @@ export const createShippingOptionsPriceSetsStep = createStep(
       priceSets.map((priceSet) => priceSet.id)
     )
   },
-  async (priceSetIds, { container }) => {
+  async (priceSetIds, { container, context }) => {
     if (!priceSetIds?.length) {
       return
     }
@@ -199,6 +205,6 @@ export const createShippingOptionsPriceSetsStep = createStep(
       Modules.PRICING
     )
 
-    await pricingService.deletePriceSets(priceSetIds)
+    await pricingService.deletePriceSets(priceSetIds, context)
   }
 )

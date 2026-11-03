@@ -129,7 +129,7 @@ function buildPrices(
 export const setShippingOptionsPricesStepId = "set-shipping-options-prices-step"
 /**
  * This step sets the prices of one or more shipping options.
- * 
+ *
  * @example
  * const data = setShippingOptionsPricesStep([
  *   {
@@ -145,7 +145,7 @@ export const setShippingOptionsPricesStepId = "set-shipping-options-prices-step"
  */
 export const setShippingOptionsPricesStep = createStep(
   setShippingOptionsPricesStepId,
-  async (data: SetShippingOptionsPricesStepInput, { container }) => {
+  async (data: SetShippingOptionsPricesStepInput, { container, context }) => {
     if (!data.length) {
       return
     }
@@ -222,14 +222,18 @@ export const setShippingOptionsPricesStep = createStep(
         continue
       }
 
-      await pricingService.updatePriceSets(shippingOptionData.price_set_id, {
-        prices: shippingOptionData.prices,
-      })
+      await pricingService.updatePriceSets(
+        shippingOptionData.price_set_id,
+        {
+          prices: shippingOptionData.prices,
+        },
+        context
+      )
     }
 
     return new StepResponse(void 0, currentShippingOptionPricesData)
   },
-  async (rollbackData, { container }) => {
+  async (rollbackData, { container, context }) => {
     if (!rollbackData?.length) {
       return
     }
@@ -243,7 +247,11 @@ export const setShippingOptionsPricesStep = createStep(
       if (!isDefined(prices)) {
         continue
       }
-      await pricingService.updatePriceSets(data_.price_set_id, { prices })
+      await pricingService.updatePriceSets(
+        data_.price_set_id,
+        { prices },
+        context
+      )
     }
   }
 )

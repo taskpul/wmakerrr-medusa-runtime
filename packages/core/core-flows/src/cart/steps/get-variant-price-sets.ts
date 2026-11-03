@@ -1,6 +1,7 @@
-import { MedusaContainer, Query } from "@medusajs/framework"
+import { Query } from "@medusajs/framework"
 import {
   CalculatedPriceSet,
+  Context,
   IPricingModuleService,
 } from "@medusajs/framework/types"
 import {
@@ -118,7 +119,7 @@ function validateVariantPriceSets(
 async function processVariantPriceSets(
   pricingService: IPricingModuleService,
   items: PriceCalculationItem[],
-  container: MedusaContainer
+  sharedContext: Context
 ): Promise<GetVariantPriceSetsStepOutput> {
   const result: GetVariantPriceSetsStepOutput = {}
 
@@ -131,7 +132,8 @@ async function processVariantPriceSets(
 
     const calculatedPriceSets = await pricingService.calculatePrices(
       { id: priceSetIds },
-      { context: context as Record<string, string | number> }
+      { context: context as Record<string, string | number> },
+      sharedContext
     )
 
     // Map calculated prices back to variants
@@ -253,7 +255,7 @@ export const getVariantPriceSetsStep = createStep(
   getVariantPriceSetsStepId,
   async (
     data: GetVariantPriceSetsStepInput | GetVariantPriceSetsStepBulkInput,
-    { container }
+    { container, context }
   ) => {
     const pricingModuleService = container.resolve<IPricingModuleService>(
       Modules.PRICING
@@ -312,7 +314,7 @@ export const getVariantPriceSetsStep = createStep(
     const result = await processVariantPriceSets(
       pricingModuleService,
       calculationItems,
-      container
+      context
     )
 
     return new StepResponse(result)

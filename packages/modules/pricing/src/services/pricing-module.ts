@@ -58,6 +58,7 @@ import { Collection } from "@medusajs/framework/mikro-orm/core"
 import { ServiceTypes } from "@types"
 import { validatePriceListDates } from "@utils"
 import { joinerConfig } from "../joiner-config"
+import { PricingStoreOwnership } from "../store-ownership"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -120,6 +121,7 @@ export default class PricingModuleService
   protected readonly pricePreferenceService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof PricePreference>
   >
+  protected readonly storeOwnership_: PricingStoreOwnership
 
   constructor(
     {
@@ -146,6 +148,7 @@ export default class PricingModuleService
     this.pricePreferenceService_ = pricePreferenceService
     this.priceListService_ = priceListService
     this.priceListRuleService_ = priceListRuleService
+    this.storeOwnership_ = new PricingStoreOwnership(moduleDeclaration)
   }
 
   __joinerConfig(): ModuleJoinerConfig {
@@ -227,17 +230,62 @@ export default class PricingModuleService
   }
 
   @InjectManager()
+  @EmitEvents()
+  // @ts-expect-error
+  async deletePriceSets(
+    primaryKeyValues: string | object | string[] | object[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    await this.storeOwnership_.deleteOwned(
+      this.priceSetService_,
+      primaryKeyValues,
+      "Price sets",
+      sharedContext
+    )
+  }
+
+  @InjectManager()
+  @EmitEvents()
+  // @ts-expect-error
+  async deletePriceLists(
+    primaryKeyValues: string | object | string[] | object[],
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<void> {
+    await this.storeOwnership_.deleteOwned(
+      this.priceListService_,
+      primaryKeyValues,
+      "Price lists",
+      sharedContext
+    )
+  }
+
+  @InjectManager()
   // @ts-expect-error
   async retrievePriceSet(
     id: string,
     config?: FindConfig<PriceSetDTO> | undefined,
     sharedContext?: Context | undefined
   ): Promise<PriceSetDTO> {
-    const priceSet = await this.priceSetService_.retrieve(
-      id,
+    if (!id) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "priceSet - id must be defined"
+      )
+    }
+
+    const [priceSet] = await this.storeOwnership_.listOwned(
+      this.priceSetService_,
+      { id },
       this.normalizePriceSetConfig(config),
-      sharedContext
+      sharedContext ?? {}
     )
+
+    if (!priceSet) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_FOUND,
+        `PriceSet with id: ${id} was not found`
+      )
+    }
 
     return await this.baseRepository_.serialize<PriceSetDTO>(priceSet)
   }
@@ -256,7 +304,7 @@ export default class PricingModuleService
     )
 
     const priceSets = await super.listPriceSets(
-      filters,
+      this.storeOwnership_.scope(filters, sharedContext),
       normalizedConfig,
       sharedContext
     )
@@ -297,7 +345,7 @@ export default class PricingModuleService
     )
 
     const [priceSets, count] = await super.listAndCountPriceSets(
-      filters,
+      this.storeOwnership_.scope(filters, sharedContext),
       normalizedConfig,
       sharedContext
     )
@@ -350,9 +398,14 @@ export default class PricingModuleService
   protected async listPriceRules_(
     filters: PricingTypes.FilterablePriceRuleProps,
     config: FindConfig<PricingTypes.PriceRuleDTO> = {},
-    sharedContext?: Context
+    sharedContext: Context = {}
   ): Promise<InferEntityType<typeof PriceRule>[]> {
-    return await this.priceRuleService_.list(filters, config, sharedContext)
+    return await this.storeOwnership_.listOwned(
+      this.priceRuleService_,
+      filters,
+      config,
+      sharedContext
+    )
   }
 
   @InjectManager()
@@ -376,9 +429,10 @@ export default class PricingModuleService
   protected async listPricePreferences_(
     filters: PricingTypes.FilterablePricePreferenceProps,
     config: FindConfig<PricingTypes.PricePreferenceDTO> = {},
-    sharedContext?: Context
+    sharedContext: Context = {}
   ): Promise<InferEntityType<typeof PricePreference>[]> {
-    return await this.pricePreferenceService_.list(
+    return await this.storeOwnership_.listOwned(
+      this.pricePreferenceService_,
       filters,
       config,
       sharedContext
@@ -391,6 +445,13 @@ export default class PricingModuleService
     pricingContext: PricingContext = { context: {} },
     @MedusaContext() sharedContext: Context = {}
   ): Promise<PricingTypes.CalculatedPriceSet[]> {
+    await this.storeOwnership_.assertOwnedIds(
+      this.priceSetService_,
+      pricingFilters.id,
+      "Price sets",
+      sharedContext
+    )
+
     const results = await this.pricingRepository_.calculatePrices(
       pricingFilters,
       pricingContext,
@@ -689,11 +750,17 @@ export default class PricingModuleService
   ): Promise<PriceSetDTO | PriceSetDTO[]> {
     let normalizedInput: ServiceTypes.UpdatePriceSetInput[] = []
     if (isString(idOrSelector)) {
-      // Check if the ID exists, it will throw if not.
-      await this.priceSetService_.retrieve(idOrSelector, {}, sharedContext)
+      await this.storeOwnership_.assertOwnedIds(
+        this.priceSetService_,
+        [idOrSelector],
+        "PriceSet",
+        sharedContext,
+        true
+      )
       normalizedInput = [{ id: idOrSelector, ...data }]
     } else {
-      const priceSets = await this.priceSetService_.list(
+      const priceSets = await this.storeOwnership_.listOwned(
+        this.priceSetService_,
         idOrSelector,
         {},
         sharedContext
@@ -729,11 +796,9 @@ export default class PricingModuleService
     const normalizedData = await this.normalizeUpdateData(data)
 
     const priceSetIds = normalizedData.map(({ id }) => id)
-    const existingPrices = await this.priceService_.list(
-      {
-        price_set_id: priceSetIds,
-        price_list_id: null,
-      },
+    const existingPrices = await this.storeOwnership_.listOwned(
+      this.priceService_,
+      { price_set_id: priceSetIds, price_list_id: null },
       {
         relations: ["price_rules"],
         take: null,
@@ -746,6 +811,13 @@ export default class PricingModuleService
     )
 
     const prices = normalizedData.flatMap((priceSet) => priceSet.prices || [])
+
+    this.storeOwnership_.assertOnlyOwnedIds(
+      prices.flatMap((price) => (price.id ? [price.id] : [])),
+      existingPricesMap.keys(),
+      "Prices",
+      "the active price set"
+    )
 
     const pricesToCreate = prices.filter(
       (price) => !price.id || !existingPricesMap.has(price.id)
@@ -766,7 +838,7 @@ export default class PricingModuleService
       createdPrices = await this.priceService_.create(
         pricesToCreate.map((price) => {
           price.price_rules ??= []
-          return price
+          return this.storeOwnership_.stampPrice(price, sharedContext)
         }),
         sharedContext
       )
@@ -785,7 +857,15 @@ export default class PricingModuleService
             (rule) => !("id" in rule)
           )
           const priceRulesToUpdate = priceToUpdate.price_rules.filter(
-            (rule) => "id" in rule
+            (rule): rule is typeof rule & { id: string } =>
+              "id" in rule && typeof rule.id === "string"
+          )
+
+          this.storeOwnership_.assertOnlyOwnedIds(
+            priceRulesToUpdate.map((rule) => rule.id),
+            existingPriceRules.map((rule) => rule.id),
+            "Price rules",
+            "the active price"
           )
 
           const incomingPriceRuleIds = new Set(
@@ -806,7 +886,7 @@ export default class PricingModuleService
           if (priceRulesToCreate.length > 0) {
             createdPriceRules = await this.priceRuleService_.create(
               priceRulesToCreate.map((rule) => ({
-                ...rule,
+                ...this.storeOwnership_.stamp(rule, sharedContext),
                 price_id: priceToUpdate.id,
               })),
               sharedContext
@@ -868,7 +948,8 @@ export default class PricingModuleService
       await this.priceService_.delete(pricesToDelete, sharedContext)
     }
 
-    const priceSets = await this.priceSetService_.list(
+    const priceSets = await this.storeOwnership_.listOwned(
+      this.priceSetService_,
       { id: normalizedData.map(({ id }) => id) },
       {
         relations: ["prices", "prices.price_rules"],
@@ -1251,15 +1332,16 @@ export default class PricingModuleService
   ): Promise<PricePreferenceDTO | PricePreferenceDTO[]> {
     let normalizedInput: ServiceTypes.UpdatePricePreferenceInput[] = []
     if (isString(idOrSelector)) {
-      // Check if the ID exists, it will throw if not.
-      await this.pricePreferenceService_.retrieve(
-        idOrSelector,
-        {},
+      await this.storeOwnership_.assertOwnedIds(
+        this.pricePreferenceService_,
+        [idOrSelector],
+        "Price preferences",
         sharedContext
       )
       normalizedInput = [{ id: idOrSelector, ...data }]
     } else {
-      const pricePreferences = await this.pricePreferenceService_.list(
+      const pricePreferences = await this.storeOwnership_.listOwned(
+        this.pricePreferenceService_,
         idOrSelector,
         {},
         sharedContext
@@ -1290,7 +1372,7 @@ export default class PricingModuleService
   ) {
     const preferences = await this.pricePreferenceService_.create(
       data.map((d) => ({
-        ...d,
+        ...this.storeOwnership_.stamp(d, sharedContext),
         is_tax_inclusive: d.is_tax_inclusive ?? false,
       })),
       sharedContext
@@ -1320,9 +1402,12 @@ export default class PricingModuleService
     const input = Array.isArray(data) ? data : [data]
 
     const toCreate = input.map((inputData) => {
+      const normalizedPrices = this.normalizePrices(inputData.prices, []).map(
+        (price) => this.storeOwnership_.stampPrice(price, sharedContext)
+      )
       const entry = {
-        ...inputData,
-        prices: this.normalizePrices(inputData.prices, []),
+        ...this.storeOwnership_.stamp(inputData, sharedContext),
+        prices: normalizedPrices,
       }
       return entry
     })
@@ -1357,7 +1442,8 @@ export default class PricingModuleService
         {},
         sharedContext
       ),
-      this.priceService_.list(
+      this.storeOwnership_.listOwned(
+        this.priceService_,
         priceConstraints,
         { relations: ["price_rules"] },
         sharedContext
@@ -1372,10 +1458,14 @@ export default class PricingModuleService
       )
       .filter(Boolean) as ServiceTypes.UpsertPriceDTO[]
 
+    const ownedPricesToUpsert = pricesToUpsert.map((price) =>
+      this.storeOwnership_.stampPrice(price, sharedContext)
+    )
+
     const priceSetMap = new Map<string, PriceSetDTO>(
       priceSets.map((p) => [p.id, p])
     )
-    pricesToUpsert.forEach((price) => {
+    ownedPricesToUpsert.forEach((price) => {
       const priceSet = priceSetMap.get(price.price_set_id)
 
       if (!priceSet) {
@@ -1387,7 +1477,7 @@ export default class PricingModuleService
     })
 
     const { entities } = await this.priceService_.upsertWithReplace(
-      pricesToUpsert,
+      ownedPricesToUpsert,
       { relations: ["price_rules"] },
       sharedContext
     )
@@ -1401,19 +1491,26 @@ export default class PricingModuleService
     @MedusaContext() sharedContext: Context = {}
   ) {
     const normalized = this.normalizePriceListDate(data)
+    await this.storeOwnership_.assertOwnedIds(
+      this.priceSetService_,
+      normalized.flatMap((priceList) =>
+        (priceList.prices ?? []).map((price) => price.price_set_id)
+      ),
+      "Price sets",
+      sharedContext
+    )
 
     const priceListsToCreate: ServiceTypes.CreatePriceListDTO[] =
       normalized.map((priceListData) => {
         const entry = {
-          ...priceListData,
+          ...this.storeOwnership_.stamp(priceListData, sharedContext),
           rules: undefined,
         } as ServiceTypes.CreatePriceListDTO
 
         if (priceListData.prices) {
-          entry.prices = this.normalizePrices(
-            priceListData.prices,
-            []
-          ) as ServiceTypes.UpsertPriceDTO[]
+          entry.prices = this.normalizePrices(priceListData.prices, []).map(
+            (price) => this.storeOwnership_.stampPrice(price, sharedContext)
+          ) as unknown as ServiceTypes.UpsertPriceDTO[]
         }
 
         if (priceListData.rules) {
@@ -1425,10 +1522,13 @@ export default class PricingModuleService
 
           const rulesDataMap = new Map()
           rules.map(([attribute, value]) => {
-            const rule = {
-              attribute,
-              value,
-            }
+            const rule = this.storeOwnership_.stamp(
+              {
+                attribute,
+                value,
+              },
+              sharedContext
+            )
             rulesDataMap.set(JSON.stringify(rule), rule)
           })
 
@@ -1452,7 +1552,8 @@ export default class PricingModuleService
     data: PricingTypes.UpdatePriceListDTO[],
     @MedusaContext() sharedContext: Context = {}
   ) {
-    const existingPriceLists = await this.priceListService_.list(
+    const existingPriceLists = await this.storeOwnership_.listOwned(
+      this.priceListService_,
       { id: data.map((d) => d.id) },
       {},
       sharedContext
@@ -1496,10 +1597,13 @@ export default class PricingModuleService
 
           const rulesDataMap = new Map()
           rules.map(([attribute, value]) => {
-            const rule = {
-              attribute,
-              value,
-            }
+            const rule = this.storeOwnership_.stamp(
+              {
+                attribute,
+                value,
+              },
+              sharedContext
+            )
             rulesDataMap.set(JSON.stringify(rule), rule)
           })
 
@@ -1535,8 +1639,14 @@ export default class PricingModuleService
     )
 
     const [priceLists, priceListPrices] = await promiseAll([
-      this.priceListService_.list({ id: priceListIds }, {}, sharedContext),
-      this.priceService_.list(
+      this.storeOwnership_.listOwned(
+        this.priceListService_,
+        { id: priceListIds },
+        {},
+        sharedContext
+      ),
+      this.storeOwnership_.listOwned(
+        this.priceService_,
         priceConstraints,
         { relations: ["price_rules"] },
         sharedContext
@@ -1555,6 +1665,17 @@ export default class PricingModuleService
       )
       .filter(Boolean) as ServiceTypes.UpsertPriceDTO[]
 
+    await this.storeOwnership_.assertOwnedIds(
+      this.priceSetService_,
+      pricesToUpsert.map((price) => price.price_set_id),
+      "Price sets",
+      sharedContext
+    )
+
+    const ownedPricesToUpsert = pricesToUpsert.map((price) =>
+      this.storeOwnership_.stampPrice(price, sharedContext)
+    )
+
     const priceListMap = new Map(priceLists.map((p) => [p.id, p]))
     for (const { price_list_id: priceListId } of data) {
       const priceList = priceListMap.get(priceListId)
@@ -1568,7 +1689,7 @@ export default class PricingModuleService
     }
 
     const { entities } = await this.priceService_.upsertWithReplace(
-      pricesToUpsert,
+      ownedPricesToUpsert,
       { relations: ["price_rules"] },
       sharedContext
     )
@@ -1581,6 +1702,12 @@ export default class PricingModuleService
     ids: string[],
     sharedContext: Context = {}
   ): Promise<void> {
+    await this.storeOwnership_.assertOwnedIds(
+      this.priceService_,
+      ids,
+      "Prices",
+      sharedContext
+    )
     await this.priceService_.delete(ids, sharedContext)
   }
 
@@ -1597,8 +1724,14 @@ export default class PricingModuleService
       priceListIds
     )
     const [priceLists, priceListPrices] = await promiseAll([
-      this.priceListService_.list({ id: priceListIds }, {}, sharedContext),
-      this.priceService_.list(
+      this.storeOwnership_.listOwned(
+        this.priceListService_,
+        { id: priceListIds },
+        {},
+        sharedContext
+      ),
+      this.storeOwnership_.listOwned(
+        this.priceService_,
         priceConstraints,
         { relations: ["price_rules"] },
         sharedContext
@@ -1617,8 +1750,19 @@ export default class PricingModuleService
       )
       .filter(Boolean) as ServiceTypes.UpsertPriceDTO[]
 
+    await this.storeOwnership_.assertOwnedIds(
+      this.priceSetService_,
+      pricesToUpsert.map((price) => price.price_set_id),
+      "Price sets",
+      sharedContext
+    )
+
+    const ownedPricesToUpsert = pricesToUpsert.map((price) =>
+      this.storeOwnership_.stampPrice(price, sharedContext)
+    )
+
     const priceListMap = new Map(priceLists.map((p) => [p.id, p]))
-    pricesToUpsert.forEach((price) => {
+    ownedPricesToUpsert.forEach((price) => {
       const priceList = priceListMap.get(price.price_list_id!)
 
       if (!priceList) {
@@ -1630,7 +1774,7 @@ export default class PricingModuleService
     })
 
     const { entities } = await this.priceService_.upsertWithReplace(
-      pricesToUpsert,
+      ownedPricesToUpsert,
       { relations: ["price_rules"] },
       sharedContext
     )
@@ -1644,7 +1788,8 @@ export default class PricingModuleService
     sharedContext: Context = {}
   ): Promise<InferEntityType<typeof PriceList>[]> {
     // TODO: re think this method
-    const priceLists = await this.priceListService_.list(
+    const priceLists = await this.storeOwnership_.listOwned(
+      this.priceListService_,
       { id: data.map((d) => d.price_list_id) },
       {
         relations: ["price_list_rules"],
@@ -1685,10 +1830,9 @@ export default class PricingModuleService
         return {
           ...priceList,
           rules_count: allRules.size,
-          price_list_rules: Array.from(allRules).map(([attribute, value]) => ({
-            attribute,
-            value,
-          })),
+          price_list_rules: Array.from(allRules).map(([attribute, value]) =>
+            this.storeOwnership_.stamp({ attribute, value }, sharedContext)
+          ),
         }
       })
       .filter(Boolean)
@@ -1708,7 +1852,8 @@ export default class PricingModuleService
     sharedContext: Context = {}
   ): Promise<InferEntityType<typeof PriceList>[]> {
     // TODO: re think this method
-    const priceLists = await this.priceListService_.list(
+    const priceLists = await this.storeOwnership_.listOwned(
+      this.priceListService_,
       { id: data.map((d) => d.price_list_id) },
       {
         relations: ["price_list_rules"],

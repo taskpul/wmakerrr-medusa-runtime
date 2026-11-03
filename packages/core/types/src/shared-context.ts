@@ -69,6 +69,12 @@ export type Context<TManager = unknown> = {
   requestId?: string
 
   /**
+   * The platform Store that owns the current operation. Store-aware modules
+   * require this value when they run in a shared runtime.
+   */
+  storeId?: string
+
+  /**
    * A string indicating the idempotencyKey of the current workflow execution.
    */
   idempotencyKey?: string

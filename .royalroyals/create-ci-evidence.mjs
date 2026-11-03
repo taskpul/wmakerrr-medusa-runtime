@@ -34,6 +34,9 @@ const evidenceFiles = [
   ".royalroyals/verify-baseline.mjs",
   ".royalroyals/verify-bootstrap.mjs",
   ".royalroyals/verify-public-api.mjs",
+  "packages/modules/pricing/integration-tests/__tests__/services/pricing-module/store-ownership.spec.ts",
+  "packages/modules/pricing/src/migrations/Migration20261103120215.ts",
+  "packages/modules/pricing/src/store-ownership.ts",
   "yarn.lock",
 ]
 
@@ -66,6 +69,7 @@ const evidence = {
     "node .royalroyals/verify-bootstrap.mjs",
     "node .royalroyals/verify-baseline.mjs",
     "node .royalroyals/verify-public-api.mjs",
+    "yarn workspace @medusajs/pricing test:integration --runTestsByPath integration-tests/__tests__/services/pricing-module/store-ownership.spec.ts --runInBand",
   ],
   result: "passed",
   fileDigests,

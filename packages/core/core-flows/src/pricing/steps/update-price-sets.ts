@@ -52,7 +52,7 @@ export const updatePriceSetsStepId = "update-price-sets"
  */
 export const updatePriceSetsStep = createStep(
   updatePriceSetsStepId,
-  async (data: UpdatePriceSetsStepInput, { container }) => {
+  async (data: UpdatePriceSetsStepInput, { container, context }) => {
     const pricingModule = container.resolve<IPricingModuleService>(
       Modules.PRICING
     )
@@ -65,11 +65,18 @@ export const updatePriceSetsStep = createStep(
         )
       }
 
-      const prevData = await pricingModule.listPriceSets({
-        id: data.price_sets.map((p) => p.id) as string[],
-      })
+      const prevData = await pricingModule.listPriceSets(
+        {
+          id: data.price_sets.map((p) => p.id) as string[],
+        },
+        {},
+        context
+      )
 
-      const priceSets = await pricingModule.upsertPriceSets(data.price_sets)
+      const priceSets = await pricingModule.upsertPriceSets(
+        data.price_sets,
+        context
+      )
       return new StepResponse(priceSets, prevData)
     }
 
@@ -82,19 +89,24 @@ export const updatePriceSetsStep = createStep(
       { objectFields: ["rules"] }
     )
 
-    const dataBeforeUpdate = await pricingModule.listPriceSets(data.selector, {
-      select: selects,
-      relations,
-    })
+    const dataBeforeUpdate = await pricingModule.listPriceSets(
+      data.selector,
+      {
+        select: selects,
+        relations,
+      },
+      context
+    )
 
     const updatedPriceSets = await pricingModule.updatePriceSets(
       data.selector,
-      data.update
+      data.update,
+      context
     )
 
     return new StepResponse(updatedPriceSets, dataBeforeUpdate)
   },
-  async (revertInput, { container }) => {
+  async (revertInput, { container, context }) => {
     const pricingModule = container.resolve<IPricingModuleService>(
       Modules.PRICING
     )
@@ -104,7 +116,8 @@ export const updatePriceSetsStep = createStep(
     }
 
     await pricingModule.upsertPriceSets(
-      revertInput as PricingTypes.UpsertPriceSetDTO[]
+      revertInput as PricingTypes.UpsertPriceSetDTO[],
+      context
     )
   }
 )

@@ -252,6 +252,9 @@ if (approvedChanges.packageCount !== packageGraph.packageCount) {
 const exceptionByPath = new Map(
   approvedChanges.changes.map((change) => [change.path, change])
 )
+const hasApprovedReason = (change) =>
+  change?.reason.startsWith("License-driven ") ||
+  change?.reason.startsWith("Controlled-distribution ")
 const observedExceptions = new Set()
 const currentPublicFiles = new Set()
 
@@ -332,7 +335,7 @@ for (const packageEntry of packageGraph.packages) {
       if (
         exception?.upstreamSha256 === upstreamDigest &&
         exception.currentSha256 === null &&
-        exception.reason.trim()
+        hasApprovedReason(exception)
       ) {
         observedExceptions.add(path)
       } else {
@@ -374,7 +377,7 @@ for (const packageEntry of packageGraph.packages) {
     if (
       exception.upstreamSha256 !== upstreamDigest ||
       exception.currentSha256 !== currentDigest ||
-      !exception.reason.trim()
+      !hasApprovedReason(exception)
     ) {
       errors.push(`public API exception digest or reason is invalid: ${path}`)
       continue
@@ -401,12 +404,19 @@ if (evidence?.publicFileCount !== currentPublicFiles.size) {
 
 const candidateEvidence =
   candidateManifest.baselineEvidence?.publicApiCompatibility
+const observedLicenseExceptions = [...observedExceptions].filter((path) =>
+  exceptionByPath.get(path).reason.startsWith("License-driven ")
+).length
+const observedControlledDistributionExtensions =
+  observedExceptions.size - observedLicenseExceptions
 if (
   candidateEvidence?.status !== "local-verified" ||
   candidateEvidence.upstreamRevision !== upstreamLock.commit ||
   candidateEvidence.packageCount !== packageGraph.packageCount ||
   candidateEvidence.publicSourceFileCount !== currentPublicFiles.size ||
-  candidateEvidence.approvedLicenseExceptions !== observedExceptions.size
+  candidateEvidence.approvedLicenseExceptions !== observedLicenseExceptions ||
+  candidateEvidence.approvedControlledDistributionExtensions !==
+    observedControlledDistributionExtensions
 ) {
   errors.push("candidate public API compatibility summary is stale")
 }
@@ -454,5 +464,5 @@ if (errors.length) {
 }
 
 console.log(
-  `Verified ${packageGraph.packageCount} public package manifests and ${currentPublicFiles.size} transitive public source files against Medusa ${upstreamLock.version}; ${observedExceptions.size} license exclusions approved.`
+  `Verified ${packageGraph.packageCount} public package manifests and ${currentPublicFiles.size} transitive public source files against Medusa ${upstreamLock.version}; ${observedLicenseExceptions} license exclusions and ${observedControlledDistributionExtensions} controlled-distribution extensions approved.`
 )

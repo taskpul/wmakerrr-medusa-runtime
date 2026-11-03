@@ -38,13 +38,13 @@ Pricing Module for Medusa: manages price sets, prices, price rules, price lists,
 
 ## At a glance
 
-| | |
-| --- | --- |
-| Package | `@medusajs/pricing` |
-| Type | Commerce Module |
-| Module key | `Modules.PRICING` (`"pricing"`) |
-| Registered by default | Yes |
-| Import from | `@medusajs/medusa/pricing` |
+|                       |                                 |
+| --------------------- | ------------------------------- |
+| Package               | `@medusajs/pricing`             |
+| Type                  | Commerce Module                 |
+| Module key            | `Modules.PRICING` (`"pricing"`) |
+| Registered by default | Yes                             |
+| Import from           | `@medusajs/medusa/pricing`      |
 
 ## Features
 
@@ -52,6 +52,8 @@ Pricing Module for Medusa: manages price sets, prices, price rules, price lists,
 - Create price lists for sales and price overrides.
 - Calculate the best price for a context, such as currency, region, or customer group.
 - Configure tax-inclusive pricing with price preferences.
+- Persist an explicit platform Store owner on Pricing records in the
+  controlled distribution.
 
 ## Installation
 
@@ -83,6 +85,44 @@ const createPriceSetStep = createStep(
   }
 )
 ```
+
+## Store ownership
+
+The controlled distribution supports two Pricing placement modes. Dedicated
+mode is the backward-compatible default and uses one configured Store namespace
+for the deployment:
+
+```ts
+modules: [
+  {
+    resolve: "@medusajs/medusa/pricing",
+    options: {
+      store_isolation: {
+        mode: "dedicated",
+        store_id: "store_123",
+      },
+    },
+  },
+]
+```
+
+Shared mode requires the platform Store identity in `Context.storeId` and
+fails closed when it is missing. The Store identity is server-owned context;
+never accept it directly from an unverified client payload.
+
+```ts
+await pricingModuleService.listPriceSets(
+  {},
+  {},
+  {
+    storeId: "store_123",
+  }
+)
+```
+
+This is an admission-gated controlled-distribution capability. Do not activate
+shared placement until the distribution's database-policy, workflow,
+background-task, upgrade, and attack-matrix gates have also passed.
 
 ## Resources
 

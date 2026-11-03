@@ -59,9 +59,10 @@ jobs:
         run: node .yarn/releases/yarn-3.2.1.cjs install --immutable
 
       - name: Build Store ownership packages
-        run: |
-          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/types build
-          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/pricing build
+        run: >-
+          node .yarn/releases/yarn-3.2.1.cjs turbo run build
+          --filter=@medusajs/pricing...
+          --no-daemon
 
       - name: Prove Pricing Store ownership
         run: >-

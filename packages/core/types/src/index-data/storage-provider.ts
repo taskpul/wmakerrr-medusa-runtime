@@ -1,5 +1,6 @@
 import { IndexQueryConfig, QueryResultSet } from "./query-config"
 import { Subscriber } from "../event-bus"
+import { Context } from "../shared-context"
 import { SchemaObjectEntityRepresentation } from "./common"
 
 /**
@@ -18,7 +19,8 @@ export interface StorageProvider {
   onApplicationStart?(): Promise<void>
 
   query<const TEntry extends string>(
-    config: IndexQueryConfig<TEntry>
+    config: IndexQueryConfig<TEntry>,
+    sharedContext?: Context
   ): Promise<QueryResultSet<TEntry>>
 
   consumeEvent(

@@ -11,8 +11,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "company": {
@@ -22,6 +45,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "first_name": {
@@ -31,6 +61,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "last_name": {
@@ -40,6 +77,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "address_1": {
@@ -49,6 +93,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "address_2": {
@@ -58,6 +109,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "city": {
@@ -67,6 +125,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "country_code": {
@@ -76,6 +141,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "province": {
@@ -85,6 +157,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "postal_code": {
@@ -94,6 +173,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "phone": {
@@ -103,6 +189,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -112,6 +205,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -121,8 +221,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -132,8 +237,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -143,7 +253,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -158,6 +274,15 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_address_deleted_at\" ON \"fulfillment_address\" (\"deleted_at\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_fulfillment_address_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_fulfillment_address_store_id_id\" ON \"fulfillment_address\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "fulfillment_address_pkey",
@@ -181,8 +306,15 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
-          "primary": false,
+          "primary": true,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "is_enabled": {
@@ -192,7 +324,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "true",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "boolean"
         },
         "created_at": {
@@ -202,8 +340,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -213,8 +356,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -224,7 +372,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -262,8 +416,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "name": {
@@ -273,6 +450,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "type": {
@@ -282,6 +466,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -291,6 +482,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -300,8 +498,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -311,8 +514,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -322,7 +530,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -339,13 +553,22 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_set_deleted_at\" ON \"fulfillment_set\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_fulfillment_set_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_fulfillment_set_store_id_id\" ON \"fulfillment_set\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_fulfillment_set_name_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_fulfillment_set_name_unique\" ON \"fulfillment_set\" (\"name\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_fulfillment_set_name_unique\" ON \"fulfillment_set\" (\"store_id\", \"name\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "fulfillment_set_pkey",
@@ -369,8 +592,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "name": {
@@ -380,6 +626,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "fulfillment_set_id": {
@@ -389,6 +642,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -398,6 +658,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -407,8 +674,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -418,8 +690,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -429,7 +706,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -455,13 +738,22 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_service_zone_deleted_at\" ON \"service_zone\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_service_zone_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_service_zone_store_id_id\" ON \"service_zone\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_service_zone_name_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_service_zone_name_unique\" ON \"service_zone\" (\"name\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_service_zone_name_unique\" ON \"service_zone\" (\"store_id\", \"name\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "service_zone_pkey",
@@ -499,8 +791,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "type": {
@@ -510,7 +825,12 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "'country'",
+          "comment": null,
           "enumItems": [
             "country",
             "province",
@@ -526,6 +846,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "province_code": {
@@ -535,6 +862,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "city": {
@@ -544,6 +878,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "postal_expression": {
@@ -553,6 +894,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "service_zone_id": {
@@ -562,6 +910,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -571,6 +926,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -580,8 +942,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -591,8 +958,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -602,7 +974,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -628,31 +1006,40 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_geo_zone_deleted_at\" ON \"geo_zone\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_geo_zone_country_code",
+          "keyName": "IDX_geo_zone_store_id_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_geo_zone_country_code\" ON \"geo_zone\" (\"country_code\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_geo_zone_store_id_id\" ON \"geo_zone\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_geo_zone_province_code",
+          "keyName": "IDX_geo_zone_store_id_country_code",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_geo_zone_province_code\" ON \"geo_zone\" (\"province_code\") WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_geo_zone_store_id_country_code\" ON \"geo_zone\" (\"store_id\", \"country_code\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_geo_zone_city",
+          "keyName": "IDX_geo_zone_store_id_province_code",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_geo_zone_city\" ON \"geo_zone\" (\"city\") WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_geo_zone_store_id_province_code\" ON \"geo_zone\" (\"store_id\", \"province_code\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_geo_zone_store_id_city",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_geo_zone_store_id_city\" ON \"geo_zone\" (\"store_id\", \"city\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "geo_zone_pkey",
@@ -690,8 +1077,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "label": {
@@ -701,6 +1111,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "description": {
@@ -710,6 +1127,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "code": {
@@ -719,6 +1143,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -728,8 +1159,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -739,8 +1175,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -750,7 +1191,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -765,6 +1212,15 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_shipping_option_type_deleted_at\" ON \"shipping_option_type\" (\"deleted_at\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_shipping_option_type_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_shipping_option_type_store_id_id\" ON \"shipping_option_type\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "shipping_option_type_pkey",
@@ -788,8 +1244,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "name": {
@@ -799,6 +1278,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "type": {
@@ -808,6 +1294,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -817,6 +1310,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -826,8 +1326,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -837,8 +1342,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -848,7 +1358,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -865,13 +1381,22 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_shipping_profile_deleted_at\" ON \"shipping_profile\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_shipping_profile_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_shipping_profile_store_id_id\" ON \"shipping_profile\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_shipping_profile_name_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_shipping_profile_name_unique\" ON \"shipping_profile\" (\"name\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_shipping_profile_name_unique\" ON \"shipping_profile\" (\"store_id\", \"name\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "shipping_profile_pkey",
@@ -895,8 +1420,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "name": {
@@ -906,6 +1454,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "price_type": {
@@ -915,7 +1470,12 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "'flat'",
+          "comment": null,
           "enumItems": [
             "calculated",
             "flat"
@@ -929,6 +1489,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "metadata": {
@@ -938,6 +1505,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "service_zone_id": {
@@ -947,6 +1521,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "shipping_profile_id": {
@@ -956,6 +1537,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "provider_id": {
@@ -965,6 +1553,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "shipping_option_type_id": {
@@ -974,6 +1569,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -983,8 +1585,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -994,8 +1601,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1005,7 +1617,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -1056,6 +1674,33 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_shipping_option_deleted_at\" ON \"shipping_option\" (\"deleted_at\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_shipping_option_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_shipping_option_store_id_id\" ON \"shipping_option\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_shipping_option_store_service_zone",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_shipping_option_store_service_zone\" ON \"shipping_option\" (\"store_id\", \"service_zone_id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_shipping_option_store_shipping_profile",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_shipping_option_store_shipping_profile\" ON \"shipping_option\" (\"store_id\", \"shipping_profile_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "shipping_option_pkey",
@@ -1131,8 +1776,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "attribute": {
@@ -1142,6 +1810,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "operator": {
@@ -1151,6 +1826,12 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
           "enumItems": [
             "in",
             "eq",
@@ -1170,6 +1851,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "shipping_option_id": {
@@ -1179,6 +1867,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -1188,8 +1883,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -1199,8 +1899,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1210,7 +1915,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -1234,6 +1945,15 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_shipping_option_rule_deleted_at\" ON \"shipping_option_rule\" (\"deleted_at\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_shipping_option_rule_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_shipping_option_rule_store_id_id\" ON \"shipping_option_rule\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "shipping_option_rule_pkey",
@@ -1271,8 +1991,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "location_id": {
@@ -1282,6 +2025,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "packed_at": {
@@ -1291,7 +2041,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "shipped_at": {
@@ -1301,7 +2057,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "marked_shipped_by": {
@@ -1311,6 +2073,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_by": {
@@ -1320,6 +2089,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "delivered_at": {
@@ -1329,7 +2105,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "canceled_at": {
@@ -1339,7 +2121,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "data": {
@@ -1349,6 +2137,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "requires_shipping": {
@@ -1358,7 +2153,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "true",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "boolean"
         },
         "provider_id": {
@@ -1368,6 +2169,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "shipping_option_id": {
@@ -1377,6 +2185,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "delivery_address_id": {
@@ -1386,6 +2201,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -1395,6 +2217,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -1404,8 +2233,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -1415,8 +2249,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1426,7 +2265,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -1452,13 +2297,22 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_deleted_at\" ON \"fulfillment\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_fulfillment_location_id",
+          "keyName": "IDX_fulfillment_store_id_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_location_id\" ON \"fulfillment\" (\"location_id\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_fulfillment_store_id_id\" ON \"fulfillment\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_fulfillment_store_id_location_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_store_id_location_id\" ON \"fulfillment\" (\"store_id\", \"location_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "fulfillment_pkey",
@@ -1522,8 +2376,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "tracking_number": {
@@ -1533,6 +2410,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "tracking_url": {
@@ -1542,6 +2426,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "label_url": {
@@ -1551,6 +2442,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "fulfillment_id": {
@@ -1560,6 +2458,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -1569,8 +2474,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -1580,8 +2490,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1591,7 +2506,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -1615,6 +2536,15 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_label_deleted_at\" ON \"fulfillment_label\" (\"deleted_at\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_fulfillment_label_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_fulfillment_label_store_id_id\" ON \"fulfillment_label\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "fulfillment_label_pkey",
@@ -1652,8 +2582,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "title": {
@@ -1663,6 +2616,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "sku": {
@@ -1672,6 +2632,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "barcode": {
@@ -1681,6 +2648,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "quantity": {
@@ -1690,6 +2664,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "decimal"
         },
         "line_item_id": {
@@ -1699,6 +2680,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "inventory_item_id": {
@@ -1708,6 +2696,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "fulfillment_id": {
@@ -1717,6 +2712,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "raw_quantity": {
@@ -1726,6 +2728,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -1735,8 +2744,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -1746,8 +2760,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1757,7 +2776,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -1783,22 +2808,31 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_item_deleted_at\" ON \"fulfillment_item\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_fulfillment_item_inventory_item_id",
+          "keyName": "IDX_fulfillment_item_store_id_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_item_inventory_item_id\" ON \"fulfillment_item\" (\"inventory_item_id\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_fulfillment_item_store_id_id\" ON \"fulfillment_item\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
         },
         {
-          "keyName": "IDX_fulfillment_item_line_item_id",
+          "keyName": "IDX_fulfillment_item_store_id_inventory_item_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_item_line_item_id\" ON \"fulfillment_item\" (\"line_item_id\") WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_item_store_id_inventory_item_id\" ON \"fulfillment_item\" (\"store_id\", \"inventory_item_id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_fulfillment_item_store_id_line_item_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_fulfillment_item_store_id_line_item_id\" ON \"fulfillment_item\" (\"store_id\", \"line_item_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "fulfillment_item_pkey",

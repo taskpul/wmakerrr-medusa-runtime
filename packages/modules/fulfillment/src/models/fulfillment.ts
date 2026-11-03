@@ -1,4 +1,5 @@
 import { model } from "@medusajs/framework/utils"
+import { FULFILLMENT_DEDICATED_STORE_ID } from "../store-ownership"
 
 import { FulfillmentAddress } from "./address"
 import { FulfillmentItem } from "./fulfillment-item"
@@ -9,6 +10,7 @@ import { ShippingOption } from "./shipping-option"
 export const Fulfillment = model
   .define("fulfillment", {
     id: model.id({ prefix: "ful" }).primaryKey(),
+    store_id: model.text().default(FULFILLMENT_DEDICATED_STORE_ID),
     location_id: model.text(),
     packed_at: model.dateTime().nullable(),
     shipped_at: model.dateTime().nullable(),
@@ -45,7 +47,13 @@ export const Fulfillment = model
   })
   .indexes([
     {
-      on: ["location_id"],
+      name: "IDX_fulfillment_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+      where: "deleted_at IS NULL",
+    },
+    {
+      on: ["store_id", "location_id"],
       where: "deleted_at IS NULL",
     },
   ])

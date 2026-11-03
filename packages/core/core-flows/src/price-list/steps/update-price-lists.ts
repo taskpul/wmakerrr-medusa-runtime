@@ -1,4 +1,5 @@
 import {
+  Context,
   IPricingModuleService,
   UpdatePriceListDTO,
   UpdatePriceListWorkflowInputDTO,
@@ -30,7 +31,7 @@ export const updatePriceListsStepId = "update-price-lists"
  */
 export const updatePriceListsStep = createStep(
   updatePriceListsStepId,
-  async (data: UpdatePriceListsStepInput, { container }) => {
+  async (data: UpdatePriceListsStepInput, { container, context }) => {
     const pricingModule = container.resolve<IPricingModuleService>(
       Modules.PRICING
     )
@@ -41,10 +42,14 @@ export const updatePriceListsStep = createStep(
 
     const { dataBeforeUpdate, selects, relations } = await getDataBeforeUpdate(
       pricingModule,
-      data
+      data,
+      context
     )
 
-    const updatedPriceLists = await pricingModule.updatePriceLists(data)
+    const updatedPriceLists = await pricingModule.updatePriceLists(
+      data,
+      context
+    )
 
     return new StepResponse(updatedPriceLists, {
       dataBeforeUpdate,
@@ -52,7 +57,7 @@ export const updatePriceListsStep = createStep(
       relations,
     })
   },
-  async (revertInput, { container }) => {
+  async (revertInput, { container, context }) => {
     if (!revertInput) {
       return
     }
@@ -76,7 +81,8 @@ export const updatePriceListsStep = createStep(
           selects,
           relations
         )
-      })
+      }),
+      context
     )
   }
 )
@@ -87,7 +93,8 @@ export const updatePriceListsStep = createStep(
 // if this is not the response the module provides.
 async function getDataBeforeUpdate(
   pricingModule: IPricingModuleService,
-  data: UpdatePriceListWorkflowInputDTO[]
+  data: UpdatePriceListWorkflowInputDTO[],
+  context: Context
 ) {
   const { selects, relations } = getSelectsAndRelationsFromObjectArray(data, {
     objectFields: ["rules"],
@@ -108,7 +115,8 @@ async function getDataBeforeUpdate(
 
   const dataBeforeUpdate = await pricingModule.listPriceLists(
     { id: data.map((d) => d.id) },
-    { relations: relationsClone, select: selectsClone }
+    { relations: relationsClone, select: selectsClone },
+    context
   )
 
   return {

@@ -1,10 +1,12 @@
 import { model } from "@medusajs/framework/utils"
 import InventoryLevel from "./inventory-level"
 import ReservationItem from "./reservation-item"
+import { INVENTORY_DEDICATED_STORE_ID } from "../store-ownership"
 
 const InventoryItem = model
   .define("InventoryItem", {
     id: model.id({ prefix: "iitem" }).primaryKey(),
+    store_id: model.text().default(INVENTORY_DEDICATED_STORE_ID),
     sku: model.text().searchable().nullable(),
     origin_country: model.text().nullable(),
     hs_code: model.text().searchable().nullable(),
@@ -34,10 +36,16 @@ const InventoryItem = model
   })
   .indexes([
     {
-      name: "IDX_inventory_item_sku",
-      on: ["sku"],
+      name: "IDX_inventory_item_store_id_id",
+      on: ["store_id", "id"],
       unique: true,
       where: "deleted_at IS NULL",
+    },
+    {
+      name: "IDX_inventory_item_store_id_sku",
+      on: ["store_id", "sku"],
+      unique: true,
+      where: "deleted_at IS NULL AND sku IS NOT NULL",
     },
   ])
 

@@ -3,6 +3,7 @@ import { Modules } from "@medusajs/utils"
 export const defaultSchema = `
   type Product @Listeners(values: ["${Modules.PRODUCT}.product.created", "${Modules.PRODUCT}.product.updated", "${Modules.PRODUCT}.product.deleted", "${Modules.PRODUCT}.product.restored"]) {
     id: ID
+    store_id: String
     title: String
     handle: String
     status: String
@@ -19,6 +20,7 @@ export const defaultSchema = `
 
   type ProductVariant @Listeners(values: ["${Modules.PRODUCT}.product-variant.created", "${Modules.PRODUCT}.product-variant.updated", "${Modules.PRODUCT}.product-variant.deleted", "${Modules.PRODUCT}.product-variant.restored"]) {
     id: ID
+    store_id: String
     product_id: String
     sku: String
 

@@ -12,6 +12,7 @@ import { InventoryLevelWorkflowEvents } from "@medusajs/framework/utils"
 
 import { emitEventStep } from "../../common"
 import { updateInventoryLevelsStep } from "../steps/update-inventory-levels"
+import { validateInventoryLocationsStep } from "../steps/validate-inventory-locations"
 
 /**
  * The data to update the inventory levels.
@@ -61,6 +62,7 @@ export const updateInventoryLevelsWorkflow = createWorkflow(
   (
     input: WorkflowData<UpdateInventoryLevelsWorkflowInput>
   ): WorkflowResponse<UpdateInventoryLevelsWorkflowOutput> => {
+    validateInventoryLocationsStep(input.updates)
     const inventoryLevels = updateInventoryLevelsStep(input.updates)
 
     const levelIdEvents = transform(

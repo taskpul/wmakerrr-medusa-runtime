@@ -12,6 +12,7 @@ import {
   RestoreReturn,
   SoftDeleteReturn,
 } from "@medusajs/framework/types"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
   arrayDifference,
   BigNumber,
@@ -30,6 +31,12 @@ import { InventoryItem, InventoryLevel, ReservationItem } from "@models"
 import { joinerConfig } from "../joiner-config"
 import { applyEntityHooks } from "../utils/apply-decorators"
 import InventoryLevelService from "./inventory-level"
+import { setInventoryStoreDatabaseContext } from "../database-context"
+import {
+  GeneratedCrudHookInput,
+  GeneratedCrudResultHookInput,
+  InventoryStoreOwnership,
+} from "../store-ownership"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -75,6 +82,8 @@ export default class InventoryModuleService
     typeof ReservationItem
   >
   protected readonly inventoryLevelService_: InventoryLevelService
+  protected readonly storeOwnership_: InventoryStoreOwnership
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -83,7 +92,7 @@ export default class InventoryModuleService
       inventoryLevelService,
       reservationItemService,
     }: InjectedDependencies,
-    protected readonly moduleDeclaration?: InternalModuleDeclaration
+    protected readonly moduleDeclaration: InternalModuleDeclaration
   ) {
     // @ts-ignore
     // eslint-disable-next-line prefer-rest-params
@@ -93,10 +102,74 @@ export default class InventoryModuleService
     this.inventoryItemService_ = inventoryItemService
     this.inventoryLevelService_ = inventoryLevelService
     this.reservationItemService_ = reservationItemService
+    this.storeOwnership_ = new InventoryStoreOwnership(moduleDeclaration, {
+      InventoryItem: inventoryItemService,
+      InventoryLevel: inventoryLevelService,
+      ReservationItem: reservationItemService,
+    })
   }
 
   __joinerConfig(): ModuleJoinerConfig {
     return joinerConfig
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeOwnership_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeOwnership_.resolveStoreId(context)
+    const execute = async (
+      transactionManager: SqlEntityManager,
+      scopedContext: Context
+    ) => {
+      scopedContext.storeId ??= storeId
+      const activeStoreId = this.databaseStoreContexts_.get(transactionManager)
+      if (activeStoreId && activeStoreId !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Inventory transaction is already bound to another Store"
+        )
+      }
+      if (!activeStoreId) {
+        await setInventoryStoreDatabaseContext(
+          transactionManager,
+          storeId,
+          this.storeOwnership_.isShared
+        )
+        this.databaseStoreContexts_.set(transactionManager, storeId)
+      }
+      return await task(scopedContext)
+    }
+    const transactionManager = context.transactionManager as
+      SqlEntityManager | undefined
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      {
+        manager: context.manager as SqlEntityManager | undefined,
+        isolationLevel: context.isolationLevel,
+        enableNestedTransactions: context.enableNestedTransactions,
+      } as any
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: GeneratedCrudHookInput
+  ): Promise<unknown[]> {
+    return this.storeOwnership_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: GeneratedCrudResultHookInput
+  ): Promise<void> {
+    this.storeOwnership_.validateGeneratedMethodResult(input)
   }
 
   private async ensureInventoryLevels(
@@ -259,8 +332,10 @@ export default class InventoryModuleService
     input: InventoryTypes.CreateReservationItemInput[],
     @MedusaContext() context: Context = {}
   ): Promise<InferEntityType<typeof ReservationItem>[]> {
+    const stampedInput = this.storeOwnership_.stamp(input, context)
+    await this.storeOwnership_.assertInventoryItems(stampedInput, context)
     const inventoryLevels = await this.ensureInventoryLevels(
-      input.map(
+      stampedInput.map(
         ({ location_id, inventory_item_id, quantity, allow_backorder }) => ({
           location_id,
           inventory_item_id,
@@ -274,9 +349,12 @@ export default class InventoryModuleService
       context
     )
 
-    const created = await this.reservationItemService_.create(input, context)
+    const created = await this.reservationItemService_.create(
+      stampedInput,
+      context
+    )
 
-    const adjustments: Map<string, Map<string, number>> = input.reduce(
+    const adjustments: Map<string, Map<string, number>> = stampedInput.reduce(
       (acc, curr) => {
         const locationMap = acc.get(curr.inventory_item_id) ?? new Map()
 
@@ -346,7 +424,10 @@ export default class InventoryModuleService
     input: InventoryTypes.CreateInventoryItemInput[],
     @MedusaContext() context: Context = {}
   ): Promise<InventoryTypes.InventoryItemDTO[]> {
-    return await this.inventoryItemService_.create(input, context)
+    return await this.inventoryItemService_.create(
+      this.storeOwnership_.stamp(input, context),
+      context
+    )
   }
 
   // @ts-ignore
@@ -389,7 +470,16 @@ export default class InventoryModuleService
     input: InventoryTypes.CreateInventoryLevelInput[],
     @MedusaContext() context: Context = {}
   ): Promise<InferEntityType<typeof InventoryLevel>[]> {
-    return await this.inventoryLevelService_.create(input, context)
+    const stamped = this.storeOwnership_.stamp(
+      input.map((level) => ({
+        reserved_quantity: 0,
+        incoming_quantity: 0,
+        ...level,
+      })),
+      context
+    )
+    await this.storeOwnership_.assertInventoryItems(stamped, context)
+    return await this.inventoryLevelService_.create(stamped, context)
   }
 
   // @ts-expect-error
@@ -434,7 +524,16 @@ export default class InventoryModuleService
     })[],
     @MedusaContext() context: Context = {}
   ): Promise<InferEntityType<typeof InventoryItem>[]> {
-    return await this.inventoryItemService_.update(input, context)
+    await this.storeOwnership_.assertOwnedIds(
+      this.inventoryItemService_,
+      input.map(({ id }) => id),
+      "Inventory items",
+      context
+    )
+    return await this.inventoryItemService_.update(
+      this.storeOwnership_.stamp(input, context),
+      context
+    )
   }
 
   @InjectManager()
@@ -517,8 +616,10 @@ export default class InventoryModuleService
     updates: InventoryTypes.UpdateInventoryLevelInput[],
     @MedusaContext() context: Context = {}
   ) {
+    const stampedUpdates = this.storeOwnership_.stamp(updates, context)
+    await this.storeOwnership_.assertInventoryItems(stampedUpdates, context)
     const inventoryLevels = await this.ensureInventoryLevels(
-      updates.map(({ location_id, inventory_item_id }) => ({
+      stampedUpdates.map(({ location_id, inventory_item_id }) => ({
         location_id,
         inventory_item_id,
       })),
@@ -533,7 +634,7 @@ export default class InventoryModuleService
       return acc
     }, new Map())
 
-    const updatesWithIds = updates.map((update) => {
+    const updatesWithIds = stampedUpdates.map((update) => {
       const id = levelMap.get(update.inventory_item_id).get(update.location_id)
 
       return { id, ...update }
@@ -588,6 +689,12 @@ export default class InventoryModuleService
     @MedusaContext() context: Context = {}
   ): Promise<InferEntityType<typeof ReservationItem>[]> {
     const ids = input.map((u) => u.id)
+    await this.storeOwnership_.assertOwnedIds(
+      this.reservationItemService_,
+      ids,
+      "Reservation items",
+      context
+    )
     const reservationItems = await this.reservationItemService_.list(
       { id: ids },
       {},

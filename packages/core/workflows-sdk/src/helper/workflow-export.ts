@@ -15,6 +15,7 @@ import {
 import {
   ContainerRegistrationKeys,
   isPresent,
+  MedusaError,
   MedusaContextType,
   Modules,
   TransactionHandlerType,
@@ -44,6 +45,35 @@ function getCachedLoadedModules(): LoadedModule[] {
     )
   }
   return cachedLoadedModules
+}
+
+function resolveWorkflowStoreId(
+  container: LoadedModule[] | MedusaContainer | undefined,
+  requestedStoreId?: string
+): string | undefined {
+  if (!container || Array.isArray(container) || !container.hasRegistration) {
+    return requestedStoreId
+  }
+
+  if (!container.hasRegistration("storeContext")) {
+    return requestedStoreId
+  }
+
+  const storeContext = container.resolve<{ storeId?: string }>("storeContext")
+  const resolvedStoreId = storeContext?.storeId?.trim()
+  if (!resolvedStoreId) {
+    throw new MedusaError(
+      MedusaError.Types.NOT_ALLOWED,
+      "Registered Store context is invalid"
+    )
+  }
+  if (requestedStoreId && requestedStoreId !== resolvedStoreId) {
+    throw new MedusaError(
+      MedusaError.Types.NOT_ALLOWED,
+      "Workflow Store context does not match the request scope"
+    )
+  }
+  return resolvedStoreId
 }
 
 function createContextualWorkflowRunner<
@@ -116,6 +146,7 @@ function createContextualWorkflowRunner<
       parentStepIdempotencyKey,
       preventReleaseEvents,
       cancelingFromParentStep,
+      storeId,
     } = context
 
     if (!preventReleaseEvents) {
@@ -128,6 +159,7 @@ function createContextualWorkflowRunner<
       sourcePath: options?.sourcePath,
       preventReleaseEvents,
       cancelingFromParentStep,
+      storeId,
     }
 
     context.isCancelling = isCancel
@@ -217,6 +249,10 @@ function createContextualWorkflowRunner<
       ...outerContext,
       __type: MedusaContextType as Context["__type"],
     }
+    context.storeId = resolveWorkflowStoreId(
+      container ?? (flow.container as LoadedModule[] | MedusaContainer),
+      context.storeId
+    )
 
     const uniqId = ulid()
 
@@ -264,6 +300,10 @@ function createContextualWorkflowRunner<
       transactionId,
       __type: MedusaContextType as Context["__type"],
     }
+    context.storeId = resolveWorkflowStoreId(
+      container ?? (flow.container as LoadedModule[] | MedusaContainer),
+      context.storeId
+    )
 
     context.eventGroupId ??= ulid()
 
@@ -309,6 +349,10 @@ function createContextualWorkflowRunner<
       transactionId,
       __type: MedusaContextType as Context["__type"],
     }
+    context.storeId = resolveWorkflowStoreId(
+      container ?? (flow.container as LoadedModule[] | MedusaContainer),
+      context.storeId
+    )
 
     context.eventGroupId ??= ulid()
 
@@ -351,6 +395,10 @@ function createContextualWorkflowRunner<
       transactionId,
       __type: MedusaContextType as Context["__type"],
     }
+    context.storeId = resolveWorkflowStoreId(
+      container ?? (flow.container as LoadedModule[] | MedusaContainer),
+      context.storeId
+    )
 
     context.eventGroupId ??= ulid()
 
@@ -386,6 +434,10 @@ function createContextualWorkflowRunner<
       transactionId,
       __type: MedusaContextType as Context["__type"],
     }
+    context.storeId = resolveWorkflowStoreId(
+      container ?? (flow.container as LoadedModule[] | MedusaContainer),
+      context.storeId
+    )
 
     context.eventGroupId ??= ulid()
 

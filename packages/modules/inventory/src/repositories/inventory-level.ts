@@ -16,12 +16,16 @@ export class InventoryLevelRepository extends mikroOrmBaseRepositoryFactory(
     context: Context = {}
   ): Promise<BigNumber> {
     const manager = super.getActiveManager<SqlEntityManager>(context)
+    const storeId = context.storeId
 
     const result = await manager
       .getKnex()({ il: "inventory_level" })
       .select("raw_reserved_quantity")
       .whereIn("location_id", locationIds)
       .andWhere("inventory_item_id", inventoryItemId)
+      .modify((query) => {
+        if (storeId) query.andWhere("store_id", storeId)
+      })
       .andWhereRaw("deleted_at IS NULL")
 
     return new BigNumber(
@@ -35,6 +39,7 @@ export class InventoryLevelRepository extends mikroOrmBaseRepositoryFactory(
     context: Context = {}
   ): Promise<BigNumber> {
     const knex = super.getActiveManager<SqlEntityManager>(context).getKnex()
+    const storeId = context.storeId
 
     const result = await knex({
       il: "inventory_level",
@@ -42,6 +47,9 @@ export class InventoryLevelRepository extends mikroOrmBaseRepositoryFactory(
       .select("raw_stocked_quantity", "raw_reserved_quantity")
       .whereIn("location_id", locationIds)
       .andWhere("inventory_item_id", inventoryItemId)
+      .modify((query) => {
+        if (storeId) query.andWhere("store_id", storeId)
+      })
       .andWhereRaw("deleted_at IS NULL")
 
     return new BigNumber(
@@ -59,6 +67,7 @@ export class InventoryLevelRepository extends mikroOrmBaseRepositoryFactory(
     context: Context = {}
   ): Promise<BigNumber> {
     const knex = super.getActiveManager<SqlEntityManager>(context).getKnex()
+    const storeId = context.storeId
 
     const result = await knex({
       il: "inventory_level",
@@ -66,6 +75,9 @@ export class InventoryLevelRepository extends mikroOrmBaseRepositoryFactory(
       .select("raw_stocked_quantity")
       .whereIn("location_id", locationIds)
       .andWhere("inventory_item_id", inventoryItemId)
+      .modify((query) => {
+        if (storeId) query.andWhere("store_id", storeId)
+      })
       .andWhereRaw("deleted_at IS NULL")
 
     return new BigNumber(

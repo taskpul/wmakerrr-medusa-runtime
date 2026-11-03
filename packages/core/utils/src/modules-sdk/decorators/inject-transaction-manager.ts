@@ -1,5 +1,9 @@
 import { Context } from "@medusajs/types"
-import { MedusaContextType } from "./context-parameter"
+import {
+  MedusaContextType,
+  mergeActiveMedusaContext,
+} from "./context-parameter"
+import { runManagerContext } from "./run-manager-context"
 
 export function InjectTransactionManager(
   managerProperty?: string
@@ -22,10 +26,17 @@ export function InjectTransactionManager(
 
     const argIndex = target.MedusaContextIndex_[propertyKey]
     descriptor.value = async function (...args: any[]) {
-      const originalContext = args[argIndex] ?? {}
+      const originalContext = mergeActiveMedusaContext(args[argIndex] ?? {})
 
       if (originalContext?.transactionManager) {
-        return await originalMethod.apply(this, args)
+        return await runManagerContext(
+          this,
+          originalContext,
+          async (context) => {
+            args[argIndex] = context
+            return await originalMethod.apply(this, args)
+          }
+        )
       }
 
       return await (
@@ -55,7 +66,14 @@ export function InjectTransactionManager(
 
           args[argIndex] = copiedContext
 
-          return await originalMethod.apply(this, args)
+          return await runManagerContext(
+            this,
+            copiedContext,
+            async (context) => {
+              args[argIndex] = context
+              return await originalMethod.apply(this, args)
+            }
+          )
         },
         {
           manager: originalContext?.manager,

@@ -1,4 +1,5 @@
 import { model } from "@medusajs/framework/utils"
+import { PRODUCT_DEDICATED_STORE_ID } from "../store-ownership"
 import { Product } from "./index"
 import ProductOptionValue from "./product-option-value"
 
@@ -8,6 +9,7 @@ import ProductOptionValue from "./product-option-value"
 const ProductOption = model
   .define("ProductOption", {
     id: model.id({ prefix: "opt" }).primaryKey(),
+    store_id: model.text().default(PRODUCT_DEDICATED_STORE_ID),
     /**
      * The option's display name.
      */
@@ -40,8 +42,14 @@ const ProductOption = model
   })
   .indexes([
     {
+      name: "IDX_product_option_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+      where: "deleted_at IS NULL",
+    },
+    {
       name: "IDX_product_option_global_title_unique",
-      on: ["title"],
+      on: ["store_id", "title"],
       unique: true,
       where: "deleted_at IS NULL AND is_exclusive = false",
     },

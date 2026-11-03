@@ -24,15 +24,122 @@
       "packageCount": 79,
       "publicSourceFileCount": 1321,
       "approvedLicenseExceptions": 28,
-      "approvedControlledDistributionExtensions": 7,
+      "approvedControlledDistributionExtensions": 34,
       "verifier": {
         "path": ".royalroyals/verify-public-api.mjs",
         "sha256": "bb33f58bda3963a772370deb34a179c0fcf403b281fb2e0bc19a55927ada104b"
       },
       "exceptionLedger": {
         "path": ".royalroyals/public-api-exceptions.json",
-        "sha256": "d2f6d1e556541d93ab214fff0372a845fb824e8c82e7dbef935379286381acdc"
+        "sha256": "2ad7d2104dd7181744ff948a0ecd3f1d82fcaa57749fd9d4e9f8ed3f32b12b31"
       }
+    },
+    "pricingIsolation": {
+      "status": "local-verified",
+      "pricingCoreFlowReferences": 23,
+      "contextBoundPricingCalls": 40,
+      "guardedCrossModuleLinkPaths": 4,
+      "unreviewedBackgroundCallers": 0,
+      "verifier": {
+        "path": ".royalroyals/verify-pricing-isolation.mjs",
+        "sha256": "185dbc5ee57df79b7ed5bdd8387c8cf7a6488716f82a3f1cc0220ec225e88766"
+      }
+    },
+    "productCatalogDesign": {
+      "status": "local-design-verified",
+      "phase": "7G-5A",
+      "productTables": 15,
+      "coreFlowReferences": 61,
+      "catalogRoutes": 49,
+      "crossModuleLinks": 7,
+      "attackCases": 32,
+      "contract": {
+        "path": ".royalroyals/product-catalog-boundary.json",
+        "sha256": "0e2ba77a95b40b5aac9691b91a4892fd645b1279927806d9ad2dd9a72f9d8202"
+      },
+      "verifier": {
+        "path": ".royalroyals/verify-product-catalog-inventory.mjs",
+        "sha256": "d56c0dc01fa2d7cec5449e7450a600e1198a30c737bf7e1d74e9490666e9934d"
+      },
+      "admissionEffect": "none"
+    },
+    "productCatalogPersistence": {
+      "status": "local-verified",
+      "phase": "7G-5B",
+      "directStoreOwnedTables": 12,
+      "parentDerivedPivotTables": 3,
+      "forcedRlsTables": 15,
+      "storeScopedBusinessKeys": 11,
+      "productUnitTests": 14,
+      "productIntegrationTests": 235,
+      "verifier": {
+        "path": ".royalroyals/verify-product-persistence-isolation.mjs",
+        "sha256": "7f1cc1f7a55faf14ef8980fa909e3984ff217a96b21a05b08bb5900ca7d48610"
+      },
+      "admissionEffect": "none"
+    },
+    "productCatalogRuntime": {
+      "status": "local-verified",
+      "phases": ["7G-5C", "7G-5D", "7G-5E"],
+      "productUnitTests": 14,
+      "productIntegrationTests": 235,
+      "focusedFrameworkWorkflowIndexLinkTests": 230,
+      "attackCases": 32,
+      "verifier": {
+        "path": ".royalroyals/verify-product-runtime-isolation.mjs",
+        "sha256": "50410b2fbede57e7e0cee4542d0a1ae8d344eaa396c107dad2710dd21f60e883"
+      },
+      "sharedProduction": "disabled",
+      "admissionEffect": "none"
+    },
+    "fulfillmentShippingBoundary": {
+      "status": "local-verified",
+      "phases": ["7G-6A", "7G-6B", "7G-6C", "7G-6D", "7G-6E"],
+      "fulfillmentTables": 12,
+      "directStoreOwnedTables": 11,
+      "globalReferenceTables": 1,
+      "coreFlowReferences": 43,
+      "routes": 40,
+      "crossModuleLinks": 8,
+      "attackCases": 35,
+      "fulfillmentUnitTests": 33,
+      "fulfillmentIntegrationTests": 87,
+      "contract": {
+        "path": ".royalroyals/fulfillment-shipping-boundary.json",
+        "sha256": "143949492c7888889a507e6759c92bfc461c6c8f3cb9b50ef5e089e6465dff42"
+      },
+      "inventoryVerifier": {
+        "path": ".royalroyals/verify-fulfillment-shipping-inventory.mjs",
+        "sha256": "f1afa60b1dfe8a89f23cf65ed29c550282be68c474d40e476b848482729f0274"
+      },
+      "runtimeVerifier": {
+        "path": ".royalroyals/verify-fulfillment-runtime-isolation.mjs",
+        "sha256": "b67a1292b9a2893eab2e0ae60b1e173b52dae9ace5399865dc87a3746144d5a8"
+      },
+      "sharedProduction": "disabled",
+      "admissionEffect": "none"
+    },
+    "inventoryStockBoundary": {
+      "status": "local-verified",
+      "phases": ["7G-7A", "7G-7B", "7G-7C", "7G-7D", "7G-7E"],
+      "directStoreOwnedTables": 5,
+      "forcedRlsTables": 5,
+      "requestRoles": 2,
+      "attackCases": 24,
+      "inventoryIntegrationTests": 47,
+      "stockLocationIntegrationTests": 15,
+      "moduleLinkTests": 14,
+      "managerContextAndEventTests": 20,
+      "contract": {
+        "path": ".royalroyals/inventory-stock-boundary.json",
+        "sha256": "5de36a9d16a615f02e1c8c9f26cf28c69df7dd5d628798912bbfa9751ae6374b"
+      },
+      "verifier": {
+        "path": ".royalroyals/verify-inventory-stock-boundary.mjs",
+        "sha256": "2c7d01a4e1d4bb0649ba892bdc111b9592415dc87198837454b23bfc5f9a6def"
+      },
+      "sharedProduction": "disabled",
+      "admissionEffect": "none"
     },
     "commands": [
       "yarn install --immutable",
@@ -40,7 +147,22 @@
       "node .royalroyals/verify-bootstrap.mjs",
       "node .royalroyals/verify-baseline.mjs",
       "node .royalroyals/verify-public-api.mjs",
-      "yarn workspace @medusajs/pricing test:integration --runTestsByPath integration-tests/__tests__/services/pricing-module/store-ownership.spec.ts --runInBand"
+      "node .royalroyals/verify-pricing-isolation.mjs",
+      "node .royalroyals/verify-product-catalog-inventory.mjs",
+      "node .royalroyals/verify-product-persistence-isolation.mjs",
+      "node .royalroyals/verify-product-runtime-isolation.mjs",
+      "node .royalroyals/verify-fulfillment-shipping-inventory.mjs",
+      "node .royalroyals/verify-fulfillment-runtime-isolation.mjs",
+      "node .royalroyals/verify-inventory-stock-boundary.mjs",
+      "yarn workspace @medusajs/fulfillment test --runInBand",
+      "yarn workspace @medusajs/fulfillment test:integration --runTestsByPath integration-tests/__tests__/fulfillment-module-service/store-ownership-persistence.spec.ts integration-tests/__tests__/fulfillment-module-service/store-ownership-service.spec.ts integration-tests/__tests__/fulfillment-module-service/store-ownership-dedicated.spec.ts --runInBand",
+      "yarn workspace @medusajs/modules-sdk test --runInBand src/__tests__/remote-link.spec.ts",
+      "yarn workspace @medusajs/workflows-sdk test --runInBand src/utils/composer/__tests__/compose.spec.ts",
+      "yarn workspace @medusajs/core-flows test --runInBand src/product/steps/__tests__/create-variant-pricing-link.spec.ts",
+      "yarn workspace @medusajs/pricing test:integration --runTestsByPath integration-tests/__tests__/services/pricing-module/store-ownership.spec.ts integration-tests/__tests__/services/pricing-module/store-ownership-dedicated.spec.ts --runInBand",
+      "yarn workspace @medusajs/inventory test:integration --runInBand",
+      "yarn workspace @medusajs/stock-location test:integration --runInBand",
+      "yarn workspace @medusajs/utils test --runInBand src/modules-sdk/decorators/__tests__/emit-events.ts src/modules-sdk/__tests__/active-medusa-context.spec.ts src/modules-sdk/__tests__/medusa-service.spec.ts"
     ],
     "admissionNote": "Local reproducibility evidence only. Protected CI and review evidence are still required before any admission gate can pass."
   },

@@ -38,13 +38,13 @@ Product Module for Medusa: manages products, product variants, options and optio
 
 ## At a glance
 
-| | |
-| --- | --- |
-| Package | `@medusajs/product` |
-| Type | Commerce Module |
-| Module key | `Modules.PRODUCT` (`"product"`) |
-| Registered by default | Yes |
-| Import from | `@medusajs/medusa/product` |
+|                       |                                 |
+| --------------------- | ------------------------------- |
+| Package               | `@medusajs/product`             |
+| Type                  | Commerce Module                 |
+| Module key            | `Modules.PRODUCT` (`"product"`) |
+| Registered by default | Yes                             |
+| Import from           | `@medusajs/medusa/product`      |
 
 ## Features
 
@@ -56,6 +56,8 @@ Product Module for Medusa: manages products, product variants, options and optio
 ## Installation
 
 No installation needed. The module is included in `@medusajs/medusa` and registered by default.
+
+The Royalroyals controlled runtime supports a dedicated placement by default and a fail-closed shared placement through the module's `store_isolation` option. Shared operations require a verified `Context.storeId`; request payloads and filters cannot select ownership. This boundary is local candidate work and does not by itself enable shared production.
 
 ## Usage
 

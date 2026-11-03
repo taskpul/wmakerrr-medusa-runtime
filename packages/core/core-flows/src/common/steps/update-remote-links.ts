@@ -32,7 +32,7 @@ export const updateRemoteLinksStepId = "update-remote-links-step"
  */
 export const updateRemoteLinksStep = createStep(
   updateRemoteLinksStepId,
-  async (data: LinkDefinition[], { container }) => {
+  async (data: LinkDefinition[], { container, context }) => {
     if (!data?.length) {
       return new StepResponse([], [])
     }
@@ -40,9 +40,11 @@ export const updateRemoteLinksStep = createStep(
     const link = container.resolve<Link>(ContainerRegistrationKeys.LINK)
 
     // Fetch all existing links and throw an error if any weren't found
-    const dataBeforeUpdate = (await link.list(data, {
-      asLinkDefinition: true,
-    })) as LinkDefinition[]
+    const dataBeforeUpdate = (await link.list(
+      data,
+      { asLinkDefinition: true },
+      context
+    )) as LinkDefinition[]
 
     const unequal = dataBeforeUpdate.length !== data.length
 
@@ -55,17 +57,17 @@ export const updateRemoteLinksStep = createStep(
 
     // link.create here performs an upsert. By performing validation above, we can ensure
     // that this method will always perform an update in these cases
-    await link.create(data)
+    await link.create(data, context)
 
     return new StepResponse(data, dataBeforeUpdate)
   },
-  async (dataBeforeUpdate, { container }) => {
+  async (dataBeforeUpdate, { container, context }) => {
     if (!dataBeforeUpdate?.length) {
       return
     }
 
     const link = container.resolve<Link>(ContainerRegistrationKeys.LINK)
 
-    await link.create(dataBeforeUpdate)
+    await link.create(dataBeforeUpdate, context)
   }
 )

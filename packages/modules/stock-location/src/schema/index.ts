@@ -1,6 +1,7 @@
 export default `
 type StockLocationAddress {
   id: ID
+  store_id: String!
   address_1: String!
   address_2: String
   company: String
@@ -18,6 +19,7 @@ type StockLocationAddress {
 
 type StockLocation {
   id: ID!
+  store_id: String!
   name: String!
   metadata: JSON
   address_id: ID!

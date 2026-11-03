@@ -1,7 +1,5 @@
 {
-  "namespaces": [
-    "public"
-  ],
+  "namespaces": ["public"],
   "name": "public",
   "tables": [
     {
@@ -11,8 +9,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "name": {
@@ -22,6 +43,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "description": {
@@ -31,7 +59,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "''",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "handle": {
@@ -41,6 +75,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "mpath": {
@@ -50,6 +91,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "is_active": {
@@ -59,7 +107,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "false",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "boolean"
         },
         "is_internal": {
@@ -69,7 +123,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "false",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "boolean"
         },
         "rank": {
@@ -79,7 +139,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "0",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "integer"
         },
         "external_id": {
@@ -89,6 +155,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -98,6 +171,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "parent_category_id": {
@@ -107,6 +187,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -116,8 +203,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -127,8 +219,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -138,7 +235,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -164,13 +267,22 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_category_deleted_at\" ON \"product_category\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_category_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_category_store_id_id\" ON \"product_category\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_product_category_path",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_category_path\" ON \"product_category\" (\"mpath\") WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_category_path\" ON \"product_category\" (\"store_id\", \"mpath\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_category_handle_unique",
@@ -179,13 +291,11 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_category_handle_unique\" ON \"product_category\" (\"handle\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_category_handle_unique\" ON \"product_category\" (\"store_id\", \"handle\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "product_category_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -196,13 +306,9 @@
       "foreignKeys": {
         "product_category_parent_category_id_foreign": {
           "constraintName": "product_category_parent_category_id_foreign",
-          "columnNames": [
-            "parent_category_id"
-          ],
+          "columnNames": ["parent_category_id"],
           "localTableName": "public.product_category",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product_category",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -217,8 +323,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "title": {
@@ -228,6 +357,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "handle": {
@@ -237,6 +373,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "external_id": {
@@ -246,6 +389,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -255,6 +405,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -264,8 +421,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -275,8 +437,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -286,7 +453,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -303,19 +476,26 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_collection_deleted_at\" ON \"product_collection\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_collection_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_collection_store_id_id\" ON \"product_collection\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_collection_handle_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_collection_handle_unique\" ON \"product_collection\" (\"handle\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_collection_handle_unique\" ON \"product_collection\" (\"store_id\", \"handle\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "product_collection_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -333,8 +513,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "title": {
@@ -344,6 +547,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "is_exclusive": {
@@ -353,7 +563,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "false",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "boolean"
         },
         "metadata": {
@@ -363,6 +579,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -372,8 +595,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -383,8 +611,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -394,7 +627,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -411,10 +650,26 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_option_deleted_at\" ON \"product_option\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_option_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_option_store_id_id\" ON \"product_option\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_product_option_global_title_unique",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_option_global_title_unique\" ON \"product_option\" (\"store_id\", \"title\") WHERE deleted_at IS NULL AND is_exclusive = false"
+        },
+        {
           "keyName": "product_option_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -432,8 +687,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "value": {
@@ -443,6 +721,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "rank": {
@@ -452,6 +737,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "integer"
         },
         "metadata": {
@@ -461,6 +753,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "option_id": {
@@ -470,6 +769,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -479,8 +785,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -490,8 +801,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -501,7 +817,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -527,19 +849,26 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_option_value_deleted_at\" ON \"product_option_value\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_option_value_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_option_value_store_id_id\" ON \"product_option_value\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_option_value_option_id_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_option_value_option_id_unique\" ON \"product_option_value\" (\"option_id\", \"value\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_option_value_option_id_unique\" ON \"product_option_value\" (\"store_id\", \"option_id\", \"value\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "product_option_value_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -550,13 +879,9 @@
       "foreignKeys": {
         "product_option_value_option_id_foreign": {
           "constraintName": "product_option_value_option_id_foreign",
-          "columnNames": [
-            "option_id"
-          ],
+          "columnNames": ["option_id"],
           "localTableName": "public.product_option_value",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product_option",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -571,8 +896,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "value": {
@@ -582,6 +930,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "external_id": {
@@ -591,6 +946,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -600,6 +962,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -609,8 +978,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -620,8 +994,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -631,7 +1010,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -648,19 +1033,26 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_tag_deleted_at\" ON \"product_tag\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_tag_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_tag_store_id_id\" ON \"product_tag\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_tag_value_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_tag_value_unique\" ON \"product_tag\" (\"value\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_tag_value_unique\" ON \"product_tag\" (\"store_id\", \"value\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "product_tag_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -678,8 +1070,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "value": {
@@ -689,6 +1104,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "external_id": {
@@ -698,6 +1120,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -707,6 +1136,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "created_at": {
@@ -716,8 +1152,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -727,8 +1168,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -738,7 +1184,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -755,19 +1207,26 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_type_deleted_at\" ON \"product_type\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_type_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_type_store_id_id\" ON \"product_type\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_type_value_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_type_value_unique\" ON \"product_type\" (\"value\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_type_value_unique\" ON \"product_type\" (\"store_id\", \"value\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "product_type_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -785,8 +1244,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "title": {
@@ -796,6 +1278,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "handle": {
@@ -805,6 +1294,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "subtitle": {
@@ -814,6 +1310,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "description": {
@@ -823,6 +1326,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "is_giftcard": {
@@ -832,7 +1342,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "false",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "boolean"
         },
         "status": {
@@ -842,13 +1358,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "'draft'",
-          "enumItems": [
-            "draft",
-            "proposed",
-            "published",
-            "rejected"
-          ],
+          "comment": null,
+          "enumItems": ["draft", "proposed", "published", "rejected"],
           "mappedType": "enum"
         },
         "thumbnail": {
@@ -858,6 +1374,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "weight": {
@@ -867,6 +1390,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "float"
         },
         "length": {
@@ -876,6 +1406,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "float"
         },
         "height": {
@@ -885,6 +1422,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "float"
         },
         "width": {
@@ -894,6 +1438,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "float"
         },
         "origin_country": {
@@ -903,6 +1454,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "hs_code": {
@@ -912,6 +1470,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "mid_code": {
@@ -921,6 +1486,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "material": {
@@ -930,6 +1502,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "discountable": {
@@ -939,7 +1518,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "true",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "boolean"
         },
         "external_id": {
@@ -949,6 +1534,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -958,6 +1550,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "type_id": {
@@ -967,6 +1566,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "collection_id": {
@@ -976,6 +1582,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -985,8 +1598,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -996,8 +1614,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1007,7 +1630,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -1042,13 +1671,40 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_deleted_at\" ON \"product\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_store_id_id\" ON \"product\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_product_handle_unique",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_handle_unique\" ON \"product\" (\"handle\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_handle_unique\" ON \"product\" (\"store_id\", \"handle\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_product_type_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_type_id\" ON \"product\" (\"store_id\", \"type_id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_product_collection_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_collection_id\" ON \"product\" (\"store_id\", \"collection_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_product_status",
@@ -1057,13 +1713,11 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_status\" ON \"product\" (\"status\") WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_status\" ON \"product\" (\"store_id\", \"status\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "product_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1074,26 +1728,18 @@
       "foreignKeys": {
         "product_type_id_foreign": {
           "constraintName": "product_type_id_foreign",
-          "columnNames": [
-            "type_id"
-          ],
+          "columnNames": ["type_id"],
           "localTableName": "public.product",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product_type",
           "deleteRule": "set null",
           "updateRule": "cascade"
         },
         "product_collection_id_foreign": {
           "constraintName": "product_collection_id_foreign",
-          "columnNames": [
-            "collection_id"
-          ],
+          "columnNames": ["collection_id"],
           "localTableName": "public.product",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product_collection",
           "deleteRule": "set null",
           "updateRule": "cascade"
@@ -1108,8 +1754,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "product_id": {
@@ -1119,6 +1788,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "product_option_id": {
@@ -1128,6 +1804,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -1137,8 +1820,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -1148,8 +1836,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1159,7 +1852,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -1194,10 +1893,17 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_deleted_at\" ON \"product_product_option\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_product_option_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_product_option_store_id_id\" ON \"product_product_option\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "product_product_option_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1215,8 +1921,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "product_product_option_id": {
@@ -1226,6 +1955,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "product_option_value_id": {
@@ -1235,6 +1971,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -1244,8 +1987,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -1255,8 +2003,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1266,7 +2019,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -1281,15 +2040,6 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_value_product_product_option_id\" ON \"product_product_option_value\" (\"product_product_option_id\") WHERE deleted_at IS NULL"
-        },
-        {
-          "keyName": "IDX_product_product_option_value_product_product_option_id_fk",
-          "columnNames": [],
-          "composite": false,
-          "constraint": false,
-          "primary": false,
-          "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_value_product_product_option_id_fk\" ON \"product_product_option_value\" (\"product_product_option_id\")"
         },
         {
           "keyName": "IDX_product_product_option_value_product_option_value_id",
@@ -1310,10 +2060,26 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_value_deleted_at\" ON \"product_product_option_value\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_product_option_value_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_product_option_value_store_id_id\" ON \"product_product_option_value\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_product_product_option_value_product_product_option_id_fk",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_product_option_value_product_product_option_id_fk\" ON \"product_product_option_value\" (\"product_product_option_id\")"
+        },
+        {
           "keyName": "product_product_option_value_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1321,32 +2087,7 @@
         }
       ],
       "checks": [],
-      "foreignKeys": {
-        "product_product_option_value_product_product_option_id_foreign": {
-          "constraintName": "product_product_option_value_product_product_option_id_foreign",
-          "columnNames": [
-            "product_product_option_id"
-          ],
-          "localTableName": "public.product_product_option_value",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.product_product_option",
-          "updateRule": "cascade"
-        },
-        "product_product_option_value_product_option_value_id_foreign": {
-          "constraintName": "product_product_option_value_product_option_value_id_foreign",
-          "columnNames": [
-            "product_option_value_id"
-          ],
-          "localTableName": "public.product_product_option_value",
-          "referencedColumnNames": [
-            "id"
-          ],
-          "referencedTableName": "public.product_option_value",
-          "updateRule": "cascade"
-        }
-      },
+      "foreignKeys": {},
       "nativeEnums": {}
     },
     {
@@ -1356,8 +2097,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "url": {
@@ -1367,6 +2131,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "metadata": {
@@ -1376,6 +2147,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "rank": {
@@ -1385,7 +2163,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "0",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "integer"
         },
         "product_id": {
@@ -1395,6 +2179,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -1404,8 +2195,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -1415,8 +2211,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1426,7 +2227,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -1450,6 +2257,15 @@
           "primary": false,
           "unique": false,
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_image_deleted_at\" ON \"image\" (\"deleted_at\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_image_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_image_store_id_id\" ON \"image\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_product_image_url",
@@ -1489,9 +2305,7 @@
         },
         {
           "keyName": "image_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1502,13 +2316,9 @@
       "foreignKeys": {
         "image_product_id_foreign": {
           "constraintName": "image_product_id_foreign",
-          "columnNames": [
-            "product_id"
-          ],
+          "columnNames": ["product_id"],
           "localTableName": "public.image",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -1523,8 +2333,15 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
-          "primary": false,
+          "primary": true,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "product_tag_id": {
@@ -1532,8 +2349,15 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
-          "primary": false,
+          "primary": true,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         }
       },
@@ -1542,10 +2366,7 @@
       "indexes": [
         {
           "keyName": "product_tags_pkey",
-          "columnNames": [
-            "product_id",
-            "product_tag_id"
-          ],
+          "columnNames": ["product_id", "product_tag_id"],
           "composite": true,
           "constraint": true,
           "primary": true,
@@ -1556,26 +2377,18 @@
       "foreignKeys": {
         "product_tags_product_id_foreign": {
           "constraintName": "product_tags_product_id_foreign",
-          "columnNames": [
-            "product_id"
-          ],
+          "columnNames": ["product_id"],
           "localTableName": "public.product_tags",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product",
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
         "product_tags_product_tag_id_foreign": {
           "constraintName": "product_tags_product_tag_id_foreign",
-          "columnNames": [
-            "product_tag_id"
-          ],
+          "columnNames": ["product_tag_id"],
           "localTableName": "public.product_tags",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product_tag",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -1590,8 +2403,15 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
-          "primary": false,
+          "primary": true,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "product_category_id": {
@@ -1599,8 +2419,15 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
-          "primary": false,
+          "primary": true,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         }
       },
@@ -1609,10 +2436,7 @@
       "indexes": [
         {
           "keyName": "product_category_product_pkey",
-          "columnNames": [
-            "product_id",
-            "product_category_id"
-          ],
+          "columnNames": ["product_id", "product_category_id"],
           "composite": true,
           "constraint": true,
           "primary": true,
@@ -1623,26 +2447,18 @@
       "foreignKeys": {
         "product_category_product_product_id_foreign": {
           "constraintName": "product_category_product_product_id_foreign",
-          "columnNames": [
-            "product_id"
-          ],
+          "columnNames": ["product_id"],
           "localTableName": "public.product_category_product",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product",
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
         "product_category_product_product_category_id_foreign": {
           "constraintName": "product_category_product_product_category_id_foreign",
-          "columnNames": [
-            "product_category_id"
-          ],
+          "columnNames": ["product_category_id"],
           "localTableName": "public.product_category_product",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product_category",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -1657,8 +2473,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "title": {
@@ -1668,6 +2507,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "sku": {
@@ -1677,6 +2523,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "barcode": {
@@ -1686,6 +2539,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "ean": {
@@ -1695,6 +2555,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "upc": {
@@ -1704,6 +2571,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "allow_backorder": {
@@ -1713,7 +2587,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "false",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "boolean"
         },
         "manage_inventory": {
@@ -1723,7 +2603,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "true",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "boolean"
         },
         "hs_code": {
@@ -1733,6 +2619,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "origin_country": {
@@ -1742,6 +2635,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "mid_code": {
@@ -1751,6 +2651,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "material": {
@@ -1760,6 +2667,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "weight": {
@@ -1769,6 +2683,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "float"
         },
         "length": {
@@ -1778,6 +2699,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "float"
         },
         "height": {
@@ -1787,6 +2715,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "float"
         },
         "width": {
@@ -1796,6 +2731,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "float"
         },
         "metadata": {
@@ -1805,6 +2747,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "json"
         },
         "variant_rank": {
@@ -1814,7 +2763,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
           "default": "0",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "integer"
         },
         "thumbnail": {
@@ -1824,6 +2779,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "product_id": {
@@ -1833,6 +2795,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -1842,8 +2811,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -1853,8 +2827,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -1864,7 +2843,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -1890,13 +2875,31 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_variant_deleted_at\" ON \"product_variant\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_variant_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_variant_store_id_id\" ON \"product_variant\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "IDX_product_variant_id_product_id",
           "columnNames": [],
           "composite": false,
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_variant_id_product_id\" ON \"product_variant\" (\"id\", \"product_id\") WHERE deleted_at IS NULL"
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_variant_id_product_id\" ON \"product_variant\" (\"store_id\", \"id\", \"product_id\") WHERE deleted_at IS NULL"
+        },
+        {
+          "keyName": "IDX_product_variant_product_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_variant_product_id\" ON \"product_variant\" (\"store_id\", \"product_id\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_product_variant_sku_unique",
@@ -1905,7 +2908,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_variant_sku_unique\" ON \"product_variant\" (\"sku\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_variant_sku_unique\" ON \"product_variant\" (\"store_id\", \"sku\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_product_variant_barcode_unique",
@@ -1914,7 +2917,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_variant_barcode_unique\" ON \"product_variant\" (\"barcode\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_variant_barcode_unique\" ON \"product_variant\" (\"store_id\", \"barcode\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_product_variant_ean_unique",
@@ -1923,7 +2926,7 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_variant_ean_unique\" ON \"product_variant\" (\"ean\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_variant_ean_unique\" ON \"product_variant\" (\"store_id\", \"ean\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "IDX_product_variant_upc_unique",
@@ -1932,13 +2935,11 @@
           "constraint": false,
           "primary": false,
           "unique": false,
-          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_variant_upc_unique\" ON \"product_variant\" (\"upc\") WHERE deleted_at IS NULL"
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_variant_upc_unique\" ON \"product_variant\" (\"store_id\", \"upc\") WHERE deleted_at IS NULL"
         },
         {
           "keyName": "product_variant_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,
@@ -1949,13 +2950,9 @@
       "foreignKeys": {
         "product_variant_product_id_foreign": {
           "constraintName": "product_variant_product_id_foreign",
-          "columnNames": [
-            "product_id"
-          ],
+          "columnNames": ["product_id"],
           "localTableName": "public.product_variant",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -1970,8 +2967,15 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
-          "primary": false,
+          "primary": true,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "option_value_id": {
@@ -1979,8 +2983,15 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
-          "primary": false,
+          "primary": true,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         }
       },
@@ -1989,10 +3000,7 @@
       "indexes": [
         {
           "keyName": "product_variant_option_pkey",
-          "columnNames": [
-            "variant_id",
-            "option_value_id"
-          ],
+          "columnNames": ["variant_id", "option_value_id"],
           "composite": true,
           "constraint": true,
           "primary": true,
@@ -2003,26 +3011,18 @@
       "foreignKeys": {
         "product_variant_option_variant_id_foreign": {
           "constraintName": "product_variant_option_variant_id_foreign",
-          "columnNames": [
-            "variant_id"
-          ],
+          "columnNames": ["variant_id"],
           "localTableName": "public.product_variant_option",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product_variant",
           "deleteRule": "cascade",
           "updateRule": "cascade"
         },
         "product_variant_option_option_value_id_foreign": {
           "constraintName": "product_variant_option_option_value_id_foreign",
-          "columnNames": [
-            "option_value_id"
-          ],
+          "columnNames": ["option_value_id"],
           "localTableName": "public.product_variant_option",
-          "referencedColumnNames": [
-            "id"
-          ],
+          "referencedColumnNames": ["id"],
           "referencedTableName": "public.product_option_value",
           "deleteRule": "cascade",
           "updateRule": "cascade"
@@ -2037,8 +3037,31 @@
           "type": "text",
           "unsigned": false,
           "autoincrement": false,
+          "primary": true,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "variant_id": {
@@ -2048,6 +3071,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "image_id": {
@@ -2057,6 +3087,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "text"
         },
         "created_at": {
@@ -2066,8 +3103,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "updated_at": {
@@ -2077,8 +3119,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": false,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
           "default": "now()",
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         },
         "deleted_at": {
@@ -2088,7 +3135,13 @@
           "autoincrement": false,
           "primary": false,
           "nullable": true,
+          "unique": false,
           "length": 6,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
           "mappedType": "datetime"
         }
       },
@@ -2123,10 +3176,17 @@
           "expression": "CREATE INDEX IF NOT EXISTS \"IDX_product_variant_product_image_deleted_at\" ON \"product_variant_product_image\" (\"deleted_at\") WHERE deleted_at IS NULL"
         },
         {
+          "keyName": "IDX_product_variant_product_image_store_id_id",
+          "columnNames": [],
+          "composite": false,
+          "constraint": false,
+          "primary": false,
+          "unique": false,
+          "expression": "CREATE UNIQUE INDEX IF NOT EXISTS \"IDX_product_variant_product_image_store_id_id\" ON \"product_variant_product_image\" (\"store_id\", \"id\") WHERE deleted_at IS NULL"
+        },
+        {
           "keyName": "product_variant_product_image_pkey",
-          "columnNames": [
-            "id"
-          ],
+          "columnNames": ["id"],
           "composite": false,
           "constraint": true,
           "primary": true,

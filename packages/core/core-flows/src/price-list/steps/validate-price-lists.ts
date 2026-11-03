@@ -22,7 +22,7 @@ export const validatePriceListsStepId = "validate-price-lists"
  */
 export const validatePriceListsStep = createStep(
   validatePriceListsStepId,
-  async (data: ValidatePriceListsStepInput, { container }) => {
+  async (data: ValidatePriceListsStepInput, { container, context }) => {
     const pricingModule = container.resolve<IPricingModuleService>(
       Modules.PRICING
     )
@@ -32,7 +32,11 @@ export const validatePriceListsStep = createStep(
     }
 
     const priceListIds = data.map((d) => d.id)
-    const priceLists = await pricingModule.listPriceLists({ id: priceListIds })
+    const priceLists = await pricingModule.listPriceLists(
+      { id: priceListIds },
+      {},
+      context
+    )
 
     const diff = arrayDifference(
       priceListIds,

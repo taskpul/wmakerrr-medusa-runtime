@@ -1,5 +1,6 @@
 import { ContainerRegistrationKeys, Modules } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { assertPriceSetStoreContext } from "../../common/utils/assert-price-set-store-context"
 
 /**
  * The links to create between variant and price set records.
@@ -23,7 +24,7 @@ export type CreateVariantPricingLinkStepInput = {
 export const createVariantPricingLinkStepId = "create-variant-pricing-link"
 /**
  * This step creates links between variant and price set records.
- * 
+ *
  * @example
  * const data = createVariantPricingLinkStep({
  *   links: [
@@ -36,7 +37,13 @@ export const createVariantPricingLinkStepId = "create-variant-pricing-link"
  */
 export const createVariantPricingLinkStep = createStep(
   createVariantPricingLinkStepId,
-  async (data: CreateVariantPricingLinkStepInput, { container }) => {
+  async (data: CreateVariantPricingLinkStepInput, { container, context }) => {
+    await assertPriceSetStoreContext({
+      priceSetIds: data.links.map((entry) => entry.price_set_id),
+      container,
+      context,
+    })
+
     const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
     await remoteLink.create(
       data.links.map((entry) => ({
@@ -46,15 +53,22 @@ export const createVariantPricingLinkStep = createStep(
         [Modules.PRICING]: {
           price_set_id: entry.price_set_id,
         },
-      }))
+      })),
+      context
     )
 
     return new StepResponse(void 0, data)
   },
-  async (data, { container }) => {
+  async (data, { container, context }) => {
     if (!data?.links?.length) {
       return
     }
+
+    await assertPriceSetStoreContext({
+      priceSetIds: data.links.map((entry) => entry.price_set_id),
+      container,
+      context,
+    })
 
     const remoteLink = container.resolve(ContainerRegistrationKeys.LINK)
     const links = data.links.map((entry) => ({
@@ -66,6 +80,6 @@ export const createVariantPricingLinkStep = createStep(
       },
     }))
 
-    await remoteLink.dismiss(links)
+    await remoteLink.dismiss(links, context)
   }
 )

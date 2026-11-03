@@ -4,7 +4,7 @@ Product Module (`Modules.PRODUCT`): products, variants, options and option value
 
 ## Using this package
 
-- Registered by default; consumers import it as `@medusajs/medusa/product`. No module options.
+- Registered by default; consumers import it as `@medusajs/medusa/product`. The controlled runtime adds `store_isolation`: dedicated mode is backward compatible and shared mode requires verified `Context.storeId`.
 - Resolve: `container.resolve(Modules.PRODUCT)` (`IProductModuleService`). Use `@medusajs/core-flows` workflows (`createProductsWorkflow`, `updateProductsWorkflow`, ...) for writes: they also create price sets, inventory items, sales channel and shipping profile links.
 - Prices, stock and sales channels are not on the product; they come from linked modules through Query (`variants.calculated_price`, `variants.inventory_items`, `sales_channels`).
 
@@ -12,7 +12,9 @@ Product Module (`Modules.PRODUCT`): products, variants, options and option value
 await productModuleService.createProducts({
   title: "Shirt",
   options: [{ title: "Color", values: ["Red", "Blue"] }],
-  variants: [{ title: "Red shirt", sku: "SHIRT-RED", options: { Color: "Red" } }],
+  variants: [
+    { title: "Red shirt", sku: "SHIRT-RED", options: { Color: "Red" } },
+  ],
 })
 ```
 
@@ -52,6 +54,10 @@ yarn migration:create          # after any change in src/models
 - Integration tests: `integration-tests/__tests__/product-module-service/` (products, variants, options, categories, collections, tags, types, events) plus `integration-tests/__tests__/product.spec.ts` and `product-category.spec.ts`.
 
 ## Gotchas
+
+- Store ownership is canonical in `src/store-ownership.ts`. Do not duplicate Store filters in routes or workflows. Shared operations fail closed without context, while dedicated placement uses its immutable configured Store ID.
+- Every direct Product table has immutable `store_id`, forced RLS, and same-Store relationship enforcement. ORM pivots derive ownership from both parents. Any model change requires a new migration and both shared/dedicated negative tests.
+- Shared-placement Product and variant events carry `store_id`; default dedicated payloads remain compatible, and asynchronous workflows and Index operations retain verified Store context. Shared Product links remain closed unless the counterpart module has its own certified Store boundary.
 
 - Missing `handle` is generated from `title` (`toHandle`); a handle with non URL-safe characters throws. Category and collection handles default to `kebabCase(name/title)`.
 - Variant `options` is `{ [optionTitle]: value }` and must cover every product option; duplicate option combinations across variants throw.

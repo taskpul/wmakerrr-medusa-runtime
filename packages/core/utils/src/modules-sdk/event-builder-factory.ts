@@ -66,6 +66,10 @@ export function moduleEventBuilderFactory({
       context: sharedContext,
       data: {
         id: data.length === 1 ? data[0].id : data.map((item) => item.id),
+        ...(sharedContext.storeId &&
+        sharedContext.storeId !== "__medusa_dedicated__"
+          ? { store_id: sharedContext.storeId }
+          : {}),
       },
       eventName: eventName!,
       object,

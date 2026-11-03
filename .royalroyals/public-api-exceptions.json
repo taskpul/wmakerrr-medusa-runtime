@@ -130,6 +130,42 @@
       "reason": "License-driven removal of an excluded Enterprise contract."
     },
     {
+      "path": "packages/core/utils/src/modules-sdk/decorators/context-parameter.ts",
+      "upstreamSha256": "41ac6f79ae296138a61d58069ef5bef335b37e8d7abf99ca3ad13e5a10c12734",
+      "currentSha256": "39dd8c58193d2597dbaae23e182a898a00c14fa53297ae611c732b7fd443ae09",
+      "reason": "Controlled-distribution asynchronous Store context propagation and rebinding protection for canonical module and workflow execution."
+    },
+    {
+      "path": "packages/core/utils/src/modules-sdk/decorators/inject-manager.ts",
+      "upstreamSha256": "b770cc08040ef87068893e3aa7c8b9844292289fb8e3364a7d3c84e4eeaa81d4",
+      "currentSha256": "2e34a25a4c4dd503a6e85eb507e1f923462b033499ce0905fa7ca23b9155a9f9",
+      "reason": "Controlled-distribution propagation of active Store context through manager-decorated module operations, including post-commit event flushing for transaction-bound Store execution."
+    },
+    {
+      "path": "packages/core/utils/src/modules-sdk/decorators/emit-events.ts",
+      "upstreamSha256": "8e985e2502244dd8b2ccd8aa207d6f546833750de45f91a159722a95e8202ec0",
+      "currentSha256": "7d4455701e83d693600f03ea956b0c6d33af746911c6d89fc775626336099e75",
+      "reason": "Controlled-distribution preservation of canonical module events when transaction-bound Store execution emits ORM mutations at commit."
+    },
+    {
+      "path": "packages/core/utils/src/modules-sdk/decorators/inject-transaction-manager.ts",
+      "upstreamSha256": "ca0b717c6cd6508503b9e45ab491318240afd7ce2bfb7534e5edea234c0cd226",
+      "currentSha256": "95ae8b25e40d0d5769b39182d43cc65c4bf7a4f63433850b69402f4eced3d092",
+      "reason": "Controlled-distribution transaction-local database context boundary for transaction-decorated module operations."
+    },
+    {
+      "path": "packages/core/utils/src/modules-sdk/event-builder-factory.ts",
+      "upstreamSha256": "6d9bf107cbc1311dd4a0171190beb849ed96229b1c8cba3565e070b72af940af",
+      "currentSha256": "423a13261666caa1a0f710e278f34a2522fd0ff0741ca21712e831c248881e21",
+      "reason": "Controlled-distribution shared-Store provenance on module mutation events for safe background and Index processing while preserving default Medusa event payloads."
+    },
+    {
+      "path": "packages/core/utils/src/modules-sdk/medusa-service.ts",
+      "upstreamSha256": "acf67ad2ef1c209cf5caf54c9caf38e0660480c6921d05aca95ed0946bf78a2b",
+      "currentSha256": "34c0ce4b44161cf8fabe7dbd4f06d451a787f9542ef0927031a8caf69a8cff95",
+      "reason": "Controlled-distribution generated CRUD and transaction-local database context hooks for Store ownership enforcement."
+    },
+    {
       "path": "packages/core/utils/src/policies/discover-policies.ts",
       "upstreamSha256": "89ceceb04450cf36efde711e8c656d091ac1793017ed059b2e90c657d38125fc",
       "currentSha256": null,
@@ -172,6 +208,30 @@
       "reason": "License-driven removal of an excluded Enterprise contract."
     },
     {
+      "path": "packages/core/core-flows/src/common/steps/create-remote-links.ts",
+      "upstreamSha256": "cc2d844525f9e5ef50f62080d0839b9b8e7e7b6e9e6a72c4ef2abefa67e06eb3",
+      "currentSha256": "3568db2b7558db5ff3da980d8e9e392a07fe92ad72138e3ac352062c422e1630",
+      "reason": "Controlled-distribution propagation of verified Store context into remote-link creation and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/common/steps/dismiss-remote-links.ts",
+      "upstreamSha256": "1df50b301442997c8b1868722c85367e6ad434e3f69b6d9c3e4853df08c06617",
+      "currentSha256": "3f2ddeac0afe074e5b20f5ce8f4bb4d195c39930daf75b7082868f43c6877239",
+      "reason": "Controlled-distribution propagation of verified Store context into remote-link dismissal and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/common/steps/remove-remote-links.ts",
+      "upstreamSha256": "0e60a811a6fb46790e9cfe43cffd19bfb0ec5db4e562b91c953146434234b9d0",
+      "currentSha256": "a40e18abbfac7433867b800a3bec0e23e19bc285bb809ef3389996b4eb14536f",
+      "reason": "Controlled-distribution propagation of verified Store context into remote-link removal and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/common/steps/update-remote-links.ts",
+      "upstreamSha256": "ece2b5de26b5e1928eec25d6e0ae3704ce3276b9c206d8f566ceeee85da925f6",
+      "currentSha256": "1519fe8de74b799f758ec0aaa312ef13208cd005a89d3e6c07ae60703e74bfa6",
+      "reason": "Controlled-distribution propagation of verified Store context into remote-link updates and compensation."
+    },
+    {
       "path": "packages/core/core-flows/src/cart/steps/get-variant-price-sets.ts",
       "upstreamSha256": "faf1f248038c1be9aea7862fc7bcd0132f544841c2091f672187e93ae7091f1e",
       "currentSha256": "25ba18c1b3a43057d0ddc7bf79176c2d71e28c48566662e889a168e3fcd739b7",
@@ -212,6 +272,108 @@
       "upstreamSha256": "5c279c9e8e2a466fe9588c11f8d44bdf7dd0890c221df2532eb03dc7e1505ad7",
       "currentSha256": "b0b2ec624da586318b82ec21a3bf21c8aeab8351067d99494ad77590dc5c855e",
       "reason": "Controlled-distribution propagation of verified Store context into price-set reads, updates, and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/inventory/workflows/batch-inventory-item-levels.ts",
+      "upstreamSha256": "20a5ac500817df96cd28953a49aab9c1666085ad1cbaadd8b84aef3065f8a45d",
+      "currentSha256": "04da4ee097849ba0b7538fa18f52fefe954fdcfc10c67ab213ed5f7a60882c40",
+      "reason": "Controlled-distribution validation of owned Stock Location endpoints before Inventory level batch creates and updates."
+    },
+    {
+      "path": "packages/core/core-flows/src/inventory/workflows/update-inventory-levels.ts",
+      "upstreamSha256": "b2b2d5108f716c80b8b3d683f179aaec1b4c919d44fb1d0427aefbb70d6c8a78",
+      "currentSha256": "b9a0480e1daa05734140fc043eb130c6b427a7a3b7752284e0ca9f53b2bddfb7",
+      "reason": "Controlled-distribution validation of owned Stock Location endpoints before Inventory level updates."
+    },
+    {
+      "path": "packages/core/core-flows/src/price-list/steps/delete-price-lists.ts",
+      "upstreamSha256": "53c4919ee0c80332f7a34c35bffd00528c0c890e4b9f6cb758fb47818b385d26",
+      "currentSha256": "45b400d0e43038be2ed685b37505ed47072b4981f588a7d42e2a3679760896e6",
+      "reason": "Controlled-distribution propagation of verified Store context into price-list deletion and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/price-list/steps/get-existing-price-lists-price-ids.ts",
+      "upstreamSha256": "d5f6c6924f6c0897e54748fd075e9a8cb5e7ebfcec87b361904b53677e0fa544",
+      "currentSha256": "2ed84c4bc5a7d1d3c2f35bdc795cf060d22fb7670e2d2c82bf99aa323855ff71",
+      "reason": "Controlled-distribution propagation of verified Store context into existing price-list price lookup."
+    },
+    {
+      "path": "packages/core/core-flows/src/price-list/steps/remove-price-list-prices.ts",
+      "upstreamSha256": "cedf1495c411e4f4fbcd5523bfb28280b2e2fc42204dd47a211f1cf184a95616",
+      "currentSha256": "373f9a520e78a11bf1807326c3958e5c95fc5fbba67ede2abdf5d69abc83572c",
+      "reason": "Controlled-distribution propagation of verified Store context into price-list price removal and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/price-list/steps/update-price-list-prices.ts",
+      "upstreamSha256": "049f6283309501ca1f6aa83477cdafbf21606cc7d7d8e5e50725a53be13c50f3",
+      "currentSha256": "96a51b27caf1eade53f36e2ac11120ee3375db268a20aec663b90655427913c8",
+      "reason": "Controlled-distribution propagation of verified Store context into price-list price updates and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/price-list/steps/update-price-lists.ts",
+      "upstreamSha256": "2c48b600b7815767eb585ef4115819fda794c3c524523761114de7474ae2d502",
+      "currentSha256": "2f9ced069375500e6d4f01f923d5fd6f7fc5257822cd8fe1a06830d85770052c",
+      "reason": "Controlled-distribution propagation of verified Store context into price-list updates and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/price-list/steps/validate-price-lists.ts",
+      "upstreamSha256": "def666a0774f43bb69025b53d160138dd90d2b0c8e070127c797b504ac6882fd",
+      "currentSha256": "8580ac907ecc70bf41a1a2539ec59f2cfb6cd7d8acc8c9866e39bba0ac2f24de",
+      "reason": "Controlled-distribution propagation of verified Store context into price-list validation."
+    },
+    {
+      "path": "packages/core/core-flows/src/price-list/steps/validate-variant-price-links.ts",
+      "upstreamSha256": "1a5cb0f528ecab8cf8ba33e36b9ddee8dcd5ccd5abb338572d61efc0bbe062b0",
+      "currentSha256": "2d249fa267e8abd24beab0b88a02c084445e1f264a1ed24b85c84a134a6c04e6",
+      "reason": "Controlled-distribution validation of Price Set ownership before Product variant link use."
+    },
+    {
+      "path": "packages/core/core-flows/src/pricing/steps/create-price-preferences.ts",
+      "upstreamSha256": "c7e0bfaf0e499e6be5662632dbd4d8fcaa609888b6f63fd04cf5361ae8c45d6d",
+      "currentSha256": "26848267cf778a9d0e468facbc4b1aceee52f1205b62a48e25b6796eed275b53",
+      "reason": "Controlled-distribution propagation of verified Store context into price-preference creation and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/pricing/steps/delete-price-preferences.ts",
+      "upstreamSha256": "c35c47990c4b51fd6f8d8c4e0c5cfafb1e53bddf98b912657682788dfc197235",
+      "currentSha256": "4e12d37211f9a2e426564618549ff945d40aa8d045f6067f5e8e47707d7d511d",
+      "reason": "Controlled-distribution propagation of verified Store context into price-preference deletion and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/pricing/steps/update-price-preferences-as-array.ts",
+      "upstreamSha256": "13cb5129066684dc11ddcbf6c59e9375306c7bd5efa9a58275a9dce10565c515",
+      "currentSha256": "52c6668308c5ac2ff05c24180c9c7e3cda3dec53d164d998eb5d21092a7d47e0",
+      "reason": "Controlled-distribution propagation of verified Store context into batch price-preference updates and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/pricing/steps/update-price-preferences.ts",
+      "upstreamSha256": "71a01a437353888364815e2d741164fd504efd4cf81065e3f4087bd356521122",
+      "currentSha256": "076b74b8bc8185c7ae0039d0c411b9a42f38602eac7aba04351eb97dc08f8671",
+      "reason": "Controlled-distribution propagation of verified Store context into price-preference updates and compensation."
+    },
+    {
+      "path": "packages/core/core-flows/src/product/steps/create-variant-pricing-link.ts",
+      "upstreamSha256": "6f77a8f93599901e4eebd38ba4f90c525d5893114c98a052e9fc7b222cdd26f6",
+      "currentSha256": "0c52ec75b123da1eab801a3aa852dc70e7998bfa50f99cef96c7e880b8ccc259",
+      "reason": "Controlled-distribution validation and propagation of verified Store context for Product variant Price Set links."
+    },
+    {
+      "path": "packages/core/query/src/query/query.ts",
+      "upstreamSha256": "60bb08ea9232c86e5f28e820b634c93f59c6ce8cb8265423643c4323a1cc615e",
+      "currentSha256": "e559d6630f013dcd314a1df65c2dd211a92802e75893f9856e2e69f5e940ce53",
+      "reason": "Controlled-distribution propagation of active Store context into Index queries."
+    },
+    {
+      "path": "packages/core/orchestration/src/workflow/local-workflow.ts",
+      "upstreamSha256": "81b79844de699b358747030181410381007804bc39d6e1267dcb24a7cc7598b0",
+      "currentSha256": "47ebb5826e7311a7e6a5ab8d875db38098c2f540952b9376b16eaee5a80eb886",
+      "reason": "Controlled-distribution restoration and immutable validation of persisted Store context during workflow continuation."
+    },
+    {
+      "path": "packages/core/workflows-sdk/src/helper/workflow-export.ts",
+      "upstreamSha256": "dd25ebca366feed43b3c1eb3ece646a630dcd4baa5200934842c9c23986892cc",
+      "currentSha256": "0de90977ee08fa7f1acb2269f2f9f6509d0e4a8cbf30f1bdbc14ab44b77916f2",
+      "reason": "Controlled-distribution persistence of verified Store context in workflow flow metadata."
     }
   ],
   "evidence": {

@@ -7,6 +7,7 @@ import {
   Modules,
   promiseAll,
 } from "@medusajs/framework/utils"
+import { assertPriceSetStoreContext } from "../../common/utils/assert-price-set-store-context"
 
 /**
  * The data to set the price sets of a shipping option.
@@ -66,7 +67,10 @@ export const setShippingOptionsPriceSetsStepId =
  */
 export const setShippingOptionsPriceSetsStep = createStep(
   setShippingOptionsPriceSetsStepId,
-  async (data: SetShippingOptionsPriceSetsStepInput, { container }) => {
+  async (
+    data: SetShippingOptionsPriceSetsStepInput,
+    { container, context }
+  ) => {
     if (!data.length) {
       return
     }
@@ -137,14 +141,22 @@ export const setShippingOptionsPriceSetsStep = createStep(
       .flat()
       .filter((d): d is LinkItems[0] => !!d)
 
+    await assertPriceSetStoreContext({
+      priceSetIds: [...currentExistingLinks, ...linksToCreate].map(
+        (link) => link[Modules.PRICING].price_set_id
+      ),
+      container,
+      context,
+    })
+
     const promises: Promise<unknown[]>[] = []
 
     if (linksToRemove.length) {
-      promises.push(remoteLink.dismiss(linksToRemove))
+      promises.push(remoteLink.dismiss(linksToRemove, context))
     }
 
     if (linksToCreate.length) {
-      promises.push(remoteLink.create(linksToCreate))
+      promises.push(remoteLink.create(linksToCreate, context))
     }
 
     await promiseAll(promises)
@@ -154,21 +166,30 @@ export const setShippingOptionsPriceSetsStep = createStep(
       linksToRemove: linksToCreate,
     })
   },
-  async (rollbackData, { container }) => {
+  async (rollbackData, { container, context }) => {
     if (!rollbackData) {
       return
     }
 
     const remoteLink = container.resolve<Link>(ContainerRegistrationKeys.LINK)
 
+    await assertPriceSetStoreContext({
+      priceSetIds: [
+        ...rollbackData.linksToRemove,
+        ...rollbackData.linksToCreate,
+      ].map((link) => link[Modules.PRICING].price_set_id),
+      container,
+      context,
+    })
+
     const promises: Promise<unknown[]>[] = []
 
     if (rollbackData.linksToRemove.length) {
-      promises.push(remoteLink.dismiss(rollbackData.linksToRemove))
+      promises.push(remoteLink.dismiss(rollbackData.linksToRemove, context))
     }
 
     if (rollbackData.linksToCreate.length) {
-      promises.push(remoteLink.create(rollbackData.linksToCreate))
+      promises.push(remoteLink.create(rollbackData.linksToCreate, context))
     }
 
     await promiseAll(promises)

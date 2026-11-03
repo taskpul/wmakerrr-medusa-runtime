@@ -38,13 +38,13 @@ Stock Location Module for Medusa: manages stock locations (such as warehouses) a
 
 ## At a glance
 
-| | |
-| --- | --- |
-| Package | `@medusajs/stock-location` |
-| Type | Commerce Module |
-| Module key | `Modules.STOCK_LOCATION` (`"stock_location"`) |
-| Registered by default | Yes |
-| Import from | `@medusajs/medusa/stock-location` |
+|                       |                                               |
+| --------------------- | --------------------------------------------- |
+| Package               | `@medusajs/stock-location`                    |
+| Type                  | Commerce Module                               |
+| Module key            | `Modules.STOCK_LOCATION` (`"stock_location"`) |
+| Registered by default | Yes                                           |
+| Import from           | `@medusajs/medusa/stock-location`             |
 
 ## Installation
 
@@ -63,14 +63,25 @@ const createStockLocationStep = createStep(
   async ({}, { container }) => {
     const stockLocationModuleService = container.resolve(Modules.STOCK_LOCATION)
 
-    const stockLocation = await stockLocationModuleService.createStockLocations({
-      name: "Warehouse 1",
-    })
+    const stockLocation = await stockLocationModuleService.createStockLocations(
+      {
+        name: "Warehouse 1",
+      }
+    )
 
     return new StepResponse({ stockLocation }, stockLocation.id)
   }
 )
 ```
+
+## Controlled Store isolation
+
+The controlled runtime accepts `store_isolation` module options. Dedicated
+placement derives one immutable Store from configuration; shared placement
+requires verified `Context.storeId`. Stock locations and their addresses are
+Store-owned and protected by forced PostgreSQL RLS and same-Store relationship
+constraints. Shared deployments must provision the non-bypass
+`medusa_stock_location_request` role. Client input never controls ownership.
 
 ## Resources
 

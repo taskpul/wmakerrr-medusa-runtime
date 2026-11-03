@@ -5,6 +5,7 @@ import {
   Modules,
 } from "@medusajs/framework/utils"
 import { createStep, StepResponse } from "@medusajs/framework/workflows-sdk"
+import { assertPriceSetStoreContext } from "../../common/utils/assert-price-set-store-context"
 
 /**
  * The configurations to retrieve pricing links for product variants.
@@ -22,7 +23,7 @@ export const getVariantPricingLinkStepId = "get-variant-pricing-link"
  */
 export const getVariantPricingLinkStep = createStep(
   getVariantPricingLinkStepId,
-  async (data: GetVariantPricingLinkStepInput, { container }) => {
+  async (data: GetVariantPricingLinkStepInput, { container, context }) => {
     if (!data.ids.length) {
       return new StepResponse([])
     }
@@ -38,11 +39,18 @@ export const getVariantPricingLinkStep = createStep(
 
     const existingItems = (await linkService.list(
       { variant_id: data.ids },
-      { select: ["variant_id", "price_set_id"] }
+      { select: ["variant_id", "price_set_id"] },
+      context
     )) as {
       variant_id: string
       price_set_id: string
     }[]
+
+    await assertPriceSetStoreContext({
+      priceSetIds: existingItems.map((item) => item.price_set_id),
+      container,
+      context,
+    })
 
     if (existingItems.length !== data.ids.length) {
       const missing = arrayDifference(

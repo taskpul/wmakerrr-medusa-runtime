@@ -16,6 +16,7 @@ import {
   UpsertStockLocationAddressInput,
   UpsertStockLocationInput,
 } from "@medusajs/framework/types"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
   EmitEvents,
   InjectManager,
@@ -25,9 +26,16 @@ import {
   MedusaService,
   Modules,
   promiseAll,
+  MedusaError,
 } from "@medusajs/framework/utils"
 import { joinerConfig } from "../joiner-config"
 import { StockLocation, StockLocationAddress } from "../models"
+import { setStockLocationStoreDatabaseContext } from "../database-context"
+import {
+  GeneratedCrudHookInput,
+  GeneratedCrudResultHookInput,
+  StockLocationStoreOwnership,
+} from "../store-ownership"
 
 type InjectedDependencies = {
   [Modules.EVENT_BUS]: IEventBusService
@@ -54,6 +62,8 @@ export default class StockLocationModuleService
   protected readonly stockLocationAddressService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof StockLocationAddress>
   >
+  protected readonly storeOwnership_: StockLocationStoreOwnership
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -62,7 +72,7 @@ export default class StockLocationModuleService
       stockLocationService,
       stockLocationAddressService,
     }: InjectedDependencies,
-    protected readonly moduleDeclaration?: InternalModuleDeclaration
+    protected readonly moduleDeclaration: InternalModuleDeclaration
   ) {
     // @ts-ignore
     super(...arguments)
@@ -71,10 +81,71 @@ export default class StockLocationModuleService
     this.stockLocationService_ = stockLocationService
     this.stockLocationAddressService_ = stockLocationAddressService
     this.eventBusModuleService_ = eventBusModuleService
+    this.storeOwnership_ = new StockLocationStoreOwnership(moduleDeclaration, {
+      StockLocation: stockLocationService,
+      StockLocationAddress: stockLocationAddressService,
+    })
   }
 
   __joinerConfig(): ModuleJoinerConfig {
     return joinerConfig
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeOwnership_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeOwnership_.resolveStoreId(context)
+    const execute = async (
+      transactionManager: SqlEntityManager,
+      scopedContext: Context
+    ) => {
+      scopedContext.storeId ??= storeId
+      const activeStoreId = this.databaseStoreContexts_.get(transactionManager)
+      if (activeStoreId && activeStoreId !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Stock Location transaction is already bound to another Store"
+        )
+      }
+      if (!activeStoreId) {
+        await setStockLocationStoreDatabaseContext(
+          transactionManager,
+          storeId,
+          this.storeOwnership_.isShared
+        )
+        this.databaseStoreContexts_.set(transactionManager, storeId)
+      }
+      return await task(scopedContext)
+    }
+    const transactionManager = context.transactionManager as
+      SqlEntityManager | undefined
+    if (transactionManager) return await execute(transactionManager, context)
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      {
+        manager: context.manager as SqlEntityManager | undefined,
+        isolationLevel: context.isolationLevel,
+        enableNestedTransactions: context.enableNestedTransactions,
+      } as any
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: GeneratedCrudHookInput
+  ): Promise<unknown[]> {
+    return this.storeOwnership_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: GeneratedCrudResultHookInput
+  ): Promise<void> {
+    this.storeOwnership_.validateGeneratedMethodResult(input)
   }
 
   // @ts-expect-error
@@ -114,7 +185,9 @@ export default class StockLocationModuleService
     data: CreateStockLocationInput[],
     @MedusaContext() context: Context = {}
   ): Promise<InferEntityType<typeof StockLocation>[]> {
-    return await this.stockLocationService_.create(data, context)
+    const stamped = this.storeOwnership_.stampLocations(data, context)
+    await this.storeOwnership_.assertAddresses(stamped, context)
+    return await this.stockLocationService_.create(stamped, context)
   }
 
   async upsertStockLocations(
@@ -230,7 +303,29 @@ export default class StockLocationModuleService
     | InferEntityType<typeof StockLocation>[]
     | InferEntityType<typeof StockLocation>
   > {
-    return await this.stockLocationService_.update(data, context)
+    const entries =
+      "selector" in data
+        ? data
+        : this.storeOwnership_.stampLocations(data, context)
+    if ("selector" in entries) {
+      entries.selector = this.storeOwnership_.scope(entries.selector, context)
+      entries.data = this.storeOwnership_.stampLocations(entries.data, context)
+      await this.storeOwnership_.assertAddresses(entries.data, context)
+    } else {
+      const records = Array.isArray(entries) ? entries : [entries]
+      await this.storeOwnership_.assertOwnedIds(
+        this.stockLocationService_,
+        records
+          .map(
+            (record) => (record as UpdateStockLocationInput & { id: string }).id
+          )
+          .filter(Boolean),
+        "Stock locations",
+        context
+      )
+      await this.storeOwnership_.assertAddresses(records, context)
+    }
+    return await this.stockLocationService_.update(entries, context)
   }
 
   // @ts-expect-error
@@ -270,7 +365,16 @@ export default class StockLocationModuleService
     input: (StockLocationAddressInput & { id: string })[],
     @MedusaContext() context: Context
   ) {
-    return await this.stockLocationAddressService_.update(input, context)
+    await this.storeOwnership_.assertOwnedIds(
+      this.stockLocationAddressService_,
+      input.map(({ id }) => id),
+      "Stock location addresses",
+      context
+    )
+    return await this.stockLocationAddressService_.update(
+      this.storeOwnership_.stamp(input, context),
+      context
+    )
   }
 
   async upsertStockLocationAddresses(
@@ -320,12 +424,26 @@ export default class StockLocationModuleService
 
     if (toCreate.length) {
       operations.push(
-        this.stockLocationAddressService_.create(toCreate, context)
+        this.stockLocationAddressService_.create(
+          this.storeOwnership_.stamp(toCreate, context),
+          context
+        )
       )
     }
     if (toUpdate.length) {
       operations.push(
-        this.stockLocationAddressService_.update(toUpdate, context)
+        (async () => {
+          await this.storeOwnership_.assertOwnedIds(
+            this.stockLocationAddressService_,
+            toUpdate.map(({ id }) => id),
+            "Stock location addresses",
+            context
+          )
+          return await this.stockLocationAddressService_.update(
+            this.storeOwnership_.stamp(toUpdate, context),
+            context
+          )
+        })()
       )
     }
 

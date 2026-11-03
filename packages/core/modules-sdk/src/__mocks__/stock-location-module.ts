@@ -19,5 +19,9 @@ export const StockLocationModule = {
   },
 
   list: jest.fn(async () => []),
+  listStockLocations: jest.fn(async (filters) =>
+    (filters.id ?? []).map((id) => ({ id }))
+  ),
+  __storeIsolationMode: jest.fn(() => "dedicated"),
   softDelete: jest.fn(() => {}),
 }

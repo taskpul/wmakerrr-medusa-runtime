@@ -56,6 +56,13 @@ export default defineLink(ProductModule.linkable.product, {
 
 - `MedusaService({ Post })` generates `retrievePost`, `listPosts`, `listAndCountPosts`, `createPosts`, `updatePosts`, `deletePosts`, `softDeletePosts`, `restorePosts`. Names use the model key, pluralized; override with `{ Post: { dto, singular, plural } }`.
 - Generated `update*` accepts `{ id, ...data }` objects or `{ selector, data }`.
+- Module services can override the protected `prepareGeneratedMethodArgs_` and
+  `validateGeneratedMethodResult_` hooks to enforce one domain boundary across
+  generated CRUD methods. Keep the default no-op behavior for modules that do
+  not need this boundary.
+- The protected `withManagerContext_` hook runs after `@EmitEvents` has created
+  its message aggregator and inside transaction-decorated internal calls. Use
+  it for transaction-local module context without replacing generated methods.
 - `defineLink` options: per side `linkable`, `isList`, `deleteCascade`, `filterable`, `field`; third arg `{ database: { table, idPrefix, extraColumns }, readOnly, pk }`.
 - `ModuleProvider(Modules.FILE, { services: [MyProviderService] })` wraps provider packages; each service needs a static `identifier`.
 - Other frequently used exports: `Modules`, `ContainerRegistrationKeys`, `MedusaError` (`MedusaError.Types.*`), `QueryContext`, `MathBN`/`BigNumber`, `promiseAll`, `generateEntityId`, `loadEnv`, `*WorkflowEvents` constants (`src/core-flows/events.ts`), `defineFileConfig`.

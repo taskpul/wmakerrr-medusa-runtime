@@ -4,9 +4,6 @@ on:
   pull_request:
     branches:
       - main
-  push:
-    branches:
-      - main
   workflow_dispatch:
     inputs:
       candidate_ref:
@@ -18,12 +15,161 @@ permissions:
   contents: read
 
 concurrency:
-  group: controlled-distribution-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: false
+  group: controlled-distribution-${{ github.event.pull_request.number || inputs.candidate_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  store-ownership:
-    name: Pricing Store ownership
+  classify:
+    name: Classify candidate changes
+    runs-on: ubuntu-latest
+    outputs:
+      docs_only: ${{ steps.changes.outputs.docs_only }}
+      pricing_boundary: ${{ steps.changes.outputs.pricing_boundary }}
+      product_catalog_boundary: ${{ steps.changes.outputs.product_catalog_boundary }}
+      fulfillment_shipping_boundary: ${{ steps.changes.outputs.fulfillment_shipping_boundary }}
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Classify changed files
+        id: changes
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+            echo "pricing_boundary=true" >> "$GITHUB_OUTPUT"
+            echo "product_catalog_boundary=true" >> "$GITHUB_OUTPUT"
+            echo "fulfillment_shipping_boundary=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git diff --name-only "$BASE_SHA" "$HEAD_SHA" > "$RUNNER_TEMP/changed-files.txt"
+
+          if grep -Evq '(^docs/|\.mdx?$|\.txt$)' "$RUNNER_TEMP/changed-files.txt"; then
+            echo "docs_only=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "docs_only=true" >> "$GITHUB_OUTPUT"
+          fi
+
+          if grep -Eq '^(packages/core/(core-flows|orchestration|utils|workflows-sdk)/|packages/modules/pricing/|\.royalroyals/verify-pricing-isolation\.mjs$|package.json$|yarn.lock$|\.yarn/|turbo.json$)' "$RUNNER_TEMP/changed-files.txt"; then
+            echo "pricing_boundary=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "pricing_boundary=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if grep -Eq '^(packages/modules/product/|packages/modules/index/|packages/modules/link-modules/src/definitions/|packages/core/modules-sdk/src/(link|store-link-ownership)\.ts$|packages/core/core-flows/src/(product|product-category)/|packages/medusa/src/api/(admin|store)/(collections|product-categories|product-options|product-tags|product-types|product-variants|products)/|\.royalroyals/(product-catalog-boundary\.json|verify-product-catalog-inventory\.mjs|verify-product-persistence-isolation\.mjs|verify-product-runtime-isolation\.mjs)$)' "$RUNNER_TEMP/changed-files.txt"; then
+            echo "product_catalog_boundary=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "product_catalog_boundary=false" >> "$GITHUB_OUTPUT"
+          fi
+
+          if grep -Eq '^(packages/modules/fulfillment/|packages/modules/link-modules/src/definitions/|packages/core/modules-sdk/src/(link|store-link-ownership)\.ts$|packages/core/core-flows/src/(fulfillment|shipping-options|shipping-profile|cart|order)/|packages/medusa/src/api/(admin|store)/|\.royalroyals/(fulfillment-shipping-boundary\.json|verify-fulfillment-(shipping-inventory|runtime-isolation)\.mjs)$)' "$RUNNER_TEMP/changed-files.txt"; then
+            echo "fulfillment_shipping_boundary=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "fulfillment_shipping_boundary=false" >> "$GITHUB_OUTPUT"
+          fi
+
+  pull-request-verification:
+    name: Affected package verification
+    if: github.event_name == 'pull_request' && needs.classify.outputs.docs_only != 'true'
+    needs: classify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DB_HOST: localhost
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+    steps:
+      - name: Check out candidate
+        uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
+        with:
+          node-version-file: .nvmrc
+
+      - name: Install immutable dependencies
+        run: node .yarn/releases/yarn-3.2.1.cjs install --immutable
+
+      - name: Build affected packages once
+        run: >-
+          node .yarn/releases/yarn-3.2.1.cjs turbo run build
+          --affected
+          --no-daemon
+
+      - name: Prove Pricing Store ownership
+        if: needs.classify.outputs.pricing_boundary == 'true'
+        run: |
+          node .royalroyals/verify-pricing-isolation.mjs
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/workflows-sdk test --runInBand src/utils/composer/__tests__/compose.spec.ts
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/core-flows test --runInBand src/product/steps/__tests__/create-variant-pricing-link.spec.ts
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/pricing test:integration --runTestsByPath integration-tests/__tests__/services/pricing-module/store-ownership.spec.ts integration-tests/__tests__/services/pricing-module/store-ownership-dedicated.spec.ts --runInBand
+
+      - name: Verify Product catalog design inventory
+        if: needs.classify.outputs.product_catalog_boundary == 'true'
+        run: |
+          node .royalroyals/verify-product-catalog-inventory.mjs
+          node .royalroyals/verify-product-persistence-isolation.mjs
+
+      - name: Prove Fulfillment and shipping Store ownership
+        if: needs.classify.outputs.fulfillment_shipping_boundary == 'true'
+        run: |
+          node .royalroyals/verify-fulfillment-shipping-inventory.mjs
+          node .royalroyals/verify-fulfillment-runtime-isolation.mjs
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/fulfillment test --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/fulfillment test:integration --runTestsByPath integration-tests/__tests__/fulfillment-module-service/store-ownership-persistence.spec.ts integration-tests/__tests__/fulfillment-module-service/store-ownership-service.spec.ts integration-tests/__tests__/fulfillment-module-service/store-ownership-dedicated.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/modules-sdk test --runInBand src/__tests__/remote-link.spec.ts
+
+  pull-request-gate:
+    name: Controlled distribution checks
+    if: always() && github.event_name == 'pull_request'
+    needs:
+      - classify
+      - pull-request-verification
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require applicable checks
+        env:
+          CLASSIFY_RESULT: ${{ needs.classify.result }}
+          VERIFICATION_RESULT: ${{ needs.pull-request-verification.result }}
+        shell: bash
+        run: |
+          if [[ "$CLASSIFY_RESULT" != "success" ]]; then
+            exit 1
+          fi
+
+          if [[ "$VERIFICATION_RESULT" != "success" && "$VERIFICATION_RESULT" != "skipped" ]]; then
+            exit 1
+          fi
+
+  candidate-security:
+    name: Candidate Pricing security
+    if: github.event_name == 'workflow_dispatch'
+    needs: classify
     runs-on: ubuntu-latest
     timeout-minutes: 20
     services:
@@ -41,6 +187,7 @@ jobs:
           --health-retries 5
     env:
       DB_HOST: localhost
+      DB_PORT: 5432
       DB_USERNAME: postgres
       DB_PASSWORD: postgres
     steps:
@@ -48,7 +195,7 @@ jobs:
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
         with:
           persist-credentials: false
-          ref: ${{ inputs.candidate_ref || github.sha }}
+          ref: ${{ inputs.candidate_ref }}
 
       - name: Set up Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
@@ -62,18 +209,22 @@ jobs:
         run: >-
           node .yarn/releases/yarn-3.2.1.cjs turbo run build
           --filter=@medusajs/pricing...
+          --filter=@medusajs/core-flows
+          --filter=@medusajs/workflows-sdk
+          --filter=@medusajs/orchestration
           --no-daemon
 
       - name: Prove Pricing Store ownership
-        run: >-
-          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/pricing
-          test:integration --runTestsByPath
-          integration-tests/__tests__/services/pricing-module/store-ownership.spec.ts
-          --runInBand
+        run: |
+          node .royalroyals/verify-pricing-isolation.mjs
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/workflows-sdk test --runInBand src/utils/composer/__tests__/compose.spec.ts
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/core-flows test --runInBand src/product/steps/__tests__/create-variant-pricing-link.spec.ts
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/pricing test:integration --runTestsByPath integration-tests/__tests__/services/pricing-module/store-ownership.spec.ts integration-tests/__tests__/services/pricing-module/store-ownership-dedicated.spec.ts --runInBand
 
   evidence:
     name: Immutable candidate evidence
-    needs: store-ownership
+    if: github.event_name == 'workflow_dispatch'
+    needs: candidate-security
     runs-on: windows-latest
     timeout-minutes: 30
     env:
@@ -93,7 +244,7 @@ jobs:
         with:
           path: candidate
           persist-credentials: false
-          ref: ${{ inputs.candidate_ref || github.sha }}
+          ref: ${{ inputs.candidate_ref }}
           fetch-depth: 0
 
       - name: Restore canonical Git blobs
@@ -135,6 +286,11 @@ jobs:
           node .royalroyals/verify-bootstrap.mjs
           node .royalroyals/verify-baseline.mjs
           node .royalroyals/verify-public-api.mjs
+          node .royalroyals/verify-pricing-isolation.mjs
+          node .royalroyals/verify-product-catalog-inventory.mjs
+          node .royalroyals/verify-product-persistence-isolation.mjs
+          node .royalroyals/verify-fulfillment-shipping-inventory.mjs
+          node .royalroyals/verify-fulfillment-runtime-isolation.mjs
 
       - name: Build complete public workspace
         working-directory: candidate

@@ -14,9 +14,11 @@ import {
 import { FulfillmentSet } from "./fulfillment-set"
 import { GeoZone } from "./geo-zone"
 import { ShippingOption } from "./shipping-option"
+import { FULFILLMENT_DEDICATED_STORE_ID } from "../store-ownership"
 
 export type ServiceZoneSchema = {
   id: PrimaryKeyModifier<string, IdProperty>
+  store_id: TextProperty
   name: TextProperty
   fulfillment_set: BelongsTo<() => typeof FulfillmentSet>
   geo_zones: HasMany<() => typeof GeoZone>
@@ -27,6 +29,7 @@ export type ServiceZoneSchema = {
 export const ServiceZone = model
   .define("service_zone", {
     id: model.id({ prefix: "serzo" }).primaryKey(),
+    store_id: model.text().default(FULFILLMENT_DEDICATED_STORE_ID),
     name: model.text(),
     fulfillment_set: model.belongsTo<() => typeof FulfillmentSet>(
       () => FulfillmentSet,
@@ -47,7 +50,14 @@ export const ServiceZone = model
   })
   .indexes([
     {
-      on: ["name"],
+      name: "IDX_service_zone_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+      where: "deleted_at IS NULL",
+    },
+    {
+      name: "IDX_service_zone_name_unique",
+      on: ["store_id", "name"],
       unique: true,
       where: "deleted_at IS NULL",
     },

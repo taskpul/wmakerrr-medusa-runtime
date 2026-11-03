@@ -1,4 +1,5 @@
 import { model } from "@medusajs/framework/utils"
+import { PRODUCT_DEDICATED_STORE_ID } from "../store-ownership"
 import Product from "./product"
 import ProductVariant from "./product-variant"
 import ProductVariantProductImage from "./product-variant-product-image"
@@ -8,6 +9,7 @@ const ProductImage = model
     { tableName: "image", name: "ProductImage" },
     {
       id: model.id({ prefix: "img" }).primaryKey(),
+      store_id: model.text().default(PRODUCT_DEDICATED_STORE_ID),
       url: model.text(),
       metadata: model.json().nullable(),
       rank: model.number().default(0),
@@ -24,6 +26,12 @@ const ProductImage = model
     }
   )
   .indexes([
+    {
+      name: "IDX_image_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+      where: "deleted_at IS NULL",
+    },
     {
       name: "IDX_product_image_url",
       on: ["url"],

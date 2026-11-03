@@ -38,12 +38,12 @@ Inventory Module for Medusa: manages inventory items, their stock levels per loc
 
 ## At a glance
 
-| | |
-| --- | --- |
-| Package | `@medusajs/inventory` |
-| Type | Commerce Module |
-| Module key | `Modules.INVENTORY` (`"inventory"`) |
-| Registered by default | Yes |
+|                       |                                     |
+| --------------------- | ----------------------------------- |
+| Package               | `@medusajs/inventory`               |
+| Type                  | Commerce Module                     |
+| Module key            | `Modules.INVENTORY` (`"inventory"`) |
+| Registered by default | Yes                                 |
 
 ## Installation
 
@@ -59,6 +59,16 @@ const inventoryModuleService = container.resolve(Modules.INVENTORY)
 const [inventoryItems, count] =
   await inventoryModuleService.listAndCountInventoryItems({})
 ```
+
+## Controlled Store isolation
+
+The controlled runtime accepts `store_isolation` module options. Dedicated
+placement derives ownership from one immutable `store_id`; shared placement
+requires verified `Context.storeId` on every operation. Inventory items,
+levels, and reservations are Store-owned, SKU and level uniqueness are
+Store-scoped, and PostgreSQL request-role RLS is forced. Application code must
+not accept `store_id` from clients. Shared deployments must provision the
+non-bypass `medusa_inventory_request` role and its least-privilege grants.
 
 ## Resources
 

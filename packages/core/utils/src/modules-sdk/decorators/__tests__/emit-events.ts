@@ -2,6 +2,7 @@ import { EmitEvents } from "../emit-events"
 import { MedusaContext } from "../context-parameter"
 import { Context } from "@medusajs/types"
 import { InjectSharedContext } from "../inject-shared-context"
+import { InjectManager } from "../inject-manager"
 
 describe("EmitEvents", () => {
   it(`should call the emit event method from the base service including the messages and their options`, async () => {
@@ -92,5 +93,44 @@ describe("EmitEvents", () => {
         },
       ],
     })
+  })
+
+  it("prepares the event aggregator before a manager context boundary", async () => {
+    const managerContext = jest.fn()
+    const emit = jest.fn()
+
+    class FakeService {
+      baseRepository_ = {
+        getFreshManager: () => ({}),
+      }
+
+      async withManagerContext_(
+        context: Context,
+        task: (context: Context) => Promise<void>
+      ) {
+        managerContext(context.messageAggregator)
+        await task(context)
+        context.messageAggregator?.saveRawMessageData({
+          data: { id: 1 },
+          object: "test",
+          action: "create",
+          source: "test",
+          eventName: "manager-context-event",
+        })
+      }
+
+      async emitEvents_(...args) {
+        emit(...args)
+      }
+
+      @InjectManager()
+      @EmitEvents()
+      async method(@MedusaContext() _context: Context = {}) {}
+    }
+
+    await new FakeService().method()
+
+    expect(managerContext).toHaveBeenCalledWith(expect.anything())
+    expect(emit).toHaveBeenCalledTimes(1)
   })
 })

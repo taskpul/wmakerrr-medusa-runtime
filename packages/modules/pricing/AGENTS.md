@@ -39,6 +39,25 @@ Docs: https://docs.medusajs.com/resources/commerce-modules/pricing.md, https://d
 
 ## Architecture
 
+- `src/store-ownership.ts` is the single Store-ownership boundary for Pricing.
+  It scopes every generated CRUD method before pagination, stamps writes,
+  validates returned records, and verifies parent ownership. The calculation
+  repository receives the resolved Store and scopes every raw SQL branch.
+- `Migration20261103135040_enforce_store_ownership.ts` adds reversible
+  PostgreSQL triggers that reject cross-Store parent references and prevent
+  reassignment of an existing Pricing record to another Store. The triggers
+  cover relationships that cannot safely share `store_id` in MikroORM's
+  generated relationship mapping.
+- `src/database-context.ts` binds every Pricing operation to a transaction-local
+  `medusa.store_id`. Shared mode also switches to the fixed
+  `medusa_pricing_request` database role; the role name is configuration-owned
+  and never derived from a request.
+- `Migration20261103142513_enforce_pricing_request_rls.ts` enables and forces
+  reversible Store policies on all six Pricing tables. Shared infrastructure
+  must provision `medusa_pricing_request` as `NOLOGIN`, `NOSUPERUSER`, and
+  `NOBYPASSRLS`, grant it only the required schema/table access, and grant the
+  application connection permission to assume it. Shared mode fails closed if
+  that role or permission is absent.
 - `src/repositories/pricing.ts` (`PricingRepository.calculatePrices`): one SQL query. Removes `currency_code` and `quantity` from the context, matches a price when all its rules (`rules_count`) match the context, and joins only active price lists within `starts_at` / `ends_at` whose list rules all match. Ordering: price-list prices first, then more rules first, then lowest amount.
 - `calculatePrices` in the service picks per price set: `override` list price always wins; `sale` list price is used only if lower than the original price. `original_amount` is the override price if any, else the default price. Tax-inclusiveness comes from price rules / `PricePreference` for `region_id` or `currency_code`.
 - `src/utils/validate-price-list-dates.ts` validates `starts_at` / `ends_at` input.
@@ -65,6 +84,9 @@ yarn migration:create          # after any change in src/models
 - Never accept `Context.storeId` from an unverified request body or header. It
   must come from the platform's authenticated Store-resolution boundary.
 - Shared placement is not admitted merely because Pricing Store ownership
-  tests pass. Database policies, every generated CRUD path, workflows,
-  background work, upgrades, and cross-module links remain separate gates.
+  tests pass. Generated CRUD, raw calculation SQL, and Pricing persistence
+  ownership, request-role RLS, workflow/background Store provenance, and the
+  Pricing side of cross-module link isolation are closed by this slice.
+  Product and Fulfillment ownership, upgrade rehearsal, repair evidence, and
+  the remaining commerce resource groups remain separate gates.
 - A price list only applies when `status: "active"`, not soft-deleted, and `now()` (database time) is within `starts_at` / `ends_at`; lists default to `draft`.

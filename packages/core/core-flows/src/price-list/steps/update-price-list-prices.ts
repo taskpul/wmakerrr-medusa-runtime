@@ -36,7 +36,10 @@ export const updatePriceListPricesStepId = "update-price-list-prices"
  */
 export const updatePriceListPricesStep = createStep(
   updatePriceListPricesStepId,
-  async (stepInput: UpdatePriceListPriceWorkflowStepDTO, { container }) => {
+  async (
+    stepInput: UpdatePriceListPriceWorkflowStepDTO,
+    { container, context }
+  ) => {
     const { data = [], variant_price_map: variantPriceSetMap } = stepInput
     const priceListPricesToUpdate: UpdatePriceListPricesDTO[] = []
     const priceIds: string[] = []
@@ -75,7 +78,8 @@ export const updatePriceListPricesStep = createStep(
     const existingPrices = priceIds.length
       ? await pricingModule.listPrices(
           { id: priceIds },
-          { relations: ["price_list"] }
+          { relations: ["price_list"] },
+          context
         )
       : []
 
@@ -97,12 +101,13 @@ export const updatePriceListPricesStep = createStep(
     }
 
     const updatedPrices = await pricingModule.updatePriceListPrices(
-      priceListPricesToUpdate
+      priceListPricesToUpdate,
+      context
     )
 
     return new StepResponse(updatedPrices, dataBeforePriceUpdate)
   },
-  async (dataBeforePriceUpdate, { container }) => {
+  async (dataBeforePriceUpdate, { container, context }) => {
     if (!dataBeforePriceUpdate?.length) {
       return
     }
@@ -112,7 +117,7 @@ export const updatePriceListPricesStep = createStep(
     )
 
     if (dataBeforePriceUpdate.length) {
-      await pricingModule.updatePriceListPrices(dataBeforePriceUpdate)
+      await pricingModule.updatePriceListPrices(dataBeforePriceUpdate, context)
     }
   }
 )

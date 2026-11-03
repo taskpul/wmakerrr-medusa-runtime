@@ -13,7 +13,7 @@ export const removePriceListPricesStepId = "remove-price-list-prices"
  */
 export const removePriceListPricesStep = createStep(
   removePriceListPricesStepId,
-  async (ids: RemovePriceListPricesStepInput, { container }) => {
+  async (ids: RemovePriceListPricesStepInput, { container, context }) => {
     if (!ids.length) {
       return new StepResponse([], [])
     }
@@ -24,16 +24,17 @@ export const removePriceListPricesStep = createStep(
 
     const prices = await pricingModule.listPrices(
       { id: ids },
-      { relations: ["price_list"] }
+      { relations: ["price_list"] },
+      context
     )
 
     const priceIds = prices.map((price) => price.id)
 
-    await pricingModule.softDeletePrices(priceIds)
+    await pricingModule.softDeletePrices(priceIds, {}, context)
 
     return new StepResponse(priceIds, priceIds)
   },
-  async (ids, { container }) => {
+  async (ids, { container, context }) => {
     if (!ids?.length) {
       return
     }
@@ -42,6 +43,6 @@ export const removePriceListPricesStep = createStep(
       Modules.PRICING
     )
 
-    await pricingModule.restorePrices(ids)
+    await pricingModule.restorePrices(ids, {}, context)
   }
 )

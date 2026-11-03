@@ -93,6 +93,12 @@ cd packages/core/core-flows && ../../../node_modules/.bin/jest src/cart/utils/__
 
 ## Gotchas
 
+- In the controlled distribution, every direct Pricing service call must pass
+  the workflow's verified `context`. Product/Price Set and Shipping
+  Option/Price Set link steps validate referenced Price Sets through Pricing
+  before creating, reading, dismissing, or compensating links. Update
+  `.royalroyals/verify-pricing-isolation.mjs` only after reviewing any new
+  Pricing caller or link path.
 - Workflow IDs, step IDs, hook names, and hook input shapes are public API: apps consume hooks by name, run workflows by ID through the workflow engine (e.g. the store add-to-cart route calls `workflowEngine.run(addToCartWorkflowId, ...)`), and target steps by ID in `setStepSuccess`. Renaming or reshaping them is breaking.
 - Steps must stay compensatable: return the data needed to undo the action as the second `StepResponse` argument and guard against `undefined` in the compensation.
 - `emitEventStep` emits with the workflow's `eventGroupId`; its compensation clears those grouped events, so emit inside the workflow rather than calling the event bus directly.

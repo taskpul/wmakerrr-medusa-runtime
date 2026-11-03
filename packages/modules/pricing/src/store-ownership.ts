@@ -17,9 +17,42 @@ type StoreContext = Context & {
   storeId?: string
 }
 
+type GeneratedCrudMethod =
+  | "retrieve"
+  | "list"
+  | "listAndCount"
+  | "delete"
+  | "softDelete"
+  | "restore"
+  | "create"
+  | "update"
+
+export type GeneratedCrudHookInput = {
+  method: GeneratedCrudMethod
+  methodName: string
+  modelName: string
+  args: unknown[]
+  context: Context
+}
+
+export type GeneratedCrudResultHookInput = GeneratedCrudHookInput & {
+  result: unknown
+}
+
+type PricingOwnershipServices = Record<
+  | "PriceSet"
+  | "Price"
+  | "PriceRule"
+  | "PriceList"
+  | "PriceListRule"
+  | "PricePreference",
+  ModulesSdkTypes.IMedusaInternalService<any>
+>
+
 export class PricingStoreOwnership {
   readonly #mode: "dedicated" | "shared"
   readonly #dedicatedStoreId: string
+  readonly #services: PricingOwnershipServices
 
   get isShared(): boolean {
     return this.#mode === "shared"
@@ -27,8 +60,12 @@ export class PricingStoreOwnership {
 
   constructor(
     moduleOptions:
-      InternalModuleDeclaration | PricingModuleOptions | Record<string, unknown>
+      | InternalModuleDeclaration
+      | PricingModuleOptions
+      | Record<string, unknown>,
+    services: PricingOwnershipServices
   ) {
+    this.#services = services
     const optionsContainer: Record<string, unknown> =
       "options" in moduleOptions && moduleOptions.options
         ? (moduleOptions.options as Record<string, unknown>)
@@ -97,6 +134,167 @@ export class PricingStoreOwnership {
       ...this.stamp(price, context),
       price_rules: price.price_rules?.map((rule) => this.stamp(rule, context)),
     }
+  }
+
+  async prepareGeneratedMethodArgs(
+    input: GeneratedCrudHookInput
+  ): Promise<unknown[]> {
+    const { method, modelName, context } = input
+    const service = this.#generatedCrudService(modelName)
+
+    if (method === "retrieve") {
+      await this.assertOwnedIds(
+        service,
+        [input.args[0] as string],
+        modelName,
+        context,
+        true
+      )
+      return input.args
+    }
+
+    if (method === "list" || method === "listAndCount") {
+      return [
+        this.scope((input.args[0] ?? {}) as object, context),
+        input.args[1],
+      ]
+    }
+
+    if (method === "create") {
+      const stamped = this.#stampGeneratedRecords(input.args[0], context)
+      await this.#assertGeneratedParentOwnership(
+        modelName,
+        Array.isArray(stamped) ? stamped : [stamped],
+        context
+      )
+      return [stamped]
+    }
+
+    if (method === "update") {
+      const original = input.args[0]
+      const entries = Array.isArray(original) ? original : [original]
+      const directIds = entries.flatMap((entry) =>
+        entry && !("selector" in entry) && entry.id ? [entry.id] : []
+      )
+
+      if (this.isShared) {
+        await this.assertOwnedIds(service, directIds, modelName, context)
+      }
+
+      const stamped = entries.map((entry) => {
+        if (entry && "selector" in entry) {
+          return {
+            ...entry,
+            selector: this.scope(entry.selector, context),
+            data: this.#stampGeneratedRecords(entry.data, context),
+          }
+        }
+
+        return this.stamp(entry, context)
+      })
+      const updateRecords = stamped.flatMap((entry) =>
+        "selector" in entry
+          ? Array.isArray(entry.data)
+            ? entry.data
+            : [entry.data]
+          : [entry]
+      )
+
+      await this.#assertGeneratedParentOwnership(
+        modelName,
+        updateRecords,
+        context
+      )
+      return [Array.isArray(original) ? stamped : stamped[0]]
+    }
+
+    const ids = await this.resolveOwnedDeleteIds(
+      service,
+      input.args[0] as string | object | string[] | object[],
+      modelName,
+      context,
+      method === "restore"
+    )
+
+    return [ids, ...input.args.slice(1)]
+  }
+
+  validateGeneratedMethodResult(input: GeneratedCrudResultHookInput): void {
+    const storeId = this.resolveStoreId(input.context)
+    const records = (
+      Array.isArray(input.result) ? input.result : [input.result]
+    ).filter(Boolean) as { store_id?: string }[]
+
+    if (
+      records.some(
+        (record) => record.store_id !== undefined && record.store_id !== storeId
+      )
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        `${input.modelName} result crossed the active Store boundary`
+      )
+    }
+  }
+
+  #generatedCrudService(modelName: string) {
+    const service = this.#services[modelName]
+
+    if (!service) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        `Pricing generated CRUD has no ownership service for ${modelName}`
+      )
+    }
+
+    return service
+  }
+
+  async #assertGeneratedParentOwnership(
+    modelName: string,
+    records: Record<string, any>[],
+    context: Context
+  ): Promise<void> {
+    const referencedIds = (key: string) =>
+      deduplicate(
+        records.flatMap((record) => (record[key] ? [record[key]] : []))
+      )
+
+    if (modelName === "Price") {
+      await this.assertOwnedIds(
+        this.#services.PriceSet,
+        referencedIds("price_set_id"),
+        "Price sets",
+        context
+      )
+      await this.assertOwnedIds(
+        this.#services.PriceList,
+        referencedIds("price_list_id"),
+        "Price lists",
+        context
+      )
+    } else if (modelName === "PriceRule") {
+      await this.assertOwnedIds(
+        this.#services.Price,
+        referencedIds("price_id"),
+        "Prices",
+        context
+      )
+    } else if (modelName === "PriceListRule") {
+      await this.assertOwnedIds(
+        this.#services.PriceList,
+        referencedIds("price_list_id"),
+        "Price lists",
+        context
+      )
+    }
+  }
+
+  #stampGeneratedRecords(data: any, context: Context) {
+    const records = Array.isArray(data) ? data : [data]
+    const stamped = records.map((record) => this.stamp(record, context))
+
+    return Array.isArray(data) ? stamped : stamped[0]
   }
 
   listOwned(
@@ -182,7 +380,8 @@ export class PricingStoreOwnership {
     service: ModulesSdkTypes.IMedusaInternalService<any>,
     primaryKeyValues: string | object | string[] | object[],
     entityName: string,
-    context: Context
+    context: Context,
+    withDeleted = false
   ): Promise<string[]> {
     const values = Array.isArray(primaryKeyValues)
       ? primaryKeyValues
@@ -192,13 +391,25 @@ export class PricingStoreOwnership {
       (value): value is object => typeof value === "object" && value !== null
     )
 
-    await this.assertOwnedIds(service, ids, entityName, context)
+    if (ids.length) {
+      const owned = await service.list(
+        this.scope({ id: ids }, context),
+        { select: ["id"], take: null, withDeleted },
+        context
+      )
+      this.assertOnlyOwnedIds(
+        ids,
+        owned.map((record) => record.id),
+        entityName,
+        "the active Store"
+      )
+    }
     const selected = (
       await promiseAll(
         selectors.map((selector) =>
           service.list(
             this.scope(selector, context),
-            { select: ["id"], take: null },
+            { select: ["id"], take: null, withDeleted },
             context
           )
         )

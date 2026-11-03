@@ -1,4 +1,5 @@
 import { model, ShippingOptionPriceType } from "@medusajs/framework/utils"
+import { FULFILLMENT_DEDICATED_STORE_ID } from "../store-ownership"
 
 import { Fulfillment } from "./fulfillment"
 import { FulfillmentProvider } from "./fulfillment-provider"
@@ -10,6 +11,7 @@ import { ShippingProfile } from "./shipping-profile"
 export const ShippingOption = model
   .define("shipping_option", {
     id: model.id({ prefix: "so" }).primaryKey(),
+    store_id: model.text().default(FULFILLMENT_DEDICATED_STORE_ID),
     name: model.text().searchable().translatable(),
     price_type: model
       .enum(ShippingOptionPriceType)
@@ -40,3 +42,21 @@ export const ShippingOption = model
   .cascades({
     delete: ["rules"],
   })
+  .indexes([
+    {
+      name: "IDX_shipping_option_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+      where: "deleted_at IS NULL",
+    },
+    {
+      name: "IDX_shipping_option_store_service_zone",
+      on: ["store_id", "service_zone_id"],
+      where: "deleted_at IS NULL",
+    },
+    {
+      name: "IDX_shipping_option_store_shipping_profile",
+      on: ["store_id", "shipping_profile_id"],
+      where: "deleted_at IS NULL",
+    },
+  ])

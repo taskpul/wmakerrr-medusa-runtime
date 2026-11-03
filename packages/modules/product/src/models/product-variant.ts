@@ -1,10 +1,12 @@
 import { model } from "@medusajs/framework/utils"
 import { Product, ProductImage, ProductOptionValue } from "@models"
+import { PRODUCT_DEDICATED_STORE_ID } from "../store-ownership"
 import ProductVariantProductImage from "./product-variant-product-image"
 
 const ProductVariant = model
   .define("ProductVariant", {
     id: model.id({ prefix: "variant" }).primaryKey(),
+    store_id: model.text().default(PRODUCT_DEDICATED_STORE_ID),
     title: model.text().searchable().translatable(),
     sku: model.text().searchable().nullable(),
     barcode: model.text().searchable().nullable(),
@@ -48,36 +50,42 @@ const ProductVariant = model
   })
   .indexes([
     {
+      name: "IDX_product_variant_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+      where: "deleted_at IS NULL",
+    },
+    {
       name: "IDX_product_variant_id_product_id",
-      on: ["id", "product_id"],
+      on: ["store_id", "id", "product_id"],
       where: "deleted_at IS NULL",
     },
     {
       name: "IDX_product_variant_product_id",
-      on: ["product_id"],
+      on: ["store_id", "product_id"],
       where: "deleted_at IS NULL",
     },
     {
       name: "IDX_product_variant_sku_unique",
-      on: ["sku"],
+      on: ["store_id", "sku"],
       unique: true,
       where: "deleted_at IS NULL",
     },
     {
       name: "IDX_product_variant_barcode_unique",
-      on: ["barcode"],
+      on: ["store_id", "barcode"],
       unique: true,
       where: "deleted_at IS NULL",
     },
     {
       name: "IDX_product_variant_ean_unique",
-      on: ["ean"],
+      on: ["store_id", "ean"],
       unique: true,
       where: "deleted_at IS NULL",
     },
     {
       name: "IDX_product_variant_upc_unique",
-      on: ["upc"],
+      on: ["store_id", "upc"],
       unique: true,
       where: "deleted_at IS NULL",
     },

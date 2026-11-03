@@ -30,7 +30,7 @@ const { data: products } = await query.index({
 
 - `MEDUSA_FF_INDEX_ENGINE=true` (flag `index_engine`) makes the core `/store/products` and `/admin/products` routes use the index.
 - Ingest custom models by setting `filterable: [...]` on a side of a `defineLink` (see `packages/core/utils/src/modules-sdk/define-link.ts`); `id` is added automatically.
-- Options (`IndexModuleOptions` in `packages/core/types/src/index-data/service.ts`): `schema` (GraphQL string replacing `src/utils/default-schema.ts`). `customAdapter` is typed but the loader ignores it (code commented out); the storage provider is always `PostgresProvider`.
+- Options (`IndexModuleOptions` in `packages/core/types/src/index-data/service.ts`): `schema` (GraphQL string replacing `src/utils/default-schema.ts`) and controlled-runtime `store_isolation`. `customAdapter` is typed but the loader ignores it (code commented out); the storage provider is always `PostgresProvider`.
 - Service methods (`IndexModuleService`): `query(config)`, `getInfo()` (per-entity status / last synced key), `sync({ strategy?: "full" | "reset" })`. No generated CRUD (`MedusaService({})`).
 
 Docs: https://docs.medusajs.com/learn/fundamentals/query/index-module.md
@@ -58,6 +58,9 @@ yarn migration:create          # after any change in src/models
 - Integration tests: `integration-tests/__tests__/` (`index-engine-module.spec.ts`, `data-synchronizer.spec.ts`, `orchestrator.spec.ts`, `query-builder.spec.ts`, `config-sync.spec.ts`, ...).
 
 ## Gotchas
+
+- In shared placement, Product and Product Variant queries, events, stale deletion, rebuilds, and full synchronization require one verified Store. The caller cannot choose a different `store_id` filter, and global reset is unavailable.
+- Product index events must carry exactly one `store_id`. Missing or mixed provenance fails closed; dedicated placement rejects a foreign Store provenance.
 
 - Requires the Event Bus Module in the container; the constructor throws otherwise. With the in-memory event bus, incremental updates are not received across processes, so the index only catches up on the next start (docs recommend Redis event bus).
 - Worker mode is anything except `worker_mode: "server"`. Server-mode instances neither subscribe to events nor sync; `sync()` there only resets metadata status (and `last_key` for `full`, or TRUNCATEs all index tables for `reset`) and emits the internal `index.continue-sync` / `index.full-sync` / `index.reset-sync` event for a worker to pick up.

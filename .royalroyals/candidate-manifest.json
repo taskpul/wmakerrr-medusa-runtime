@@ -18,11 +18,27 @@
       "path": ".royalroyals/verify-baseline.mjs",
       "sha256": "5ce313950ea3035284e667b4d88cdffd90f7ee294b2f569b06a7e464d91ea8d0"
     },
+    "publicApiCompatibility": {
+      "status": "local-verified",
+      "upstreamRevision": "cfff3f57381873097dcc77851038d5dbe8f5839c",
+      "packageCount": 79,
+      "publicSourceFileCount": 1321,
+      "approvedLicenseExceptions": 28,
+      "verifier": {
+        "path": ".royalroyals/verify-public-api.mjs",
+        "sha256": "8c734179927d26e04f50d30b65c87e193370f4ed6810fdcb85ce6b98f59b7cd1"
+      },
+      "exceptionLedger": {
+        "path": ".royalroyals/public-api-exceptions.json",
+        "sha256": "026abbacab8efbe8b0ea0befd5a2306d19355c14644a6f855b6ea089cba1d456"
+      }
+    },
     "commands": [
       "yarn install --immutable",
       "yarn build",
       "node .royalroyals/verify-bootstrap.mjs",
-      "node .royalroyals/verify-baseline.mjs"
+      "node .royalroyals/verify-baseline.mjs",
+      "node .royalroyals/verify-public-api.mjs"
     ],
     "admissionNote": "Local reproducibility evidence only. Protected CI and review evidence are still required before any admission gate can pass."
   },

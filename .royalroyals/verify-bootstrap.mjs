@@ -29,10 +29,10 @@ const noticeExclusions = [...enterpriseNotice.matchAll(/^- `([^`]+)`/gm)].map(
   (match) => match[1]
 )
 
-const sha256 = async (path) =>
-  createHash("sha256")
-    .update(await readFile(path))
-    .digest("hex")
+const sha256Content = (content) =>
+  createHash("sha256").update(content).digest("hex")
+const withCrLf = (content) =>
+  Buffer.from(content.toString("utf8").replace(/\r?\n/g, "\r\n"), "utf8")
 
 const errors = []
 if (lock.commit !== manifest.upstreamRevision) {
@@ -47,12 +47,16 @@ if (lock.license.excludedPathCount !== exclusions.length) {
 if (JSON.stringify(noticeExclusions) !== JSON.stringify(exclusions)) {
   errors.push("enterprise exclusions do not match the upstream notice")
 }
-if ((await sha256(join(root, "LICENSE"))) !== lock.license.licenseSha256) {
+if (
+  sha256Content(withCrLf(await readFile(join(root, "LICENSE")))) !==
+  lock.license.licenseSha256
+) {
   errors.push("MIT license digest does not match the lock")
 }
 if (
-  (await sha256(join(root, "ENTERPRISE-LICENSE.md"))) !==
-  lock.license.enterpriseNoticeSha256
+  sha256Content(
+    withCrLf(await readFile(join(root, "ENTERPRISE-LICENSE.md")))
+  ) !== lock.license.enterpriseNoticeSha256
 ) {
   errors.push("enterprise notice digest does not match the lock")
 }

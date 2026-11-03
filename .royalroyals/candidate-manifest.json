@@ -1,0 +1,25 @@
+{
+  "contractVersion": 1,
+  "status": "draft-unsigned",
+  "distributionVersion": "0.0.0-dev.1",
+  "upstreamVersion": "2.22.2",
+  "upstreamRevision": "cfff3f57381873097dcc77851038d5dbe8f5839c",
+  "sourceRepository": "https://github.com/taskpul/wmakerrr-medusa-runtime.git",
+  "sourceRevision": null,
+  "artifactDigest": null,
+  "packages": [],
+  "gates": {
+    "source-provenance": { "status": "pending", "evidenceDigest": null },
+    "public-api-compatibility": { "status": "pending", "evidenceDigest": null },
+    "tenant-schema-ownership": { "status": "pending", "evidenceDigest": null },
+    "cross-store-relationships": { "status": "pending", "evidenceDigest": null },
+    "request-role-database-isolation": { "status": "pending", "evidenceDigest": null },
+    "service-workflow-isolation": { "status": "pending", "evidenceDigest": null },
+    "background-context-isolation": { "status": "pending", "evidenceDigest": null },
+    "shared-service-namespacing": { "status": "pending", "evidenceDigest": null },
+    "shared-dedicated-dual-mode": { "status": "pending", "evidenceDigest": null },
+    "upgrade-rehearsal": { "status": "pending", "evidenceDigest": null },
+    "rollback-forward-repair": { "status": "pending", "evidenceDigest": null },
+    "phase-2-attack-matrix": { "status": "pending", "evidenceDigest": null }
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "repository": "https://github.com/medusajs/medusa.git",
+  "tag": "v2.22.2",
+  "version": "2.22.2",
+  "commit": "cfff3f57381873097dcc77851038d5dbe8f5839c",
+  "tree": "05d2b6a7155566197051f475fc0319e61678667e",
+  "commitDate": "2026-10-30T11:41:58+02:00",
+  "sourceSnapshotTrackedFiles": 24411,
+  "license": {
+    "policy": "mit-only-with-enterprise-paths-excluded",
+    "licenseSha256": "33e6f9e08865e0903cd363e8f1ea3a6d849cec515397fc32ac7cc9ab2802241b",
+    "enterpriseNoticeSha256": "da2cb2cbbb34b16bb9794c02f073382dad0dc5104057eb88e8357618f2dfa1d7",
+    "excludedPathCount": 44
+  },
+  "packageManager": "yarn@3.2.1",
+  "lockfileSha256": "25348a84b0e6f5afc673f51789714e93b9cfad760a1d4df6ca1199172fd547e4"
+}

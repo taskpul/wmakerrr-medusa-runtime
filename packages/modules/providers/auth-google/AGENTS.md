@@ -55,4 +55,4 @@ module.exports = defineConfig({
 - Login is rejected unless `email_verified` is true in the ID token.
 - Tokens aren't stored (no `provider_metadata`), unlike `auth-github`.
 - A body `callback_url` overrides `callbackUrl` per request with no allowlist; it must also be registered as a redirect URI in Google Cloud.
-- For Google Workspace SSO with domain restrictions, `@medusajs/auth-oidc` (`allowed_email_domains`) is the better fit.
+- This provider does not enforce a Google Workspace domain allowlist; applications that require one must validate the authenticated identity at their authorization boundary.

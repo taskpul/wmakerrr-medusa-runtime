@@ -58,7 +58,6 @@ export const ApiKeyManagementDetail = () => {
             )}
             {detailPageDefaultEntries(api_key, {
               metadata: false,
-              permissions: false,
             })}
           </>
         ),

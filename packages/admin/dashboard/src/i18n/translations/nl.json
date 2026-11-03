@@ -2785,7 +2785,6 @@
     "editUser": "Gebruiker bewerken",
     "inviteUser": "Gebruiker uitnodigen",
     "inviteUserHint": "Nodig een nieuwe gebruiker uit voor uw winkel.",
-    "inviteRolesTooltip": "Als er geen rol is geselecteerd, wordt de gebruiker uitgenodigd met een supergebruikersrol.",
     "sendInvite": "Uitnodiging versturen",
     "pendingInvites": "Openstaande uitnodigingen",
     "deleteInviteWarning": "U staat op het punt de uitnodiging voor {{email}} te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
@@ -2802,11 +2801,6 @@
       "pending": "In behandeling",
       "expired": "Verlopen"
     },
-    "roles": {
-      "admin": "Beheerder",
-      "developer": "Ontwikkelaar",
-      "member": "Lid"
-    },
     "list": {
       "empty": {
         "heading": "Geen gebruikers gevonden",
@@ -2820,127 +2814,6 @@
     "deleteUserWarning": "U staat op het punt de gebruiker {{name}} te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
     "deleteUserSuccess": "Gebruiker {{name}} succesvol verwijderd",
     "invite": "Uitnodigen"
-  },
-  "roles": {
-    "domain": "Rollen",
-    "subtitle": "Beheer toegangsrollen en machtigingen.",
-    "create": {
-      "header": "Rol aanmaken",
-      "hint": "Maak een rol aan om de toegang in uw admin te beheren.",
-      "successToast": "Rol {{name}} aangemaakt",
-      "tabs": {
-        "details": "Details",
-        "permissions": "Machtigingen"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Geen machtigingen",
-          "description": "Er zijn geen machtigingen om uit te kiezen."
-        },
-        "filtered": {
-          "heading": "Geen resultaten",
-          "description": "Geen machtigingen voldoen aan de huidige filtercriteria."
-        }
-      }
-    },
-    "edit": {
-      "header": "Rol bewerken",
-      "successToast": "Rol {{name}} bijgewerkt"
-    },
-    "delete": {
-      "title": "Rol verwijderen",
-      "description": "U staat op het punt de rol {{name}} te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
-      "successToast": "Rol {{name}} verwijderd"
-    },
-    "fields": {
-      "permissions": "Machtigingen"
-    },
-    "actions": {
-      "managePermissions": "Machtigingen beheren"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Gebruiker heeft deze rol al.",
-      "unassignableRoleTooltip": "U heeft geen toegang om deze rol toe te wijzen — uw machtigingen omvatten niet alle beleidsregels ervan.",
-      "add": {
-        "successToast_one": "Gebruiker is succesvol toegevoegd aan de rol.",
-        "successToast_other": "Gebruikers zijn succesvol toegevoegd aan de rol.",
-        "list": {
-          "noRecordsMessage": "Maak eerst een gebruiker aan."
-        }
-      },
-      "remove": {
-        "title_one": "Gebruiker verwijderen",
-        "title_other": "Gebruikers verwijderen",
-        "description_one": "U staat op het punt {{count}} gebruiker uit de rol te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
-        "description_other": "U staat op het punt {{count}} gebruikers uit de rol te verwijderen. Deze actie kan niet ongedaan worden gemaakt."
-      },
-      "list": {
-        "noRecordsMessage": "Deze rol heeft geen gebruikers."
-      }
-    },
-    "permissions": {
-      "header": "Machtigingen beheren",
-      "hint": "Selecteer de machtigingen die deze rol moet bevatten.",
-      "empty": {
-        "heading": "Geen machtigingen",
-        "description": "Er zijn geen machtigingen om uit te kiezen."
-      },
-      "filtered": {
-        "heading": "Geen resultaten",
-        "description": "Geen machtigingen voldoen aan de huidige filtercriteria."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Geen rollen gevonden",
-        "description": "Maak rollen aan om de toegang in uw admin te beheren."
-      },
-      "filtered": {
-        "heading": "Geen resultaten",
-        "description": "Geen rollen voldoen aan de huidige filtercriteria."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Beleidsregels",
-    "subtitle": "Definieer de machtigingen die rollen kunnen verlenen.",
-    "create": {
-      "header": "Beleidsregel aanmaken",
-      "hint": "Definieer een nieuwe machtiging die aan rollen kan worden gekoppeld.",
-      "successToast": "Beleidsregel {{key}} aangemaakt"
-    },
-    "edit": {
-      "header": "Beleidsregel bewerken",
-      "successToast": "Beleidsregel {{key}} bijgewerkt"
-    },
-    "delete": {
-      "title": "Beleidsregel verwijderen",
-      "description": "U staat op het punt de beleidsregel {{key}} te verwijderen. Deze actie kan niet ongedaan worden gemaakt.",
-      "successToast": "Beleidsregel {{key}} verwijderd"
-    },
-    "fields": {
-      "roles": "Rollen",
-      "users": "Gebruikers"
-    },
-    "list": {
-      "empty": {
-        "heading": "Geen beleidsregels gevonden",
-        "description": "Maak beleidsregels aan om de machtigingen te beheren die rollen kunnen verlenen."
-      },
-      "filtered": {
-        "heading": "Geen resultaten",
-        "description": "Geen beleidsregels voldoen aan de huidige filtercriteria."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Nog geen rollen bevatten deze beleidsregel."
-      },
-      "empty": {
-        "heading": "Geen rollen",
-        "description": "Nog geen rollen bevatten deze beleidsregel."
-      }
-    }
   },
   "translations": {
     "domain": "Vertalingen",
@@ -3796,57 +3669,6 @@
       "continueWithProvider": "Doorgaan met {{provider}}",
       "or": "of",
       "provisioningFailed": "We konden uw aanmelding niet voltooien. Neem contact op met een beheerder."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Toegang geweigerd",
-      "description": "U heeft geen toestemming om deze pagina te bekijken.",
-      "requiredPermission": "Vereiste machtiging: {{permission}}",
-      "action": "U heeft geen toestemming om deze actie uit te voeren."
-    },
-    "requiredPermissions": {
-      "title": "Vereiste machtigingen",
-      "none": "Geen machtigingen gedeclareerd in deze weergave.",
-      "anyOf": "Een van",
-      "allOf": "Alle van",
-      "source": "Bron: {{source}}"
-    },
-    "resources": {
-      "customer": "Klant",
-      "customer_group": "Klantengroep",
-      "order": "Bestelling",
-      "product": "Product",
-      "product_category": "Productcategorie",
-      "product_collection": "Productcollectie",
-      "product_tag": "Producttag",
-      "product_type": "Producttype",
-      "inventory": "Voorraad",
-      "reservation": "Reservering",
-      "promotion": "Promotie",
-      "campaign": "Campagne",
-      "price_list": "Prijslijst",
-      "region": "Regio",
-      "store": "Winkel",
-      "user": "Gebruiker",
-      "role": "Rol",
-      "permission": "Machtiging",
-      "sales_channel": "Verkoopkanaal",
-      "stock_location": "Voorraadlocatie",
-      "shipping_profile": "Verzendprofiel",
-      "shipping_option": "Verzendoptie",
-      "tax_region": "Belastingregio",
-      "api_key": "API-sleutel",
-      "return_reason": "Retourreden",
-      "refund_reason": "Terugbetalingsreden",
-      "workflow": "Workflow",
-      "translation": "Vertaling"
-    },
-    "actions": {
-      "read": "Bekijken",
-      "create": "Aanmaken",
-      "update": "Bewerken",
-      "delete": "Verwijderen"
     }
   }
 }

@@ -51,8 +51,6 @@ import { ShippingOptionType } from "./shipping-option-type.js"
 import { Locale } from "./locale.js"
 import { Translation } from "./translation.js"
 import { ProductOption } from "./product-option.js"
-import { RbacRole } from "./rbac-role.js"
-import { RbacPolicy } from "./rbac-policy.js"
 
 /**
  * The admin client provides access to admin-related resources.
@@ -270,17 +268,6 @@ export class Admin {
    * @tags layouts
    */
   public layouts: Layouts
-  /**
-   * @tags rbac
-   * @since 2.15.5
-   */
-  public rbacRole: RbacRole
-  /**
-   * @tags rbac
-   * @since 2.15.5
-   */
-  public rbacPolicy: RbacPolicy
-
   constructor(client: Client) {
     this.invite = new Invite(client)
     this.customer = new Customer(client)
@@ -334,7 +321,5 @@ export class Admin {
     this.views = new Views(client)
     this.propertyLabel = new PropertyLabel(client)
     this.layouts = new Layouts(client)
-    this.rbacRole = new RbacRole(client)
-    this.rbacPolicy = new RbacPolicy(client)
   }
 }

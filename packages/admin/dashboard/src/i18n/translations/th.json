@@ -2781,7 +2781,6 @@
     "editUser": "แก้ไขผู้ใช้งาน",
     "inviteUser": "เชิญผู้ใช้งาน",
     "inviteUserHint": "เชิญผู้ใช้งานใหม่ให้เข้าร่วมร้านค้าของคุณ",
-    "inviteRolesTooltip": "หากไม่ได้เลือกบทบาท ผู้ใช้จะถูกเชิญในฐานะ superuser",
     "sendInvite": "ส่งคำเชิญ",
     "pendingInvites": "คำเชิญที่รอดำเนินการ",
     "deleteInviteWarning": "คุณกำลังจะลบคำเชิญของ {{email}} การกระทำนี้ไม่สามารถย้อนกลับได้",
@@ -2798,11 +2797,6 @@
       "pending": "รอดำเนินการ",
       "expired": "หมดอายุ"
     },
-    "roles": {
-      "admin": "ผู้ดูแลระบบ",
-      "developer": "นักพัฒนา",
-      "member": "สมาชิก"
-    },
     "list": {
       "empty": {
         "heading": "ไม่พบผู้ใช้",
@@ -2816,127 +2810,6 @@
     "deleteUserWarning": "คุณกำลังจะลบผู้ใช้งาน {{name}} การกระทำนี้ไม่สามารถย้อนกลับได้",
     "deleteUserSuccess": "ลบผู้ใช้ {{name}} สำเร็จ",
     "invite": "เชิญ"
-  },
-  "roles": {
-    "domain": "บทบาท",
-    "subtitle": "จัดการบทบาทการเข้าถึงและสิทธิ์",
-    "create": {
-      "header": "สร้างบทบาท",
-      "hint": "สร้างบทบาทเพื่อจัดการการเข้าถึงในแผงควบคุมของคุณ",
-      "successToast": "สร้างบทบาท {{name}} สำเร็จ",
-      "tabs": {
-        "details": "รายละเอียด",
-        "permissions": "สิทธิ์"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "ไม่มีสิทธิ์",
-          "description": "ไม่มีสิทธิ์ที่จะเลือก"
-        },
-        "filtered": {
-          "heading": "ไม่มีผลลัพธ์",
-          "description": "ไม่มีสิทธิ์ที่ตรงกับเกณฑ์การกรองปัจจุบัน"
-        }
-      }
-    },
-    "edit": {
-      "header": "แก้ไขบทบาท",
-      "successToast": "อัปเดตบทบาท {{name}} สำเร็จ"
-    },
-    "delete": {
-      "title": "ลบบทบาท",
-      "description": "คุณกำลังจะลบบทบาท {{name}} การดำเนินการนี้ไม่สามารถยกเลิกได้",
-      "successToast": "ลบบทบาท {{name}} สำเร็จ"
-    },
-    "fields": {
-      "permissions": "สิทธิ์"
-    },
-    "actions": {
-      "managePermissions": "จัดการสิทธิ์"
-    },
-    "users": {
-      "alreadyAddedTooltip": "ผู้ใช้มีบทบาทนี้แล้ว",
-      "unassignableRoleTooltip": "คุณไม่มีสิทธิ์กำหนดบทบาทนี้ — สิทธิ์ของคุณไม่ครอบคลุมนโยบายทั้งหมด",
-      "add": {
-        "successToast_other": "เพิ่มผู้ใช้ในบทบาทสำเร็จ",
-        "list": {
-          "noRecordsMessage": "กรุณาสร้างผู้ใช้ก่อน"
-        },
-        "successToast_one": "เพิ่มผู้ใช้ในบทบาทสำเร็จ"
-      },
-      "remove": {
-        "title_other": "ลบผู้ใช้",
-        "description_other": "คุณกำลังจะลบ {{count}} ผู้ใช้ออกจากบทบาท การดำเนินการนี้ไม่สามารถยกเลิกได้",
-        "description_one": "คุณกำลังจะนำผู้ใช้ {{count}} คนออกจากบทบาท การดำเนินการนี้ไม่สามารถย้อนกลับได้",
-        "title_one": "นำผู้ใช้ออก"
-      },
-      "list": {
-        "noRecordsMessage": "บทบาทนี้ยังไม่มีผู้ใช้"
-      }
-    },
-    "permissions": {
-      "header": "จัดการสิทธิ์",
-      "hint": "เลือกสิทธิ์ที่บทบาทนี้ควรมี",
-      "empty": {
-        "heading": "ไม่มีสิทธิ์",
-        "description": "ไม่มีสิทธิ์ที่จะเลือก"
-      },
-      "filtered": {
-        "heading": "ไม่มีผลลัพธ์",
-        "description": "ไม่มีสิทธิ์ที่ตรงกับเกณฑ์การกรองปัจจุบัน"
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "ไม่พบบทบาท",
-        "description": "สร้างบทบาทเพื่อจัดการการเข้าถึงในแผงควบคุมของคุณ"
-      },
-      "filtered": {
-        "heading": "ไม่มีผลลัพธ์",
-        "description": "ไม่มีบทบาทที่ตรงกับเกณฑ์การกรองปัจจุบัน"
-      }
-    }
-  },
-  "policies": {
-    "domain": "นโยบาย",
-    "subtitle": "กำหนดสิทธิ์ที่บทบาทสามารถมอบให้ได้",
-    "create": {
-      "header": "สร้างนโยบาย",
-      "hint": "กำหนดสิทธิ์ใหม่ที่สามารถแนบกับบทบาทได้",
-      "successToast": "สร้างนโยบาย {{key}} สำเร็จ"
-    },
-    "edit": {
-      "header": "แก้ไขนโยบาย",
-      "successToast": "อัปเดตนโยบาย {{key}} สำเร็จ"
-    },
-    "delete": {
-      "title": "ลบนโยบาย",
-      "description": "คุณกำลังจะลบนโยบาย {{key}} การดำเนินการนี้ไม่สามารถยกเลิกได้",
-      "successToast": "ลบนโยบาย {{key}} สำเร็จ"
-    },
-    "fields": {
-      "roles": "บทบาท",
-      "users": "ผู้ใช้"
-    },
-    "list": {
-      "empty": {
-        "heading": "ไม่พบนโยบาย",
-        "description": "สร้างนโยบายเพื่อจัดการสิทธิ์ที่บทบาทสามารถมอบให้ได้"
-      },
-      "filtered": {
-        "heading": "ไม่มีผลลัพธ์",
-        "description": "ไม่มีนโยบายที่ตรงกับเกณฑ์การกรองปัจจุบัน"
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "ยังไม่มีบทบาทที่รวมนโยบายนี้"
-      },
-      "empty": {
-        "heading": "ไม่มีบทบาท",
-        "description": "ยังไม่มีบทบาทที่รวมนโยบายนี้"
-      }
-    }
   },
   "translations": {
     "domain": "การแปล",
@@ -3791,57 +3664,6 @@
       "continueWithProvider": "ดำเนินการต่อด้วย {{provider}}",
       "or": "หรือ",
       "provisioningFailed": "เราไม่สามารถดำเนินการเข้าสู่ระบบให้เสร็จสมบูรณ์ได้ กรุณาติดต่อผู้ดูแลระบบ"
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "การเข้าถึงถูกปฏิเสธ",
-      "description": "คุณไม่มีสิทธิ์เข้าถึงหน้านี้",
-      "requiredPermission": "สิทธิ์ที่จำเป็น: {{permission}}",
-      "action": "คุณไม่มีสิทธิ์ดำเนินการนี้"
-    },
-    "requiredPermissions": {
-      "title": "สิทธิ์ที่จำเป็น",
-      "none": "ไม่มีการประกาศสิทธิ์ในมุมมองนี้",
-      "anyOf": "อย่างน้อยหนึ่งใน",
-      "allOf": "ทั้งหมด",
-      "source": "แหล่งที่มา: {{source}}"
-    },
-    "resources": {
-      "customer": "ลูกค้า",
-      "customer_group": "กลุ่มลูกค้า",
-      "order": "คำสั่งซื้อ",
-      "product": "สินค้า",
-      "product_category": "หมวดหมู่สินค้า",
-      "product_collection": "คอลเลกชันสินค้า",
-      "product_tag": "แท็กสินค้า",
-      "product_type": "ประเภทสินค้า",
-      "inventory": "สินค้าคงคลัง",
-      "reservation": "การจอง",
-      "promotion": "โปรโมชั่น",
-      "campaign": "แคมเปญ",
-      "price_list": "รายการราคา",
-      "region": "ภูมิภาค",
-      "store": "ร้านค้า",
-      "user": "ผู้ใช้",
-      "role": "บทบาท",
-      "permission": "สิทธิ์",
-      "sales_channel": "ช่องทางการขาย",
-      "stock_location": "สถานที่จัดเก็บสินค้า",
-      "shipping_profile": "โปรไฟล์การจัดส่ง",
-      "shipping_option": "ตัวเลือกการจัดส่ง",
-      "tax_region": "ภูมิภาคภาษี",
-      "api_key": "API Key",
-      "return_reason": "เหตุผลการคืนสินค้า",
-      "refund_reason": "เหตุผลการคืนเงิน",
-      "workflow": "เวิร์กโฟลว์",
-      "translation": "การแปลภาษา"
-    },
-    "actions": {
-      "read": "ดู",
-      "create": "สร้าง",
-      "update": "แก้ไข",
-      "delete": "ลบ"
     }
   }
 }

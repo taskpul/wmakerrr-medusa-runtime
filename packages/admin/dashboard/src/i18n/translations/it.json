@@ -2787,7 +2787,6 @@
     "editUser": "Modifica Utente",
     "inviteUser": "Invita Utente",
     "inviteUserHint": "Invita un nuovo utente al tuo negozio.",
-    "inviteRolesTooltip": "Se non viene selezionato alcun ruolo, l'utente verrà invitato con un ruolo di superutente.",
     "sendInvite": "Invia invito",
     "pendingInvites": "Inviti in attesa",
     "deleteInviteWarning": "Stai per eliminare l'invito per {{email}}. Questa azione non può essere annullata.",
@@ -2804,11 +2803,6 @@
       "pending": "In attesa",
       "expired": "Scaduto"
     },
-    "roles": {
-      "admin": "Amministratore",
-      "developer": "Sviluppatore",
-      "member": "Membro"
-    },
     "list": {
       "empty": {
         "heading": "Nessun utente trovato",
@@ -2822,127 +2816,6 @@
     "deleteUserWarning": "Stai per eliminare l'utente {{name}}. Questa azione non può essere annullata.",
     "deleteUserSuccess": "Utente {{name}} eliminato con successo",
     "invite": "Invita"
-  },
-  "roles": {
-    "domain": "Ruoli",
-    "subtitle": "Gestisci ruoli di accesso e permessi.",
-    "create": {
-      "header": "Crea ruolo",
-      "hint": "Crea un ruolo per gestire gli accessi nel tuo amministratore.",
-      "successToast": "Ruolo {{name}} creato",
-      "tabs": {
-        "details": "Dettagli",
-        "permissions": "Permessi"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Nessun permesso",
-          "description": "Non ci sono permessi da selezionare."
-        },
-        "filtered": {
-          "heading": "Nessun risultato",
-          "description": "Nessun permesso corrisponde ai criteri di filtro correnti."
-        }
-      }
-    },
-    "edit": {
-      "header": "Modifica ruolo",
-      "successToast": "Ruolo {{name}} aggiornato"
-    },
-    "delete": {
-      "title": "Elimina ruolo",
-      "description": "Stai per eliminare il ruolo {{name}}. Questa azione non può essere annullata.",
-      "successToast": "Ruolo {{name}} eliminato"
-    },
-    "fields": {
-      "permissions": "Permessi"
-    },
-    "actions": {
-      "managePermissions": "Gestisci permessi"
-    },
-    "users": {
-      "alreadyAddedTooltip": "L'utente ha già questo ruolo.",
-      "unassignableRoleTooltip": "Non hai accesso per assegnare questo ruolo — i tuoi permessi non coprono tutte le sue policy.",
-      "add": {
-        "successToast_one": "L'utente è stato aggiunto al ruolo con successo.",
-        "successToast_other": "Gli utenti sono stati aggiunti al ruolo con successo.",
-        "list": {
-          "noRecordsMessage": "Crea prima un utente."
-        }
-      },
-      "remove": {
-        "title_one": "Rimuovi utente",
-        "title_other": "Rimuovi utenti",
-        "description_one": "Stai per rimuovere {{count}} utente dal ruolo. Questa azione non può essere annullata.",
-        "description_other": "Stai per rimuovere {{count}} utenti dal ruolo. Questa azione non può essere annullata."
-      },
-      "list": {
-        "noRecordsMessage": "Questo ruolo non ha utenti."
-      }
-    },
-    "permissions": {
-      "header": "Gestisci permessi",
-      "hint": "Seleziona i permessi da includere in questo ruolo.",
-      "empty": {
-        "heading": "Nessun permesso",
-        "description": "Non ci sono permessi da selezionare."
-      },
-      "filtered": {
-        "heading": "Nessun risultato",
-        "description": "Nessun permesso corrisponde ai criteri di filtro correnti."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Nessun ruolo trovato",
-        "description": "Crea ruoli per gestire gli accessi nel tuo amministratore."
-      },
-      "filtered": {
-        "heading": "Nessun risultato",
-        "description": "Nessun ruolo corrisponde ai criteri di filtro correnti."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Policy",
-    "subtitle": "Definisci i permessi che i ruoli possono concedere.",
-    "create": {
-      "header": "Crea policy",
-      "hint": "Definisci un nuovo permesso da collegare ai ruoli.",
-      "successToast": "Policy {{key}} creata"
-    },
-    "edit": {
-      "header": "Modifica policy",
-      "successToast": "Policy {{key}} aggiornata"
-    },
-    "delete": {
-      "title": "Elimina policy",
-      "description": "Stai per eliminare la policy {{key}}. Questa azione non può essere annullata.",
-      "successToast": "Policy {{key}} eliminata"
-    },
-    "fields": {
-      "roles": "Ruoli",
-      "users": "Utenti"
-    },
-    "list": {
-      "empty": {
-        "heading": "Nessuna policy trovata",
-        "description": "Crea policy per gestire i permessi che i ruoli possono concedere."
-      },
-      "filtered": {
-        "heading": "Nessun risultato",
-        "description": "Nessuna policy corrisponde ai criteri di filtro correnti."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Nessun ruolo include ancora questa policy."
-      },
-      "empty": {
-        "heading": "Nessun ruolo",
-        "description": "Nessun ruolo include ancora questa policy."
-      }
-    }
   },
   "translations": {
     "domain": "Traduzioni",
@@ -3798,57 +3671,6 @@
       "continueWithProvider": "Continua con {{provider}}",
       "or": "o",
       "provisioningFailed": "Impossibile completare l'accesso. Contatta un amministratore."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Accesso negato",
-      "description": "Non hai il permesso di accedere a questa pagina.",
-      "requiredPermission": "Permesso richiesto: {{permission}}",
-      "action": "Non hai il permesso di eseguire questa azione."
-    },
-    "requiredPermissions": {
-      "title": "Permessi richiesti",
-      "none": "Nessun permesso dichiarato in questa vista.",
-      "anyOf": "Uno qualsiasi di",
-      "allOf": "Tutti di",
-      "source": "Fonte: {{source}}"
-    },
-    "resources": {
-      "customer": "Cliente",
-      "customer_group": "Gruppo di clienti",
-      "order": "Ordine",
-      "product": "Prodotto",
-      "product_category": "Categoria prodotto",
-      "product_collection": "Collezione prodotto",
-      "product_tag": "Tag prodotto",
-      "product_type": "Tipo di prodotto",
-      "inventory": "Inventario",
-      "reservation": "Prenotazione",
-      "promotion": "Promozione",
-      "campaign": "Campagna",
-      "price_list": "Listino prezzi",
-      "region": "Regione",
-      "store": "Negozio",
-      "user": "Utente",
-      "role": "Ruolo",
-      "permission": "Permesso",
-      "sales_channel": "Canale di vendita",
-      "stock_location": "Posizione stock",
-      "shipping_profile": "Profilo di spedizione",
-      "shipping_option": "Opzione di spedizione",
-      "tax_region": "Regione fiscale",
-      "api_key": "Chiave API",
-      "return_reason": "Motivo di reso",
-      "refund_reason": "Motivo di rimborso",
-      "workflow": "Workflow",
-      "translation": "Traduzione"
-    },
-    "actions": {
-      "read": "Visualizza",
-      "create": "Crea",
-      "update": "Modifica",
-      "delete": "Elimina"
     }
   }
 }

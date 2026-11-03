@@ -2781,7 +2781,6 @@
     "editUser": "사용자 편집",
     "inviteUser": "사용자 초대",
     "inviteUserHint": "새 사용자를 스토어에 초대합니다.",
-    "inviteRolesTooltip": "역할을 선택하지 않으면 사용자는 슈퍼유저 역할로 초대됩니다.",
     "sendInvite": "초대장 보내기",
     "pendingInvites": "대기 중인 초대",
     "deleteInviteWarning": "{{email}}에 대한 초대를 삭제하려고 합니다. 이 작업은 취소할 수 없습니다.",
@@ -2798,11 +2797,6 @@
       "pending": "대기 중",
       "expired": "만료됨"
     },
-    "roles": {
-      "admin": "관리자",
-      "developer": "개발자",
-      "member": "멤버"
-    },
     "list": {
       "empty": {
         "heading": "사용자를 찾을 수 없음",
@@ -2816,124 +2810,6 @@
     "deleteUserWarning": "사용자 {{name}}을(를) 삭제하려고 합니다. 이 작업은 취소할 수 없습니다.",
     "deleteUserSuccess": "사용자 {{name}}이(가) 성공적으로 삭제되었습니다",
     "invite": "초대"
-  },
-  "roles": {
-    "domain": "역할",
-    "subtitle": "액세스 역할 및 권한을 관리합니다.",
-    "create": {
-      "header": "역할 생성",
-      "hint": "관리자에서 액세스를 관리할 역할을 생성합니다.",
-      "successToast": "역할 {{name}}이(가) 생성되었습니다.",
-      "tabs": {
-        "details": "세부 정보",
-        "permissions": "권한"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "권한 없음",
-          "description": "선택할 권한이 없습니다."
-        },
-        "filtered": {
-          "heading": "결과 없음",
-          "description": "현재 필터 조건과 일치하는 권한이 없습니다."
-        }
-      }
-    },
-    "edit": {
-      "header": "역할 편집",
-      "successToast": "역할 {{name}}이(가) 업데이트되었습니다."
-    },
-    "delete": {
-      "title": "역할 삭제",
-      "description": "역할 {{name}}을(를) 삭제하려고 합니다. 이 작업은 취소할 수 없습니다.",
-      "successToast": "역할 {{name}}이(가) 삭제되었습니다."
-    },
-    "fields": {
-      "permissions": "권한"
-    },
-    "actions": {
-      "managePermissions": "권한 관리"
-    },
-    "users": {
-      "alreadyAddedTooltip": "사용자가 이미 이 역할을 가지고 있습니다.",
-      "unassignableRoleTooltip": "이 역할을 할당할 권한이 없습니다. 권한이 모든 정책을 포함하지 않습니다.",
-      "add": {
-        "successToast_other": "사용자가 역할에 성공적으로 추가되었습니다.",
-        "list": {
-          "noRecordsMessage": "먼저 사용자를 생성하세요."
-        }
-      },
-      "remove": {
-        "title_other": "사용자 제거",
-        "description_other": "역할에서 {{count}}명의 사용자를 제거하려고 합니다. 이 작업은 취소할 수 없습니다."
-      },
-      "list": {
-        "noRecordsMessage": "이 역할에는 사용자가 없습니다."
-      }
-    },
-    "permissions": {
-      "header": "권한 관리",
-      "hint": "이 역할에 포함할 권한을 선택하세요.",
-      "empty": {
-        "heading": "권한 없음",
-        "description": "선택할 권한이 없습니다."
-      },
-      "filtered": {
-        "heading": "결과 없음",
-        "description": "현재 필터 조건과 일치하는 권한이 없습니다."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "역할 없음",
-        "description": "관리자의 액세스를 관리할 역할을 생성하세요."
-      },
-      "filtered": {
-        "heading": "결과 없음",
-        "description": "현재 필터 조건과 일치하는 역할이 없습니다."
-      }
-    }
-  },
-  "policies": {
-    "domain": "정책",
-    "subtitle": "역할이 부여할 수 있는 권한을 정의합니다.",
-    "create": {
-      "header": "정책 생성",
-      "hint": "역할에 연결할 수 있는 새 권한을 정의합니다.",
-      "successToast": "정책 {{key}}이(가) 생성되었습니다."
-    },
-    "edit": {
-      "header": "정책 편집",
-      "successToast": "정책 {{key}}이(가) 업데이트되었습니다."
-    },
-    "delete": {
-      "title": "정책 삭제",
-      "description": "정책 {{key}}을(를) 삭제하려고 합니다. 이 작업은 취소할 수 없습니다.",
-      "successToast": "정책 {{key}}이(가) 삭제되었습니다."
-    },
-    "fields": {
-      "roles": "역할",
-      "users": "사용자"
-    },
-    "list": {
-      "empty": {
-        "heading": "정책 없음",
-        "description": "역할이 부여할 수 있는 권한을 관리하기 위해 정책을 생성하세요."
-      },
-      "filtered": {
-        "heading": "결과 없음",
-        "description": "현재 필터 조건과 일치하는 정책이 없습니다."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "아직 이 정책을 포함하는 역할이 없습니다."
-      },
-      "empty": {
-        "heading": "역할 없음",
-        "description": "아직 이 정책을 포함하는 역할이 없습니다."
-      }
-    }
   },
   "translations": {
     "domain": "번역",
@@ -3787,57 +3663,6 @@
       "continueWithProvider": "{{provider}}로 계속",
       "or": "또는",
       "provisioningFailed": "로그인을 완료할 수 없습니다. 관리자에게 문의하세요."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "접근 거부",
-      "description": "이 페이지에 접근할 권한이 없습니다.",
-      "requiredPermission": "필요한 권한: {{permission}}",
-      "action": "이 작업을 수행할 권한이 없습니다."
-    },
-    "requiredPermissions": {
-      "title": "필요한 권한",
-      "none": "이 뷰에 선언된 권한이 없습니다.",
-      "anyOf": "다음 중 하나",
-      "allOf": "모두",
-      "source": "출처: {{source}}"
-    },
-    "resources": {
-      "customer": "고객",
-      "customer_group": "고객 그룹",
-      "order": "주문",
-      "product": "제품",
-      "product_category": "제품 카테고리",
-      "product_collection": "제품 컬렉션",
-      "product_tag": "제품 태그",
-      "product_type": "제품 유형",
-      "inventory": "재고",
-      "reservation": "예약",
-      "promotion": "프로모션",
-      "campaign": "캠페인",
-      "price_list": "가격 목록",
-      "region": "지역",
-      "store": "스토어",
-      "user": "사용자",
-      "role": "역할",
-      "permission": "권한",
-      "sales_channel": "판매 채널",
-      "stock_location": "재고 위치",
-      "shipping_profile": "배송 프로필",
-      "shipping_option": "배송 옵션",
-      "tax_region": "세금 지역",
-      "api_key": "API 키",
-      "return_reason": "반품 이유",
-      "refund_reason": "환불 이유",
-      "workflow": "워크플로우",
-      "translation": "번역"
-    },
-    "actions": {
-      "read": "보기",
-      "create": "생성",
-      "update": "편집",
-      "delete": "삭제"
     }
   }
 }

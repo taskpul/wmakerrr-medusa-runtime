@@ -57,7 +57,7 @@ export const ProductTagDetail = () => {
                 <ProductTagProductSection productTag={product_tag} />
               )}
             </LayoutComposer.Entry>
-            {detailPageDefaultEntries(product_tag, { permissions: false })}
+            {detailPageDefaultEntries(product_tag)}
           </>
         ),
       }}

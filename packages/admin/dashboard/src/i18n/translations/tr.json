@@ -2730,11 +2730,6 @@
       "pending": "Beklemede",
       "expired": "Süresi doldu"
     },
-    "roles": {
-      "admin": "Yönetici",
-      "developer": "Geliştirici",
-      "member": "Üye"
-    },
     "list": {
       "empty": {
         "heading": "Kullanıcı bulunamadı",
@@ -2748,7 +2743,6 @@
     "deleteUserWarning": "{{name}} kullanıcısını silmek üzeresiniz. Bu işlem geri alınamaz.",
     "deleteUserSuccess": "Kullanıcı {{name}} başarıyla silindi",
     "invite": "Davet Et",
-    "inviteRolesTooltip": "Rol seçilmezse kullanıcı süper kullanıcı rolüyle davet edilir.",
     "copyResetPasswordLink": "Şifre sıfırlama bağlantısını kopyala",
     "copyResetPasswordLinkSuccess": "Şifre sıfırlama bağlantısı panoya kopyalandı",
     "copyResetPasswordLinkHint": "Bağlantının süresi kısa sürede dolar ve bu kullanıcıya daha önce gönderilmiş şifre sıfırlama bağlantılarını geçersiz kılar."
@@ -3639,127 +3633,6 @@
       }
     }
   },
-  "roles": {
-    "domain": "Roller",
-    "subtitle": "Erişim rollerini ve izinleri yönetin.",
-    "create": {
-      "header": "Rol oluştur",
-      "hint": "Yönetim panelinizde erişimi yönetmek için bir rol oluşturun.",
-      "successToast": "{{name}} rolü oluşturuldu",
-      "tabs": {
-        "details": "Detaylar",
-        "permissions": "İzinler"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "İzin yok",
-          "description": "Seçilebilecek izin bulunmuyor."
-        },
-        "filtered": {
-          "heading": "Sonuç yok",
-          "description": "Hiçbir izin mevcut filtre kriterlerine uymuyor."
-        }
-      }
-    },
-    "edit": {
-      "header": "Rolü düzenle",
-      "successToast": "{{name}} rolü güncellendi"
-    },
-    "delete": {
-      "title": "Rolü sil",
-      "description": "{{name}} rolü silinmek üzere. Bu işlem geri alınamaz.",
-      "successToast": "{{name}} rolü silindi"
-    },
-    "fields": {
-      "permissions": "İzinler"
-    },
-    "actions": {
-      "managePermissions": "İzinleri yönet"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Kullanıcı zaten bu role sahip.",
-      "unassignableRoleTooltip": "Bu rolü atama izniniz yok — izinleriniz bu rolün tüm politikalarını kapsamıyor.",
-      "add": {
-        "successToast_one": "Kullanıcı role başarıyla eklendi.",
-        "successToast_other": "Kullanıcılar role başarıyla eklendi.",
-        "list": {
-          "noRecordsMessage": "Önce bir kullanıcı oluşturun."
-        }
-      },
-      "remove": {
-        "title_one": "Kullanıcıyı kaldır",
-        "title_other": "Kullanıcıları kaldır",
-        "description_one": "{{count}} kullanıcı rolden kaldırılmak üzere. Bu işlem geri alınamaz.",
-        "description_other": "{{count}} kullanıcı rolden kaldırılmak üzere. Bu işlem geri alınamaz."
-      },
-      "list": {
-        "noRecordsMessage": "Bu rolde kullanıcı yok."
-      }
-    },
-    "permissions": {
-      "header": "İzinleri yönet",
-      "hint": "Bu rolün içermesi gereken izinleri seçin.",
-      "empty": {
-        "heading": "İzin yok",
-        "description": "Seçilebilecek izin bulunmuyor."
-      },
-      "filtered": {
-        "heading": "Sonuç yok",
-        "description": "Hiçbir izin mevcut filtre kriterlerine uymuyor."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Rol bulunamadı",
-        "description": "Yönetim panelinizde erişimi yönetmek için roller oluşturun."
-      },
-      "filtered": {
-        "heading": "Sonuç yok",
-        "description": "Hiçbir rol mevcut filtre kriterlerine uymuyor."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Politikalar",
-    "subtitle": "Rollerin verebileceği izinleri tanımlayın.",
-    "create": {
-      "header": "Politika oluştur",
-      "hint": "Rollere eklenebilecek yeni bir izin tanımlayın.",
-      "successToast": "{{key}} politikası oluşturuldu"
-    },
-    "edit": {
-      "header": "Politikayı düzenle",
-      "successToast": "{{key}} politikası güncellendi"
-    },
-    "delete": {
-      "title": "Politikayı sil",
-      "description": "{{key}} politikasını silmek üzeresiniz. Bu işlem geri alınamaz.",
-      "successToast": "{{key}} politikası silindi"
-    },
-    "fields": {
-      "roles": "Roller",
-      "users": "Kullanıcılar"
-    },
-    "list": {
-      "empty": {
-        "heading": "Politika bulunamadı",
-        "description": "Rollerin verebileceği izinleri yönetmek için politikalar oluşturun."
-      },
-      "filtered": {
-        "heading": "Sonuç yok",
-        "description": "Mevcut filtre kriterleriyle eşleşen politika yok."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Bu politikayı içeren rol henüz yok."
-      },
-      "empty": {
-        "heading": "Rol yok",
-        "description": "Bu politikayı içeren rol henüz yok."
-      }
-    }
-  },
   "searchIndexes": {
     "domain": "Arama",
     "subtitle": "Kayıtlı arama dizinlerini görüntüleyin ve kaynak verilerden yeniden oluşturun.",
@@ -3796,57 +3669,6 @@
       "model": "Model",
       "propertyCount": "Özellik Sayısı",
       "hasOverrides": "Geçersiz Kılmaları Var"
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Erişim Reddedildi",
-      "description": "Bu sayfaya erişim izniniz yok.",
-      "requiredPermission": "Gerekli izin: {{permission}}",
-      "action": "Bu işlemi gerçekleştirme izniniz yok."
-    },
-    "requiredPermissions": {
-      "title": "Gerekli izinler",
-      "none": "Bu görünümde tanımlı bir izin yok.",
-      "anyOf": "Şunlardan biri",
-      "allOf": "Tümü",
-      "source": "Kaynak: {{source}}"
-    },
-    "resources": {
-      "customer": "Müşteri",
-      "customer_group": "Müşteri Grubu",
-      "order": "Sipariş",
-      "product": "Ürün",
-      "product_category": "Ürün Kategorisi",
-      "product_collection": "Ürün Koleksiyonu",
-      "product_tag": "Ürün Etiketi",
-      "product_type": "Ürün Türü",
-      "inventory": "Envanter",
-      "reservation": "Rezervasyon",
-      "promotion": "Promosyon",
-      "campaign": "Kampanya",
-      "price_list": "Fiyat Listesi",
-      "region": "Bölge",
-      "store": "Mağaza",
-      "user": "Kullanıcı",
-      "role": "Rol",
-      "permission": "İzin",
-      "sales_channel": "Satış Kanalı",
-      "stock_location": "Stok Konumu",
-      "shipping_profile": "Teslimat Profili",
-      "shipping_option": "Kargo Seçeneği",
-      "tax_region": "Vergi Bölgesi",
-      "api_key": "API Anahtarı",
-      "return_reason": "İade Sebebi",
-      "refund_reason": "Geri Ödeme Sebebi",
-      "workflow": "İş Akışı",
-      "translation": "Çeviri"
-    },
-    "actions": {
-      "read": "Görüntüle",
-      "create": "Oluştur",
-      "update": "Düzenle",
-      "delete": "Sil"
     }
   }
 }

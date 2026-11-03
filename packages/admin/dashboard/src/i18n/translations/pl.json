@@ -1234,133 +1234,6 @@
       }
     }
   },
-  "roles": {
-    "domain": "Role",
-    "subtitle": "Zarządzaj rolami dostępu i uprawnieniami.",
-    "create": {
-      "header": "Utwórz rolę",
-      "hint": "Utwórz rolę, aby zarządzać dostępem w panelu administracyjnym.",
-      "successToast": "Rola {{name}} została utworzona",
-      "tabs": {
-        "details": "Szczegóły",
-        "permissions": "Uprawnienia"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Brak uprawnień",
-          "description": "Nie ma uprawnień do wyboru."
-        },
-        "filtered": {
-          "heading": "Brak wyników",
-          "description": "Żadne uprawnienie nie spełnia bieżących kryteriów filtrowania."
-        }
-      }
-    },
-    "edit": {
-      "header": "Edytuj rolę",
-      "successToast": "Rola {{name}} została zaktualizowana"
-    },
-    "delete": {
-      "title": "Usuń rolę",
-      "description": "Zamierzasz usunąć rolę {{name}}. Tej akcji nie można cofnąć.",
-      "successToast": "Rola {{name}} została usunięta"
-    },
-    "fields": {
-      "permissions": "Uprawnienia"
-    },
-    "actions": {
-      "managePermissions": "Zarządzaj uprawnieniami"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Użytkownik ma już tę rolę.",
-      "unassignableRoleTooltip": "Nie możesz przypisać tej roli — Twoje uprawnienia nie obejmują wszystkich jej polityk.",
-      "add": {
-        "successToast_one": "Użytkownik został pomyślnie dodany do roli.",
-        "successToast_few": "Użytkownicy zostali pomyślnie dodani do roli.",
-        "successToast_many": "Użytkownicy zostali pomyślnie dodani do roli.",
-        "successToast_other": "Użytkownicy zostali pomyślnie dodani do roli.",
-        "list": {
-          "noRecordsMessage": "Najpierw utwórz użytkownika."
-        }
-      },
-      "remove": {
-        "title_one": "Usuń użytkownika",
-        "title_few": "Usuń użytkowników",
-        "title_many": "Usuń użytkowników",
-        "title_other": "Usuń użytkowników",
-        "description_one": "Zamierzasz usunąć {{count}} użytkownika z tej roli. Tej akcji nie można cofnąć.",
-        "description_few": "Zamierzasz usunąć {{count}} użytkowników z tej roli. Tej akcji nie można cofnąć.",
-        "description_many": "Zamierzasz usunąć {{count}} użytkowników z tej roli. Tej akcji nie można cofnąć.",
-        "description_other": "Zamierzasz usunąć {{count}} użytkowników z tej roli. Tej akcji nie można cofnąć."
-      },
-      "list": {
-        "noRecordsMessage": "Ta rola nie ma użytkowników."
-      }
-    },
-    "permissions": {
-      "header": "Zarządzaj uprawnieniami",
-      "hint": "Wybierz uprawnienia, które ma obejmować ta rola.",
-      "empty": {
-        "heading": "Brak uprawnień",
-        "description": "Nie ma uprawnień do wyboru."
-      },
-      "filtered": {
-        "heading": "Brak wyników",
-        "description": "Żadne uprawnienie nie spełnia bieżących kryteriów filtrowania."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Nie znaleziono ról",
-        "description": "Utwórz role, aby zarządzać dostępem w panelu administracyjnym."
-      },
-      "filtered": {
-        "heading": "Brak wyników",
-        "description": "Żadna rola nie spełnia bieżących kryteriów filtrowania."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Polityki",
-    "subtitle": "Zdefiniuj uprawnienia, które mogą nadawać role.",
-    "create": {
-      "header": "Utwórz politykę",
-      "hint": "Zdefiniuj nowe uprawnienie, które można przypisać do ról.",
-      "successToast": "Polityka {{key}} została utworzona"
-    },
-    "edit": {
-      "header": "Edytuj politykę",
-      "successToast": "Polityka {{key}} została zaktualizowana"
-    },
-    "delete": {
-      "title": "Usuń politykę",
-      "description": "Zamierzasz usunąć politykę {{key}}. Tej akcji nie można cofnąć.",
-      "successToast": "Polityka {{key}} została usunięta"
-    },
-    "fields": {
-      "roles": "Role",
-      "users": "Użytkownicy"
-    },
-    "list": {
-      "empty": {
-        "heading": "Nie znaleziono polityk",
-        "description": "Utwórz polityki, aby zarządzać uprawnieniami nadawanymi przez role."
-      },
-      "filtered": {
-        "heading": "Brak wyników",
-        "description": "Żadna polityka nie spełnia bieżących kryteriów filtrowania."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Żadna rola nie zawiera jeszcze tej polityki."
-      },
-      "empty": {
-        "heading": "Brak ról",
-        "description": "Żadna rola nie zawiera jeszcze tej polityki."
-      }
-    }
-  },
   "translations": {
     "domain": "Tłumaczenia",
     "settings": {
@@ -3031,7 +2904,6 @@
     "editUser": "Edytuj użytkownika",
     "inviteUser": "Zaproś użytkownika",
     "inviteUserHint": "Zaproś nowego użytkownika do swojego sklepu.",
-    "inviteRolesTooltip": "Jeśli nie wybierzesz żadnej roli, użytkownik zostanie zaproszony z rolą superużytkownika.",
     "sendInvite": "Wyślij zaproszenie",
     "pendingInvites": "Oczekujące zaproszenia",
     "deleteInviteWarning": "Zamierzasz usunąć zaproszenie dla użytkownika {{email}}. Tej akcji nie można cofnąć.",
@@ -3047,11 +2919,6 @@
       "accepted": "Przyjęty",
       "pending": "Aż do",
       "expired": "Wygasły"
-    },
-    "roles": {
-      "admin": "Administrator",
-      "developer": "Wywoływacz",
-      "member": "Członek"
     },
     "list": {
       "empty": {
@@ -3878,57 +3745,6 @@
       "continueWithProvider": "Kontynuuj z {{provider}}",
       "or": "lub",
       "provisioningFailed": "Nie udało się dokończyć logowania. Skontaktuj się z administratorem."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Odmowa dostępu",
-      "description": "Nie masz uprawnień dostępu do tej strony.",
-      "requiredPermission": "Wymagane uprawnienie: {{permission}}",
-      "action": "Nie masz uprawnień do wykonania tej akcji."
-    },
-    "requiredPermissions": {
-      "title": "Wymagane uprawnienia",
-      "none": "W tym widoku nie zadeklarowano żadnych uprawnień.",
-      "anyOf": "Dowolne z",
-      "allOf": "Wszystkie z",
-      "source": "Źródło: {{source}}"
-    },
-    "resources": {
-      "customer": "Klient",
-      "customer_group": "Grupa klientów",
-      "order": "Zamówienie",
-      "product": "Produkt",
-      "product_category": "Kategoria produktów",
-      "product_collection": "Kolekcja produktów",
-      "product_tag": "Tag produktu",
-      "product_type": "Typ produktu",
-      "inventory": "Magazyn",
-      "reservation": "Rezerwacja",
-      "promotion": "Promocja",
-      "campaign": "Kampania",
-      "price_list": "Cennik",
-      "region": "Region",
-      "store": "Sklep",
-      "user": "Użytkownik",
-      "role": "Rola",
-      "permission": "Uprawnienie",
-      "sales_channel": "Kanał sprzedaży",
-      "stock_location": "Lokalizacja magazynowa",
-      "shipping_profile": "Profil wysyłki",
-      "shipping_option": "Opcja wysyłki",
-      "tax_region": "Region podatkowy",
-      "api_key": "Klucz API",
-      "return_reason": "Powód zwrotu",
-      "refund_reason": "Powód zwrotu środków",
-      "workflow": "Przepływ pracy",
-      "translation": "Tłumaczenie"
-    },
-    "actions": {
-      "read": "Wyświetlanie",
-      "create": "Tworzenie",
-      "update": "Edycja",
-      "delete": "Usuwanie"
     }
   }
 }

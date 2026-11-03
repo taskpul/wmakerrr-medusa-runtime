@@ -128,16 +128,4 @@ export const LINKS = {
     Modules.PAYMENT,
     "account_holder_id"
   ),
-  UserRbacRole: composeLinkName(
-    Modules.USER,
-    "user_id",
-    Modules.RBAC,
-    "rbac_role_id"
-  ),
-  InviteRbacRole: composeLinkName(
-    Modules.USER,
-    "invite_id",
-    Modules.RBAC,
-    "rbac_role_id"
-  ),
 }

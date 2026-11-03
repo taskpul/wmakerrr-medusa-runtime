@@ -16,7 +16,6 @@ import {
   ActionMenu,
 } from "../../../../../components/common/action-menu"
 import { useDeleteCustomer } from "../../../../../hooks/api/customers"
-import { useCustomerPermissions } from "../../../../../hooks/use-resource-permissions"
 
 type CustomerGeneralSectionProps = {
   customer: HttpTypes.AdminCustomer
@@ -28,7 +27,8 @@ export const CustomerGeneralSection = ({
   const { t } = useTranslation()
   const prompt = usePrompt()
   const navigate = useNavigate()
-  const { canUpdate, canDelete } = useCustomerPermissions()
+  const canUpdate = true
+  const canDelete = true
 
   const { mutateAsync } = useDeleteCustomer(customer.id)
 

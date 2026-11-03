@@ -2925,7 +2925,6 @@
     "editUser": "تحرير المستخدم",
     "inviteUser": "دعوة مستخدم",
     "inviteUserHint": "دعوة مستخدم جديد إلى متجرك.",
-    "inviteRolesTooltip": "إذا لم يتم تحديد دور، سيتم دعوة المستخدم بدور مستخدم متميز.",
     "sendInvite": "إرسال الدعوة",
     "pendingInvites": "الدعوات المعلقة",
     "deleteInviteWarning": "أنت على وشك حذف الدعوة لـ {{email}}. لا يمكن التراجع عن هذا الإجراء.",
@@ -2942,146 +2941,8 @@
       "pending": "معلق",
       "expired": "منتهي الصلاحية"
     },
-    "roles": {
-      "admin": "مسؤول",
-      "developer": "مطور",
-      "member": "عضو"
-    },
     "deleteUserWarning": "أنت على وشك حذف المستخدم {{name}}. لا يمكن التراجع عن هذا الإجراء.",
     "invite": "دعوة"
-  },
-  "roles": {
-    "domain": "الأدوار",
-    "subtitle": "إدارة أدوار الوصول والأذونات.",
-    "create": {
-      "header": "إنشاء دور",
-      "hint": "إنشاء دور لإدارة الوصول في لوحة التحكم.",
-      "successToast": "تم إنشاء الدور {{name}}",
-      "tabs": {
-        "details": "التفاصيل",
-        "permissions": "الأذونات"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "لا توجد أذونات",
-          "description": "لا توجد أذونات للاختيار."
-        },
-        "filtered": {
-          "heading": "لا توجد نتائج",
-          "description": "لا توجد أذونات تطابق معايير الفلتر الحالية."
-        }
-      }
-    },
-    "edit": {
-      "header": "تعديل الدور",
-      "successToast": "تم تحديث الدور {{name}}"
-    },
-    "delete": {
-      "title": "حذف الدور",
-      "description": "أنت على وشك حذف الدور {{name}}. لا يمكن التراجع عن هذا الإجراء.",
-      "successToast": "تم حذف الدور {{name}}"
-    },
-    "fields": {
-      "permissions": "الأذونات"
-    },
-    "actions": {
-      "managePermissions": "إدارة الأذونات"
-    },
-    "users": {
-      "alreadyAddedTooltip": "المستخدم لديه هذا الدور بالفعل.",
-      "unassignableRoleTooltip": "ليس لديك صلاحية تعيين هذا الدور — أذوناتك لا تشمل جميع سياساته.",
-      "add": {
-        "successToast_zero": "تمت إضافة المستخدمين إلى الدور بنجاح.",
-        "successToast_one": "تمت إضافة المستخدم إلى الدور بنجاح.",
-        "successToast_two": "تمت إضافة المستخدمين إلى الدور بنجاح.",
-        "successToast_few": "تمت إضافة المستخدمين إلى الدور بنجاح.",
-        "successToast_many": "تمت إضافة المستخدمين إلى الدور بنجاح.",
-        "successToast_other": "تمت إضافة المستخدمين إلى الدور بنجاح.",
-        "list": {
-          "noRecordsMessage": "أنشئ مستخدمًا أولًا."
-        }
-      },
-      "remove": {
-        "title_zero": "إزالة المستخدمين",
-        "title_one": "إزالة المستخدم",
-        "title_two": "إزالة المستخدمين",
-        "title_few": "إزالة المستخدمين",
-        "title_many": "إزالة المستخدمين",
-        "title_other": "إزالة المستخدمين",
-        "description_zero": "أنت على وشك إزالة {{count}} مستخدمين من الدور. لا يمكن التراجع عن هذا الإجراء.",
-        "description_one": "أنت على وشك إزالة {{count}} مستخدم من الدور. لا يمكن التراجع عن هذا الإجراء.",
-        "description_two": "أنت على وشك إزالة مستخدمين ({{count}}) من الدور. لا يمكن التراجع عن هذا الإجراء.",
-        "description_few": "أنت على وشك إزالة {{count}} مستخدمين من الدور. لا يمكن التراجع عن هذا الإجراء.",
-        "description_many": "أنت على وشك إزالة {{count}} مستخدمًا من الدور. لا يمكن التراجع عن هذا الإجراء.",
-        "description_other": "أنت على وشك إزالة {{count}} مستخدمين من الدور. لا يمكن التراجع عن هذا الإجراء."
-      },
-      "list": {
-        "noRecordsMessage": "لا يوجد مستخدمون لهذا الدور."
-      }
-    },
-    "permissions": {
-      "header": "إدارة الأذونات",
-      "hint": "حدد الأذونات التي يجب أن يتضمنها هذا الدور.",
-      "empty": {
-        "heading": "لا توجد أذونات",
-        "description": "لا توجد أذونات للاختيار."
-      },
-      "filtered": {
-        "heading": "لا توجد نتائج",
-        "description": "لا توجد أذونات تطابق معايير الفلتر الحالية."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "لا توجد أدوار",
-        "description": "أنشئ أدوارًا لإدارة الوصول في لوحة التحكم."
-      },
-      "filtered": {
-        "heading": "لا توجد نتائج",
-        "description": "لا توجد أدوار تطابق معايير الفلتر الحالية."
-      }
-    }
-  },
-  "policies": {
-    "domain": "السياسات",
-    "subtitle": "تحديد الأذونات التي يمكن للأدوار منحها.",
-    "create": {
-      "header": "إنشاء سياسة",
-      "hint": "تحديد إذن جديد يمكن إرفاقه بالأدوار.",
-      "successToast": "تم إنشاء السياسة {{key}}"
-    },
-    "edit": {
-      "header": "تعديل السياسة",
-      "successToast": "تم تحديث السياسة {{key}}"
-    },
-    "delete": {
-      "title": "حذف السياسة",
-      "description": "أنت على وشك حذف السياسة {{key}}. لا يمكن التراجع عن هذا الإجراء.",
-      "successToast": "تم حذف السياسة {{key}}"
-    },
-    "fields": {
-      "roles": "الأدوار",
-      "users": "المستخدمون"
-    },
-    "list": {
-      "empty": {
-        "heading": "لا توجد سياسات",
-        "description": "أنشئ سياسات لإدارة الأذونات التي يمكن للأدوار منحها."
-      },
-      "filtered": {
-        "heading": "لا توجد نتائج",
-        "description": "لا توجد سياسات تطابق معايير الفلتر الحالية."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "لا توجد أدوار تتضمن هذه السياسة بعد."
-      },
-      "empty": {
-        "heading": "لا توجد أدوار",
-        "description": "لا توجد أدوار تتضمن هذه السياسة بعد."
-      }
-    }
   },
   "translations": {
     "domain": "الترجمات",
@@ -4001,57 +3862,6 @@
       "continueWithProvider": "المتابعة بـ {{provider}}",
       "or": "أو",
       "provisioningFailed": "تعذّر إكمال تسجيل دخولك. يرجى التواصل مع المسؤول."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "تم رفض الوصول",
-      "description": "ليس لديك إذن للوصول إلى هذه الصفحة.",
-      "requiredPermission": "الإذن المطلوب: {{permission}}",
-      "action": "ليس لديك إذن لتنفيذ هذا الإجراء."
-    },
-    "requiredPermissions": {
-      "title": "الأذونات المطلوبة",
-      "none": "لم يتم الإعلان عن أذونات في هذا العرض.",
-      "anyOf": "أي من",
-      "allOf": "جميع",
-      "source": "المصدر: {{source}}"
-    },
-    "resources": {
-      "customer": "العميل",
-      "customer_group": "مجموعة العملاء",
-      "order": "الطلب",
-      "product": "المنتج",
-      "product_category": "فئة المنتج",
-      "product_collection": "مجموعة المنتجات",
-      "product_tag": "علامة المنتج",
-      "product_type": "نوع المنتج",
-      "inventory": "المخزون",
-      "reservation": "الحجز",
-      "promotion": "العرض الترويجي",
-      "campaign": "الحملة",
-      "price_list": "قائمة الأسعار",
-      "region": "المنطقة",
-      "store": "المتجر",
-      "user": "المستخدم",
-      "role": "الدور",
-      "permission": "الإذن",
-      "sales_channel": "قناة البيع",
-      "stock_location": "موقع المخزون",
-      "shipping_profile": "ملف الشحن",
-      "shipping_option": "خيار الشحن",
-      "tax_region": "المنطقة الضريبية",
-      "api_key": "مفتاح API",
-      "return_reason": "سبب الإرجاع",
-      "refund_reason": "سبب الاسترداد",
-      "workflow": "سير العمل",
-      "translation": "الترجمة"
-    },
-    "actions": {
-      "read": "عرض",
-      "create": "إنشاء",
-      "update": "تعديل",
-      "delete": "حذف"
     }
   }
 }

@@ -70,7 +70,7 @@ export const ProductOptionDetail = () => {
                 />
               )}
             </LayoutComposer.Entry>
-            {detailPageDefaultEntries(product_option, { permissions: false })}
+            {detailPageDefaultEntries(product_option)}
           </>
         ),
       }}

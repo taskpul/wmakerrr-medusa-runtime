@@ -2766,7 +2766,6 @@
     "editUser": "Muokkaa käyttäjää",
     "inviteUser": "Kutsu käyttäjä",
     "inviteUserHint": "Kutsu uusi käyttäjä kauppaasi.",
-    "inviteRolesTooltip": "Jos roolia ei ole valittu, käyttäjä kutsutaan pääkäyttäjän roolilla.",
     "sendInvite": "Lähetä kutsu",
     "pendingInvites": "Odottavat kutsut",
     "deleteInviteWarning": "Olet poistamassa kutsun käyttäjälle {{email}}. Tätä toimintoa ei voi peruuttaa.",
@@ -2783,11 +2782,6 @@
       "pending": "Odottaa",
       "expired": "Vanhentunut"
     },
-    "roles": {
-      "admin": "Ylläpitäjä",
-      "developer": "Kehittäjä",
-      "member": "Jäsen"
-    },
     "list": {
       "empty": {
         "heading": "Käyttäjiä ei löytynyt",
@@ -2801,127 +2795,6 @@
     "deleteUserWarning": "Olet poistamassa käyttäjän {{name}}. Tätä toimintoa ei voi peruuttaa.",
     "deleteUserSuccess": "Käyttäjä {{name}} poistettiin onnistuneesti",
     "invite": "Kutsu"
-  },
-  "roles": {
-    "domain": "Roolit",
-    "subtitle": "Hallinnoi käyttöoikeusrooleja ja lupia.",
-    "create": {
-      "header": "Luo rooli",
-      "hint": "Luo rooli hallitaksesi käyttöoikeuksia hallintapaneelissasi.",
-      "successToast": "Rooli {{name}} luotu",
-      "tabs": {
-        "details": "Tiedot",
-        "permissions": "Luvat"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Ei lupia",
-          "description": "Valittavia lupia ei ole."
-        },
-        "filtered": {
-          "heading": "Ei tuloksia",
-          "description": "Yksikään lupa ei vastaa nykyisiä suodatinehtoja."
-        }
-      }
-    },
-    "edit": {
-      "header": "Muokkaa roolia",
-      "successToast": "Rooli {{name}} päivitetty"
-    },
-    "delete": {
-      "title": "Poista rooli",
-      "description": "Olet poistamassa roolin {{name}}. Tätä toimintoa ei voi peruuttaa.",
-      "successToast": "Rooli {{name}} poistettu"
-    },
-    "fields": {
-      "permissions": "Luvat"
-    },
-    "actions": {
-      "managePermissions": "Hallinnoi lupia"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Käyttäjällä on jo tämä rooli.",
-      "unassignableRoleTooltip": "Sinulla ei ole oikeutta määrittää tätä roolia — luvatasi eivät kata kaikkia sen käytäntöjä.",
-      "add": {
-        "successToast_one": "Käyttäjä lisättiin rooliin onnistuneesti.",
-        "successToast_other": "Käyttäjät lisättiin rooliin onnistuneesti.",
-        "list": {
-          "noRecordsMessage": "Luo ensin käyttäjä."
-        }
-      },
-      "remove": {
-        "title_one": "Poista käyttäjä",
-        "title_other": "Poista käyttäjät",
-        "description_one": "Olet poistamassa {{count}} käyttäjän roolista. Tätä toimintoa ei voi peruuttaa.",
-        "description_other": "Olet poistamassa {{count}} käyttäjää roolista. Tätä toimintoa ei voi peruuttaa."
-      },
-      "list": {
-        "noRecordsMessage": "Tällä roolilla ei ole käyttäjiä."
-      }
-    },
-    "permissions": {
-      "header": "Hallinnoi lupia",
-      "hint": "Valitse luvat, jotka tämän roolin tulisi sisältää.",
-      "empty": {
-        "heading": "Ei lupia",
-        "description": "Valittavia lupia ei ole."
-      },
-      "filtered": {
-        "heading": "Ei tuloksia",
-        "description": "Yksikään lupa ei vastaa nykyisiä suodatinehtoja."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Rooleja ei löytynyt",
-        "description": "Luo rooleja hallitaksesi käyttöoikeuksia hallintapaneelissasi."
-      },
-      "filtered": {
-        "heading": "Ei tuloksia",
-        "description": "Yksikään rooli ei vastaa nykyisiä suodatinehtoja."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Käytännöt",
-    "subtitle": "Määritä luvat, joita roolit voivat myöntää.",
-    "create": {
-      "header": "Luo käytäntö",
-      "hint": "Määritä uusi lupa, joka voidaan liittää rooleihin.",
-      "successToast": "Käytäntö {{key}} luotu"
-    },
-    "edit": {
-      "header": "Muokkaa käytäntöä",
-      "successToast": "Käytäntö {{key}} päivitetty"
-    },
-    "delete": {
-      "title": "Poista käytäntö",
-      "description": "Olet poistamassa käytännön {{key}}. Tätä toimintoa ei voi peruuttaa.",
-      "successToast": "Käytäntö {{key}} poistettu"
-    },
-    "fields": {
-      "roles": "Roolit",
-      "users": "Käyttäjät"
-    },
-    "list": {
-      "empty": {
-        "heading": "Käytäntöjä ei löytynyt",
-        "description": "Luo käytäntöjä hallitaksesi rooleille myönnettäviä lupia."
-      },
-      "filtered": {
-        "heading": "Ei tuloksia",
-        "description": "Yksikään käytäntö ei vastaa nykyisiä suodatinehtoja."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Yksikään rooli ei sisällä vielä tätä käytäntöä."
-      },
-      "empty": {
-        "heading": "Ei rooleja",
-        "description": "Yksikään rooli ei sisällä vielä tätä käytäntöä."
-      }
-    }
   },
   "translations": {
     "domain": "Käännökset",
@@ -3776,57 +3649,6 @@
       "continueWithProvider": "Jatka palveluntarjoajalla {{provider}}",
       "or": "tai",
       "provisioningFailed": "Emme voineet viimeistellä kirjautumistasi. Ota yhteyttä ylläpitäjään."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Käyttö estetty",
-      "description": "Sinulla ei ole oikeutta käyttää tätä sivua.",
-      "requiredPermission": "Vaadittu lupa: {{permission}}",
-      "action": "Sinulla ei ole oikeutta suorittaa tätä toimintoa."
-    },
-    "requiredPermissions": {
-      "title": "Vaaditut luvat",
-      "none": "Tässä näkymässä ei ole ilmoitettu lupia.",
-      "anyOf": "Jokin seuraavista",
-      "allOf": "Kaikki seuraavista",
-      "source": "Lähde: {{source}}"
-    },
-    "resources": {
-      "customer": "Asiakas",
-      "customer_group": "Asiakasryhmä",
-      "order": "Tilaus",
-      "product": "Tuote",
-      "product_category": "Tuotekategoria",
-      "product_collection": "Tuotekokoelma",
-      "product_tag": "Tuotetunniste",
-      "product_type": "Tuotetyyppi",
-      "inventory": "Varasto",
-      "reservation": "Varaus",
-      "promotion": "Kampanja",
-      "campaign": "Kampanjajakso",
-      "price_list": "Hinnasto",
-      "region": "Alue",
-      "store": "Kauppa",
-      "user": "Käyttäjä",
-      "role": "Rooli",
-      "permission": "Lupa",
-      "sales_channel": "Myyntikanava",
-      "stock_location": "Varastosijainti",
-      "shipping_profile": "Toimitusprofiili",
-      "shipping_option": "Toimitusvaihtoehto",
-      "tax_region": "Veroalue",
-      "api_key": "API-avain",
-      "return_reason": "Palautussyy",
-      "refund_reason": "Hyvityssyy",
-      "workflow": "Työnkulku",
-      "translation": "Käännös"
-    },
-    "actions": {
-      "read": "Näytä",
-      "create": "Luo",
-      "update": "Muokkaa",
-      "delete": "Poista"
     }
   }
 }

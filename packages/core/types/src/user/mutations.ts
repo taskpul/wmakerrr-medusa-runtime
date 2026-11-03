@@ -26,13 +26,6 @@ export interface CreateUserDTO {
    * Holds custom data in key-value pairs.
    */
   metadata?: Record<string, unknown> | null
-
-  /**
-   * The RBAC roles to assign to the user.
-   *
-   * @ignore
-   */
-  roles?: string[] | null
 }
 
 /**
@@ -63,13 +56,6 @@ export interface CreateInviteDTO {
    * Holds custom data in key-value pairs.
    */
   metadata?: Record<string, unknown> | null
-
-  /**
-   * The RBAC roles to assign to the user when the invite is accepted.
-   *
-   * @ignore
-   */
-  roles?: string[] | null
 }
 
 /**

@@ -1,0 +1,1121 @@
+{
+  "schemaVersion": 1,
+  "upstreamVersion": "2.22.2",
+  "packageCount": 79,
+  "packages": [
+    {
+      "name": "@medusajs/admin-bundler",
+      "path": "packages/admin/admin-bundler",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/admin-shared": "2.22.2",
+          "@medusajs/admin-vite-plugin": "2.22.2",
+          "@medusajs/dashboard": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/types": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/admin-sdk",
+      "path": "packages/admin/admin-sdk",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/admin-shared": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/admin-shared",
+      "path": "packages/admin/admin-shared",
+      "version": "2.22.2",
+      "workspaceDependencies": {}
+    },
+    {
+      "name": "@medusajs/admin-vite-plugin",
+      "path": "packages/admin/admin-vite-plugin",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/admin-shared": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/analytics",
+      "path": "packages/modules/analytics",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/analytics-local",
+      "path": "packages/modules/providers/analytics-local",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/analytics-posthog",
+      "path": "packages/modules/providers/analytics-posthog",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/api-key",
+      "path": "packages/modules/api-key",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/auth",
+      "path": "packages/modules/auth",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/auth-emailpass",
+      "path": "packages/modules/providers/auth-emailpass",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/auth-github",
+      "path": "packages/modules/providers/auth-github",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/auth-google",
+      "path": "packages/modules/providers/auth-google",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/cache-inmemory",
+      "path": "packages/modules/cache-inmemory",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/cache-redis",
+      "path": "packages/modules/cache-redis",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/caching",
+      "path": "packages/modules/caching",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/caching-redis",
+      "path": "packages/modules/providers/caching-redis",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/cart",
+      "path": "packages/modules/cart",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/cli",
+      "path": "packages/cli/medusa-cli",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/deps": "2.22.2",
+          "@medusajs/telemetry": "2.22.2",
+          "@medusajs/utils": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/core-flows",
+      "path": "packages/core/core-flows",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/currency",
+      "path": "packages/modules/currency",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/customer",
+      "path": "packages/modules/customer",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/dashboard",
+      "path": "packages/admin/dashboard",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/admin-shared": "2.22.2",
+          "@medusajs/icons": "2.22.2",
+          "@medusajs/js-sdk": "2.22.2",
+          "@medusajs/ui": "4.2.9"
+        },
+        "devDependencies": {
+          "@medusajs/admin-shared": "2.22.2",
+          "@medusajs/admin-vite-plugin": "2.22.2",
+          "@medusajs/types": "2.22.2",
+          "@medusajs/ui-preset": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/deps",
+      "path": "packages/deps",
+      "version": "2.22.2",
+      "workspaceDependencies": {}
+    },
+    {
+      "name": "@medusajs/draft-order",
+      "path": "packages/plugins/draft-order",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/js-sdk": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/admin-sdk": "2.22.2",
+          "@medusajs/cli": "2.22.2",
+          "@medusajs/dashboard": "2.22.2",
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/icons": "2.22.2",
+          "@medusajs/test-utils": "2.22.2",
+          "@medusajs/types": "2.22.2",
+          "@medusajs/ui": "4.2.9",
+          "@medusajs/ui-preset": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/admin-sdk": "2.22.2",
+          "@medusajs/cli": "2.22.2",
+          "@medusajs/dashboard": "2.22.2",
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/icons": "2.22.2",
+          "@medusajs/test-utils": "2.22.2",
+          "@medusajs/ui": "4.2.9"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/eslint-plugin",
+      "path": "packages/eslint-plugin",
+      "version": "2.22.2",
+      "workspaceDependencies": {}
+    },
+    {
+      "name": "@medusajs/event-bus-local",
+      "path": "packages/modules/event-bus-local",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/event-bus-redis",
+      "path": "packages/modules/event-bus-redis",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/types": "2.22.2",
+          "@medusajs/utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/file",
+      "path": "packages/modules/file",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/file-local",
+      "path": "packages/modules/providers/file-local",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/file-s3",
+      "path": "packages/modules/providers/file-s3",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/framework",
+      "path": "packages/core/framework",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/deps": "2.22.2",
+          "@medusajs/modules-sdk": "2.22.2",
+          "@medusajs/orchestration": "2.22.2",
+          "@medusajs/telemetry": "2.22.2",
+          "@medusajs/types": "2.22.2",
+          "@medusajs/utils": "2.22.2",
+          "@medusajs/workflows-sdk": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/cli": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/cli": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/fulfillment",
+      "path": "packages/modules/fulfillment",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/fulfillment-manual",
+      "path": "packages/modules/providers/fulfillment-manual",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/http-types-generator",
+      "path": "packages/cli/http-types-generator",
+      "version": "2.22.2",
+      "workspaceDependencies": {}
+    },
+    {
+      "name": "@medusajs/icons",
+      "path": "packages/design-system/icons",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/toolbox": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/index",
+      "path": "packages/modules/index",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/instantsearch-adapter",
+      "path": "packages/core/instantsearch-adapter",
+      "version": "2.22.2",
+      "workspaceDependencies": {}
+    },
+    {
+      "name": "@medusajs/inventory",
+      "path": "packages/modules/inventory",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/js-sdk",
+      "path": "packages/core/js-sdk",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/types": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/link-modules",
+      "path": "packages/modules/link-modules",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/locking",
+      "path": "packages/modules/locking",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/locking-postgres",
+      "path": "packages/modules/providers/locking-postgres",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/locking-redis",
+      "path": "packages/modules/providers/locking-redis",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/loyalty-plugin",
+      "path": "packages/plugins/loyalty",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/admin-sdk": "2.22.2",
+          "@medusajs/cli": "2.22.2",
+          "@medusajs/dashboard": "2.22.2",
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/icons": "2.22.2",
+          "@medusajs/medusa": "2.22.2",
+          "@medusajs/test-utils": "2.22.2",
+          "@medusajs/types": "2.22.2",
+          "@medusajs/ui": "4.2.9",
+          "@medusajs/ui-preset": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/admin-sdk": "2.22.2",
+          "@medusajs/cli": "2.22.2",
+          "@medusajs/dashboard": "2.22.2",
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/icons": "2.22.2",
+          "@medusajs/medusa": "2.22.2",
+          "@medusajs/test-utils": "2.22.2",
+          "@medusajs/ui": "4.2.9"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/medusa",
+      "path": "packages/medusa",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/admin-bundler": "2.22.2",
+          "@medusajs/analytics": "2.22.2",
+          "@medusajs/analytics-local": "2.22.2",
+          "@medusajs/analytics-posthog": "2.22.2",
+          "@medusajs/api-key": "2.22.2",
+          "@medusajs/auth": "2.22.2",
+          "@medusajs/auth-emailpass": "2.22.2",
+          "@medusajs/auth-github": "2.22.2",
+          "@medusajs/auth-google": "2.22.2",
+          "@medusajs/cache-inmemory": "2.22.2",
+          "@medusajs/cache-redis": "2.22.2",
+          "@medusajs/caching": "2.22.2",
+          "@medusajs/caching-redis": "2.22.2",
+          "@medusajs/cart": "2.22.2",
+          "@medusajs/core-flows": "2.22.2",
+          "@medusajs/currency": "2.22.2",
+          "@medusajs/customer": "2.22.2",
+          "@medusajs/draft-order": "2.22.2",
+          "@medusajs/event-bus-local": "2.22.2",
+          "@medusajs/event-bus-redis": "2.22.2",
+          "@medusajs/file": "2.22.2",
+          "@medusajs/file-local": "2.22.2",
+          "@medusajs/file-s3": "2.22.2",
+          "@medusajs/fulfillment": "2.22.2",
+          "@medusajs/fulfillment-manual": "2.22.2",
+          "@medusajs/index": "2.22.2",
+          "@medusajs/inventory": "2.22.2",
+          "@medusajs/link-modules": "2.22.2",
+          "@medusajs/locking": "2.22.2",
+          "@medusajs/locking-postgres": "2.22.2",
+          "@medusajs/locking-redis": "2.22.2",
+          "@medusajs/notification": "2.22.2",
+          "@medusajs/notification-local": "2.22.2",
+          "@medusajs/notification-sendgrid": "2.22.2",
+          "@medusajs/order": "2.22.2",
+          "@medusajs/payment": "2.22.2",
+          "@medusajs/payment-adyen": "2.22.2",
+          "@medusajs/payment-stripe": "2.22.2",
+          "@medusajs/pricing": "2.22.2",
+          "@medusajs/product": "2.22.2",
+          "@medusajs/promotion": "2.22.2",
+          "@medusajs/region": "2.22.2",
+          "@medusajs/sales-channel": "2.22.2",
+          "@medusajs/search": "2.22.2",
+          "@medusajs/search-postgres": "2.22.2",
+          "@medusajs/settings": "2.22.2",
+          "@medusajs/stock-location": "2.22.2",
+          "@medusajs/store": "2.22.2",
+          "@medusajs/tax": "2.22.2",
+          "@medusajs/telemetry": "2.22.2",
+          "@medusajs/translation": "2.22.2",
+          "@medusajs/user": "2.22.2",
+          "@medusajs/workflow-engine-inmemory": "2.22.2",
+          "@medusajs/workflow-engine-redis": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/medusa-oas-cli",
+      "path": "packages/cli/oas/medusa-oas-cli",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/medusa": "2.22.2",
+          "@medusajs/utils": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/types": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/modules-sdk",
+      "path": "packages/core/modules-sdk",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/deps": "2.22.2",
+          "@medusajs/query": "2.22.2",
+          "@medusajs/utils": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/types": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/notification",
+      "path": "packages/modules/notification",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/notification-local",
+      "path": "packages/modules/providers/notification-local",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/notification-sendgrid",
+      "path": "packages/modules/providers/notification-sendgrid",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/orchestration",
+      "path": "packages/core/orchestration",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/deps": "2.22.2",
+          "@medusajs/utils": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/types": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/order",
+      "path": "packages/modules/order",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/payment",
+      "path": "packages/modules/payment",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/payment-adyen",
+      "path": "packages/modules/providers/payment-adyen",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/payment-stripe",
+      "path": "packages/modules/providers/payment-stripe",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/pricing",
+      "path": "packages/modules/pricing",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/product",
+      "path": "packages/modules/product",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/promotion",
+      "path": "packages/modules/promotion",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/query",
+      "path": "packages/core/query",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/deps": "2.22.2",
+          "@medusajs/utils": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/types": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/region",
+      "path": "packages/modules/region",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/sales-channel",
+      "path": "packages/modules/sales-channel",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/search",
+      "path": "packages/modules/search",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/search-postgres",
+      "path": "packages/modules/providers/search-postgres",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/settings",
+      "path": "packages/modules/settings",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/stock-location",
+      "path": "packages/modules/stock-location",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/store",
+      "path": "packages/modules/store",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/tax",
+      "path": "packages/modules/tax",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/telemetry",
+      "path": "packages/medusa-telemetry",
+      "version": "2.22.2",
+      "workspaceDependencies": {}
+    },
+    {
+      "name": "@medusajs/test-utils",
+      "path": "packages/medusa-test-utils",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/core-flows": "2.22.2",
+          "@medusajs/framework": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/core-flows": "2.22.2",
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/medusa": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/translation",
+      "path": "packages/modules/translation",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/types",
+      "path": "packages/core/types",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/deps": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/ui",
+      "path": "packages/design-system/ui",
+      "version": "4.2.9",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/icons": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/ui-preset": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/ui-preset",
+      "path": "packages/design-system/ui-preset",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/toolbox": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/user",
+      "path": "packages/modules/user",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/utils",
+      "path": "packages/core/utils",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/deps": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/types": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/workflow-engine-inmemory",
+      "path": "packages/modules/workflow-engine-inmemory",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/workflow-engine-redis",
+      "path": "packages/modules/workflow-engine-redis",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "devDependencies": {
+          "@medusajs/framework": "2.22.2",
+          "@medusajs/test-utils": "2.22.2"
+        },
+        "peerDependencies": {
+          "@medusajs/framework": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "@medusajs/workflows-sdk",
+      "path": "packages/core/workflows-sdk",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/deps": "2.22.2",
+          "@medusajs/modules-sdk": "2.22.2",
+          "@medusajs/orchestration": "2.22.2",
+          "@medusajs/utils": "2.22.2"
+        },
+        "devDependencies": {
+          "@medusajs/types": "2.22.2"
+        }
+      }
+    },
+    {
+      "name": "create-medusa-app",
+      "path": "packages/cli/create-medusa-app",
+      "version": "2.22.2",
+      "workspaceDependencies": {
+        "dependencies": {
+          "@medusajs/deps": "2.22.2",
+          "@medusajs/telemetry": "2.22.2"
+        }
+      }
+    }
+  ]
+}

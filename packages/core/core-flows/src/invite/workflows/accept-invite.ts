@@ -10,7 +10,7 @@ import {
 import { setAuthAppMetadataStep } from "../../auth"
 import { emitEventStep } from "../../common/steps/emit-event"
 import { createUsersWorkflow } from "../../user"
-import { deleteInvitesStep, getInviteRolesStep } from "../steps"
+import { deleteInvitesStep } from "../steps"
 import { validateTokenStep } from "../steps/validate-token"
 
 export const acceptInviteWorkflowId = "accept-invite-workflow"
@@ -41,7 +41,7 @@ export const acceptInviteWorkflowId = "accept-invite-workflow"
  *
  * @summary
  *
- * Accept invite and create user with roles.
+ * Accept invite and create user.
  */
 export const acceptInviteWorkflow = createWorkflow(
   acceptInviteWorkflowId,
@@ -50,17 +50,13 @@ export const acceptInviteWorkflow = createWorkflow(
   ): WorkflowResponse<UserDTO[]> => {
     const invite = validateTokenStep(input.invite_token)
 
-    // Get roles associated with the invite
-    const inviteRoles = getInviteRolesStep({ invite_id: invite.id })
-
     const createUserInput = transform(
-      { input, invite, inviteRoles },
-      ({ input, invite, inviteRoles }) => {
+      { input, invite },
+      ({ input, invite }) => {
         return [
           {
             ...input.user,
             email: input.user.email ?? invite.email,
-            roles: inviteRoles,
           },
         ]
       }

@@ -24,8 +24,12 @@ export const ProductVariantInventoryItem: ModuleJoinerConfig = {
     extraFields: { required_quantity: { type: "decimal", defaultValue: "1" } },
   },
   primaryKeys: ["id", "variant_id", "inventory_item_id"],
-  relationships: [/* exactly 2: { serviceName, entity, primaryKey, foreignKey, alias, args } */],
-  extends: [/* adds `inventory_items` to ProductVariant, `variant_link` to InventoryItem */],
+  relationships: [
+    /* exactly 2: { serviceName, entity, primaryKey, foreignKey, alias, args } */
+  ],
+  extends: [
+    /* adds `inventory_items` to ProductVariant, `variant_link` to InventoryItem */
+  ],
 }
 ```
 
@@ -33,7 +37,7 @@ export const ProductVariantInventoryItem: ModuleJoinerConfig = {
 - `defineLink(a, b, options)` (`packages/core/utils/src/modules-sdk/define-link.ts`) generates the same `ModuleJoinerConfig` from data model references: `serviceName` = `composeLinkName(...)`, table name from `composeTableName(moduleA, keyA, moduleB, keyB)`, entry point `<aliasA>_<aliasB>`, validation of primary keys, plus `database.extraColumns`, `filterable` (Index Module) and `readOnly`. Both feed into the same `initialize()`.
 - Read-only links (`src/definitions/readonly/`, `isReadOnlyLink: true`) have no table: they only `extends` an entity with a relation resolved through an existing foreign key column (e.g. `OrderLineItem.product_id` -> `Product`, `Cart.region_id` -> `Region`, `Store.currency_code` -> `Currency`).
 
-Pivot tables defined here: `cart_payment_collection`, `cart_promotion`, `customer_account_holder`, `location_fulfillment_provider`, `location_fulfillment_set`, `invite_rbac_role`, `user_rbac_role`, `order_cart`, `order_fulfillment`, `order_payment_collection`, `order_promotion`, `return_fulfillment`, `product_sales_channel`, `product_shipping_profile`, `product_variant_inventory_item`, `product_variant_price_set`, `publishable_api_key_sales_channel`, `region_payment_provider`, `sales_channel_stock_location`, `shipping_option_price_set`.
+Pivot tables defined here: `cart_payment_collection`, `cart_promotion`, `customer_account_holder`, `location_fulfillment_provider`, `location_fulfillment_set`, `order_cart`, `order_fulfillment`, `order_payment_collection`, `order_promotion`, `return_fulfillment`, `product_sales_channel`, `product_shipping_profile`, `product_variant_inventory_item`, `product_variant_price_set`, `publishable_api_key_sales_channel`, `region_payment_provider`, `sales_channel_stock_location`, `shipping_option_price_set`.
 
 ## Architecture
 

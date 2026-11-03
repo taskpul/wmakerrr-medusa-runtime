@@ -6,7 +6,6 @@ import { useTranslation } from "react-i18next"
 import { ConfigurableDataTable } from "../../../../../components/table/configurable-data-table"
 import { useBatchCustomerCustomerGroups } from "../../../../../hooks/api"
 import { useCustomerGroups } from "../../../../../hooks/api/customer-groups"
-import { useCustomerPermissions } from "../../../../../hooks/use-resource-permissions"
 import { createTableAdapter } from "../../../../../lib/table/table-adapters"
 import { CustomerGroupRowActions } from "./customer-group-section"
 
@@ -17,7 +16,7 @@ export const ConfigurableCustomerGroupSection = ({
 }) => {
   const { t } = useTranslation()
   const prompt = usePrompt()
-  const { canUpdate } = useCustomerPermissions()
+  const canUpdate = true
 
   const { mutateAsync } = useBatchCustomerCustomerGroups(customer.id)
 

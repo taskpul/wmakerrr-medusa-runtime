@@ -6,7 +6,6 @@ import {
   Action,
   ActionMenu,
 } from "../../../../../components/common/action-menu"
-import { usePermissions } from "../../../../../providers/permissions-provider"
 
 export const CustomerActions = ({
   customer,
@@ -14,21 +13,13 @@ export const CustomerActions = ({
   customer: HttpTypes.AdminCustomer
 }) => {
   const { t } = useTranslation()
-  const { can } = usePermissions()
-
-  const actions: Action[] = []
-
-  if (can("customer", "update")) {
-    actions.push({
+  const actions: Action[] = [
+    {
       icon: <PencilSquare />,
       label: t("actions.edit"),
       to: `/customers/${customer.id}/edit`,
-    })
-  }
-
-  if (!actions.length) {
-    return null
-  }
+    },
+  ]
 
   return (
     <ActionMenu

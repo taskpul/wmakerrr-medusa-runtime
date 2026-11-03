@@ -8,10 +8,10 @@ describe("setTestLicense", () => {
 
     expect(container.resolve(ContainerRegistrationKeys.LICENSE)).toBeNull()
 
-    setTestLicense(["rbac"])
+    setTestLicense(["feature-a"])
 
     expect(container.resolve(ContainerRegistrationKeys.LICENSE)).toEqual(
-      testLicense(["rbac"])
+      testLicense(["feature-a"])
     )
   })
 })

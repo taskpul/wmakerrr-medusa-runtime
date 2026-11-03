@@ -2818,7 +2818,6 @@
     "editUser": "Editați utilizatorul",
     "inviteUser": "Invitați utilizator",
     "inviteUserHint": "Invitați un utilizator nou în magazinul dvs.",
-    "inviteRolesTooltip": "Dacă nu este selectat niciun rol, utilizatorul va fi invitat cu rolul de superutilizator.",
     "sendInvite": "Trimite invitația",
     "pendingInvites": "Invitații în așteptare",
     "deleteInviteWarning": "Sunteți pe cale să ștergeți invitația pentru {{email}}. ",
@@ -2835,11 +2834,6 @@
       "pending": "În așteptare",
       "expired": "Expirat"
     },
-    "roles": {
-      "admin": "Admin",
-      "developer": "Dezvoltator",
-      "member": "Membru"
-    },
     "list": {
       "empty": {
         "heading": "Nu s-au găsit utilizatori",
@@ -2853,130 +2847,6 @@
     "deleteUserWarning": "Sunteți pe cale să ștergeți utilizatorul {{name}}. ",
     "deleteUserSuccess": "Utilizatorul {{name}} a fost șters cu succes",
     "invite": "Invita"
-  },
-  "roles": {
-    "domain": "Roluri",
-    "subtitle": "Gestionați rolurile de acces și permisiunile.",
-    "create": {
-      "header": "Creați rol",
-      "hint": "Creați un rol pentru a gestiona accesul în administrare.",
-      "successToast": "Rolul {{name}} creat",
-      "tabs": {
-        "details": "Detalii",
-        "permissions": "Permisiuni"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Nu există permisiuni",
-          "description": "Nu există permisiuni de selectat."
-        },
-        "filtered": {
-          "heading": "Niciun rezultat",
-          "description": "Nicio permisiune nu corespunde criteriilor actuale de filtrare."
-        }
-      }
-    },
-    "edit": {
-      "header": "Editați rolul",
-      "successToast": "Rolul {{name}} actualizat"
-    },
-    "delete": {
-      "title": "Ștergeți rolul",
-      "description": "Urmați să ștergeți rolul {{name}}. Această acțiune nu poate fi anulată.",
-      "successToast": "Rolul {{name}} șters"
-    },
-    "fields": {
-      "permissions": "Permisiuni"
-    },
-    "actions": {
-      "managePermissions": "Gestionați permisiunile"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Utilizatorul are deja acest rol.",
-      "unassignableRoleTooltip": "Nu aveți acces pentru a atribui acest rol — permisiunile dvs. nu acoperă toate politicile sale.",
-      "add": {
-        "successToast_one": "Utilizatorul a fost adăugat cu succes la rol.",
-        "successToast_few": "Utilizatorii au fost adăugați cu succes la rol.",
-        "successToast_other": "Utilizatorii au fost adăugați cu succes la rol.",
-        "list": {
-          "noRecordsMessage": "Creați mai întâi un utilizator."
-        }
-      },
-      "remove": {
-        "title_one": "Eliminați utilizatorul",
-        "title_few": "Eliminați utilizatorii",
-        "title_other": "Eliminați utilizatorii",
-        "description_one": "Urmați să eliminați {{count}} utilizator din rol. Această acțiune nu poate fi anulată.",
-        "description_few": "Urmați să eliminați {{count}} utilizatori din rol. Această acțiune nu poate fi anulată.",
-        "description_other": "Urmați să eliminați {{count}} utilizatori din rol. Această acțiune nu poate fi anulată."
-      },
-      "list": {
-        "noRecordsMessage": "Acest rol nu are utilizatori."
-      }
-    },
-    "permissions": {
-      "header": "Gestionați permisiunile",
-      "hint": "Selectați permisiunile pe care ar trebui să le includă acest rol.",
-      "empty": {
-        "heading": "Nu există permisiuni",
-        "description": "Nu există permisiuni de selectat."
-      },
-      "filtered": {
-        "heading": "Niciun rezultat",
-        "description": "Nicio permisiune nu corespunde criteriilor actuale de filtrare."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Nu s-au găsit roluri",
-        "description": "Creați roluri pentru a gestiona accesul în administrare."
-      },
-      "filtered": {
-        "heading": "Niciun rezultat",
-        "description": "Niciun rol nu corespunde criteriilor actuale de filtrare."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Politici",
-    "subtitle": "Definiți permisiunile pe care rolurile le pot acorda.",
-    "create": {
-      "header": "Creați politică",
-      "hint": "Definiți o nouă permisiune care poate fi atașată rolurilor.",
-      "successToast": "Politica {{key}} creată"
-    },
-    "edit": {
-      "header": "Editați politica",
-      "successToast": "Politica {{key}} actualizată"
-    },
-    "delete": {
-      "title": "Ștergeți politica",
-      "description": "Urmați să ștergeți politica {{key}}. Această acțiune nu poate fi anulată.",
-      "successToast": "Politica {{key}} ștearsă"
-    },
-    "fields": {
-      "roles": "Roluri",
-      "users": "Utilizatori"
-    },
-    "list": {
-      "empty": {
-        "heading": "Nu s-au găsit politici",
-        "description": "Creați politici pentru a gestiona permisiunile pe care rolurile le pot acorda."
-      },
-      "filtered": {
-        "heading": "Niciun rezultat",
-        "description": "Nicio politică nu corespunde criteriilor actuale de filtrare."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Niciun rol nu include această politică încă."
-      },
-      "empty": {
-        "heading": "Nu există roluri",
-        "description": "Niciun rol nu include această politică încă."
-      }
-    }
   },
   "translations": {
     "domain": "Traduceri",
@@ -3848,57 +3718,6 @@
       "continueWithProvider": "Continuați cu {{provider}}",
       "or": "sau",
       "provisioningFailed": "Nu am putut finaliza autentificarea dvs. Contactați un administrator."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Acces refuzat",
-      "description": "Nu aveți permisiunea de a accesa această pagină.",
-      "requiredPermission": "Permisiune necesară: {{permission}}",
-      "action": "Nu aveți permisiunea de a efectua această acțiune."
-    },
-    "requiredPermissions": {
-      "title": "Permisiuni necesare",
-      "none": "Nu sunt declarate permisiuni în această vizualizare.",
-      "anyOf": "Oricare dintre",
-      "allOf": "Toate",
-      "source": "Sursă: {{source}}"
-    },
-    "resources": {
-      "customer": "Client",
-      "customer_group": "Grup de clienți",
-      "order": "Comandă",
-      "product": "Produs",
-      "product_category": "Categorie de produs",
-      "product_collection": "Colecție de produse",
-      "product_tag": "Etichetă de produs",
-      "product_type": "Tip de produs",
-      "inventory": "Inventar",
-      "reservation": "Rezervare",
-      "promotion": "Promoție",
-      "campaign": "Campanie",
-      "price_list": "Listă de prețuri",
-      "region": "Regiune",
-      "store": "Magazin",
-      "user": "Utilizator",
-      "role": "Rol",
-      "permission": "Permisiune",
-      "sales_channel": "Canal de vânzare",
-      "stock_location": "Locație de stoc",
-      "shipping_profile": "Profil de expediere",
-      "shipping_option": "Opțiune de expediere",
-      "tax_region": "Regiune fiscală",
-      "api_key": "Cheie API",
-      "return_reason": "Motiv de retur",
-      "refund_reason": "Motiv de rambursare",
-      "workflow": "Flux de lucru",
-      "translation": "Traducere"
-    },
-    "actions": {
-      "read": "Vizualizare",
-      "create": "Creare",
-      "update": "Editare",
-      "delete": "Ștergere"
     }
   }
 }

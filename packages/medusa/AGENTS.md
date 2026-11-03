@@ -14,7 +14,7 @@ modules: [
     resolve: "@medusajs/medusa/file",
     options: {
       providers: [
-        { resolve: "@medusajs/medusa/file-s3", id: "s3", options: { /* ... */ } },
+        { resolve: "@medusajs/medusa/file-s3", id: "s3", options: {/* ... */} },
       ],
     },
   },
@@ -55,7 +55,7 @@ export default defineMiddlewares({
 - `src/api/{admin,store,auth,hooks,cloud}/<resource>/`: per resource, `route.ts` (+ nested `[id]/route.ts`), `middlewares.ts` (exports e.g. `adminProductRoutesMiddlewares: MiddlewareRoute[]`), `validators.ts` (Zod via `@medusajs/framework/zod`), `query-config.ts` (`defaults`, `allowed`, `isList`, `defaultLimit`), optional `helpers.ts`.
 - `src/api/middlewares.ts` spreads every resource's middleware array into one `defineMiddlewares([...])`. `src/api/__tests__/middlewares.spec.ts` fails if any array is spread twice.
 - Route handlers stay thin: run a workflow from `@medusajs/core-flows`, then re-read with `refetchEntity`/`refetchEntities` (`@medusajs/framework/http`) using `req.queryConfig.fields`.
-- Admin RBAC: middleware entries carry `policies: [{ resource, operation: PolicyOperation.read }]`; resource policy sets are declared in `src/policies/*.ts` with `definePolicies(generateResourcePolicies([...]))` and loaded by `policiesLoader`. Policies are only enforced when RBAC is enabled.
+- Admin routes use the standard authenticated Medusa Admin boundary. This distribution does not include the separately licensed RBAC module, role APIs, or policy middleware.
 - `src/loaders/index.ts`: feature flags (app first, then `src/feature-flags`) and config, container, links, modules (`MedusaAppLoader`), workflows, subscribers, jobs, then entry points: `loaders/api.ts` (`ApiLoader` over this package's `src/api` plus each plugin's and the app's `api` dir) and `loaders/admin.ts`, and finally `createDefaultsWorkflow`.
 - `src/subscribers/`: `payment-webhook.ts` (handles `PaymentWebhookEvents.WebhookReceived`, emitted by `src/api/hooks/payment/[provider]/route.ts` after confirming the provider is configured), `configurable-notifications.ts`, `search-ingestion.ts`. `src/jobs/` is currently empty.
 - `src/commands/`: `develop`, `start`, `build`, `exec`, `user`, `lint`, `mcloud`, `db/*` (`migrate`, `rollback`, `generate`, `setup`, `create`, `sync-links`, `run-scripts`, `migrate-search`), `plugin/*`. `@medusajs/cli` resolves them via `@medusajs/medusa/commands/<command>`.

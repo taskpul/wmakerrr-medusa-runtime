@@ -9,7 +9,7 @@ import { LICENSE_CHECK_URL, startLicenseRemoteCheck } from "../license-check"
 const license: License = {
   token: "token",
   sub: "org_test",
-  features: ["rbac"],
+  features: ["feature-a"],
 }
 
 const logger = {

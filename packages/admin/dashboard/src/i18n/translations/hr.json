@@ -2743,11 +2743,6 @@
       "pending": "Na čekanju",
       "expired": "Isteklo"
     },
-    "roles": {
-      "admin": "Administrator",
-      "developer": "Programer",
-      "member": "Član"
-    },
     "list": {
       "empty": {
         "heading": "Nema korisnika",
@@ -2761,7 +2756,6 @@
     "deleteUserWarning": "Spremate se izbrisati korisnika {{name}}. Ova radnja se ne može poništiti.",
     "deleteUserSuccess": "Korisnik {{name}} uspješno izbrisan",
     "invite": "Pozovi",
-    "inviteRolesTooltip": "Ako nije odabrana nijedna uloga, korisnik će biti pozvan s ulogom superkorisnika.",
     "copyResetPasswordLink": "Kopiraj poveznicu za resetiranje lozinke",
     "copyResetPasswordLinkSuccess": "Poveznica za resetiranje lozinke kopirana je u međuspremnik",
     "copyResetPasswordLinkHint": "Poveznica ubrzo istječe i poništava sve prethodno poslane poveznice za resetiranje lozinke za ovog korisnika."
@@ -3667,130 +3661,6 @@
       }
     }
   },
-  "roles": {
-    "domain": "Uloge",
-    "subtitle": "Upravljajte ulogama pristupa i ovlastima.",
-    "create": {
-      "header": "Kreiraj ulogu",
-      "hint": "Kreirajte ulogu za upravljanje pristupom u Adminu.",
-      "successToast": "Uloga {{name}} je kreirana",
-      "tabs": {
-        "details": "Detalji",
-        "permissions": "Ovlasti"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "Nema ovlasti",
-          "description": "Nema ovlasti za odabir."
-        },
-        "filtered": {
-          "heading": "Nema rezultata",
-          "description": "Nijedna ovlast ne odgovara trenutačnim kriterijima filtriranja."
-        }
-      }
-    },
-    "edit": {
-      "header": "Uredi ulogu",
-      "successToast": "Uloga {{name}} je ažurirana"
-    },
-    "delete": {
-      "title": "Izbriši ulogu",
-      "description": "Upravo ćete izbrisati ulogu {{name}}. Ovu radnju nije moguće poništiti.",
-      "successToast": "Uloga {{name}} je izbrisana"
-    },
-    "fields": {
-      "permissions": "Ovlasti"
-    },
-    "actions": {
-      "managePermissions": "Upravljaj ovlastima"
-    },
-    "users": {
-      "alreadyAddedTooltip": "Korisnik već ima ovu ulogu.",
-      "unassignableRoleTooltip": "Nemate pristup za dodjelu ove uloge — vaše ovlasti ne obuhvaćaju sva njezina pravila pristupa.",
-      "add": {
-        "successToast_one": "Korisnik je uspješno dodan ulozi.",
-        "successToast_few": "Korisnici su uspješno dodani ulozi.",
-        "successToast_other": "Korisnici su uspješno dodani ulozi.",
-        "list": {
-          "noRecordsMessage": "Najprije kreirajte korisnika."
-        }
-      },
-      "remove": {
-        "title_one": "Ukloni korisnika",
-        "title_few": "Ukloni korisnike",
-        "title_other": "Ukloni korisnike",
-        "description_one": "Upravo ćete ukloniti {{count}} korisnika iz uloge. Ovu radnju nije moguće poništiti.",
-        "description_few": "Upravo ćete ukloniti {{count}} korisnika iz uloge. Ovu radnju nije moguće poništiti.",
-        "description_other": "Upravo ćete ukloniti {{count}} korisnika iz uloge. Ovu radnju nije moguće poništiti."
-      },
-      "list": {
-        "noRecordsMessage": "Ova uloga nema korisnika."
-      }
-    },
-    "permissions": {
-      "header": "Upravljaj ovlastima",
-      "hint": "Odaberite ovlasti koje ova uloga treba sadržavati.",
-      "empty": {
-        "heading": "Nema ovlasti",
-        "description": "Nema ovlasti za odabir."
-      },
-      "filtered": {
-        "heading": "Nema rezultata",
-        "description": "Nijedna ovlast ne odgovara trenutačnim kriterijima filtriranja."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "Nema uloga",
-        "description": "Kreirajte uloge za upravljanje pristupom u Adminu."
-      },
-      "filtered": {
-        "heading": "Nema rezultata",
-        "description": "Nijedna uloga ne odgovara trenutačnim kriterijima filtriranja."
-      }
-    }
-  },
-  "policies": {
-    "domain": "Pravila pristupa",
-    "subtitle": "Definirajte ovlasti koje uloge mogu dodjeljivati.",
-    "create": {
-      "header": "Kreiraj pravilo pristupa",
-      "hint": "Definirajte novu ovlast koja se može povezati s ulogama.",
-      "successToast": "Pravilo pristupa {{key}} je kreirano"
-    },
-    "edit": {
-      "header": "Uredi pravilo pristupa",
-      "successToast": "Pravilo pristupa {{key}} je ažurirano"
-    },
-    "delete": {
-      "title": "Izbriši pravilo pristupa",
-      "description": "Upravo ćete izbrisati pravilo pristupa {{key}}. Ovu radnju nije moguće poništiti.",
-      "successToast": "Pravilo pristupa {{key}} je izbrisano"
-    },
-    "fields": {
-      "roles": "Uloge",
-      "users": "Korisnici"
-    },
-    "list": {
-      "empty": {
-        "heading": "Nema pravila pristupa",
-        "description": "Kreirajte pravila pristupa za upravljanje ovlastima koje uloge mogu dodjeljivati."
-      },
-      "filtered": {
-        "heading": "Nema rezultata",
-        "description": "Nijedno pravilo pristupa ne odgovara trenutačnim kriterijima filtriranja."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "Još nijedna uloga ne uključuje ovo pravilo pristupa."
-      },
-      "empty": {
-        "heading": "Nema uloga",
-        "description": "Nijedna uloga ne uključuje ovo pravilo pristupa."
-      }
-    }
-  },
   "searchIndexes": {
     "domain": "Pretraživanje",
     "subtitle": "Pregledajte registrirane indekse pretraživanja i ponovno ih izgradite iz izvornih podataka.",
@@ -3827,57 +3697,6 @@
       "model": "Model",
       "propertyCount": "Broj svojstava",
       "hasOverrides": "Ima prilagodbe"
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "Pristup odbijen",
-      "description": "Nemate ovlast za pristup ovoj stranici.",
-      "requiredPermission": "Potrebna ovlast: {{permission}}",
-      "action": "Nemate ovlast za izvođenje ove radnje."
-    },
-    "requiredPermissions": {
-      "title": "Potrebne ovlasti",
-      "none": "U ovom prikazu nisu definirane ovlasti.",
-      "anyOf": "Bilo koja od",
-      "allOf": "Sve od",
-      "source": "Izvor: {{source}}"
-    },
-    "resources": {
-      "customer": "Kupac",
-      "customer_group": "Grupa kupaca",
-      "order": "Narudžba",
-      "product": "Proizvod",
-      "product_category": "Kategorija proizvoda",
-      "product_collection": "Kolekcija proizvoda",
-      "product_tag": "Oznaka proizvoda",
-      "product_type": "Vrsta proizvoda",
-      "inventory": "Inventar",
-      "reservation": "Rezervacija",
-      "promotion": "Promocija",
-      "campaign": "Kampanja",
-      "price_list": "Cjenik",
-      "region": "Regija",
-      "store": "Trgovina",
-      "user": "Korisnik",
-      "role": "Uloga",
-      "permission": "Ovlast",
-      "sales_channel": "Prodajni kanal",
-      "stock_location": "Lokacija zaliha",
-      "shipping_profile": "Profil dostave",
-      "shipping_option": "Opcija dostave",
-      "tax_region": "Porezna regija",
-      "api_key": "API ključ",
-      "return_reason": "Razlog povrata",
-      "refund_reason": "Razlog povrata sredstava",
-      "workflow": "Workflow",
-      "translation": "Prijevod"
-    },
-    "actions": {
-      "read": "Prikaži",
-      "create": "Kreiraj",
-      "update": "Uredi",
-      "delete": "Izbriši"
     }
   }
 }

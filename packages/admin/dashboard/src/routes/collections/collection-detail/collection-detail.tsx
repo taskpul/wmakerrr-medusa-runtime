@@ -50,7 +50,7 @@ export const CollectionDetail = () => {
                 <CollectionProductSection collection={collection} />
               )}
             </LayoutComposer.Entry>
-            {detailPageDefaultEntries(collection, { permissions: false })}
+            {detailPageDefaultEntries(collection)}
           </>
         ),
       }}

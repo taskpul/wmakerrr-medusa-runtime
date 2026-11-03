@@ -188,14 +188,14 @@ describe("generateAugmentationRefs", () => {
 
   it("normalizes a core module registered through its bare package name to the canonical medusa subpath", async () => {
     await fs.create(
-      `node_modules/@medusajs/medusa/rbac.js`,
+      `node_modules/@medusajs/medusa/pricing.js`,
       "module.exports = {}"
     )
-    await fs.create(`node_modules/@medusajs/medusa/rbac.d.ts`, "export {}")
+    await fs.create(`node_modules/@medusajs/medusa/pricing.d.ts`, "export {}")
     await fs.createJson(`node_modules/@medusajs/medusa/package.json`, {
       name: "@medusajs/medusa",
       exports: {
-        "./rbac": "./rbac.js",
+        "./pricing": "./pricing.js",
         "./event-bus-redis": "./event-bus-redis.js",
       },
     })
@@ -204,18 +204,20 @@ describe("generateAugmentationRefs", () => {
       directory: BASE_DIR,
       plugins: [],
       modules: {
-        rbac: {
+        pricing: {
           __definition: {
-            key: "rbac",
-            resolvePath: "@medusajs/rbac",
+            key: "pricing",
+            resolvePath: "@medusajs/pricing",
           },
         } as any,
       },
     })
 
     const content = await fs.contents(".medusa/types/augmentation-refs.d.ts")
-    expect(content).toContain('/// <reference types="@medusajs/medusa/rbac" />')
-    expect(content).not.toContain('"@medusajs/rbac"')
+    expect(content).toContain(
+      '/// <reference types="@medusajs/medusa/pricing" />'
+    )
+    expect(content).not.toContain('"@medusajs/pricing"')
   })
 
   it("keeps a core module's @medusajs/medusa subpath resolve path as is", async () => {
@@ -230,7 +232,7 @@ describe("generateAugmentationRefs", () => {
     await fs.createJson(`node_modules/@medusajs/medusa/package.json`, {
       name: "@medusajs/medusa",
       exports: {
-        "./rbac": "./rbac.js",
+        "./pricing": "./pricing.js",
         "./event-bus-redis": "./event-bus-redis.js",
       },
     })

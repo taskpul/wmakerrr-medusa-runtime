@@ -2847,7 +2847,6 @@
     "editUser": "ערוך משתמש",
     "inviteUser": "הזמן משתמש",
     "inviteUserHint": "הזמן משתמש חדש לחנות שלך.",
-    "inviteRolesTooltip": "אם לא נבחרה תפקיד, המשתמש יוזמן עם תפקיד מנהל-על.",
     "sendInvite": "שלח הזמנה",
     "pendingInvites": "הזמנות ממתינות",
     "deleteInviteWarning": "אתה עומד למחוק את ההזמנה עבור {{email}}. פעולה זו אינה ניתנת לביטול.",
@@ -2864,11 +2863,6 @@
       "pending": "ממתין",
       "expired": "פג תוקף"
     },
-    "roles": {
-      "admin": "מנהל",
-      "developer": "מפתח",
-      "member": "חבר"
-    },
     "list": {
       "empty": {
         "heading": "לא נמצאו משתמשים",
@@ -2882,133 +2876,6 @@
     "deleteUserWarning": "אתה עומד למחוק את המשתמש {{name}}. פעולה זו אינה ניתנת לביטול.",
     "deleteUserSuccess": "המשתמש {{name}} נמחק בהצלחה",
     "invite": "הזמן"
-  },
-  "roles": {
-    "domain": "תפקידים",
-    "subtitle": "נהל תפקידי גישה והרשאות.",
-    "create": {
-      "header": "צור תפקיד",
-      "hint": "צור תפקיד לניהול גישה בלוח הניהול שלך.",
-      "successToast": "התפקיד {{name}} נוצר",
-      "tabs": {
-        "details": "פרטים",
-        "permissions": "הרשאות"
-      },
-      "permissions": {
-        "empty": {
-          "heading": "אין הרשאות",
-          "description": "אין הרשאות לבחירה."
-        },
-        "filtered": {
-          "heading": "אין תוצאות",
-          "description": "אין הרשאות התואמות את קריטריוני הסינון הנוכחיים."
-        }
-      }
-    },
-    "edit": {
-      "header": "ערוך תפקיד",
-      "successToast": "התפקיד {{name}} עודכן"
-    },
-    "delete": {
-      "title": "מחק תפקיד",
-      "description": "אתה עומד למחוק את התפקיד {{name}}. פעולה זו אינה ניתנת לביטול.",
-      "successToast": "התפקיד {{name}} נמחק"
-    },
-    "fields": {
-      "permissions": "הרשאות"
-    },
-    "actions": {
-      "managePermissions": "נהל הרשאות"
-    },
-    "users": {
-      "alreadyAddedTooltip": "למשתמש כבר יש תפקיד זה.",
-      "unassignableRoleTooltip": "אין לך גישה להקצות תפקיד זה — ההרשאות שלך אינן מכסות את כל המדיניות שלו.",
-      "add": {
-        "successToast_one": "המשתמש נוסף בהצלחה לתפקיד.",
-        "successToast_two": "המשתמשים נוספו בהצלחה לתפקיד.",
-        "successToast_many": "המשתמשים נוספו בהצלחה לתפקיד.",
-        "successToast_other": "המשתמשים נוספו בהצלחה לתפקיד.",
-        "list": {
-          "noRecordsMessage": "צור משתמש תחילה."
-        }
-      },
-      "remove": {
-        "title_one": "הסר משתמש",
-        "title_two": "הסר משתמשים",
-        "title_many": "הסר משתמשים",
-        "title_other": "הסר משתמשים",
-        "description_one": "אתה עומד להסיר משתמש {{count}} מהתפקיד. פעולה זו אינה ניתנת לביטול.",
-        "description_two": "אתה עומד להסיר {{count}} משתמשים מהתפקיד. פעולה זו אינה ניתנת לביטול.",
-        "description_many": "אתה עומד להסיר {{count}} משתמשים מהתפקיד. פעולה זו אינה ניתנת לביטול.",
-        "description_other": "אתה עומד להסיר {{count}} משתמשים מהתפקיד. פעולה זו אינה ניתנת לביטול."
-      },
-      "list": {
-        "noRecordsMessage": "לתפקיד זה אין משתמשים."
-      }
-    },
-    "permissions": {
-      "header": "נהל הרשאות",
-      "hint": "בחר הרשאות שתפקיד זה יכלול.",
-      "empty": {
-        "heading": "אין הרשאות",
-        "description": "אין הרשאות לבחירה."
-      },
-      "filtered": {
-        "heading": "אין תוצאות",
-        "description": "אין הרשאות התואמות את קריטריוני הסינון הנוכחיים."
-      }
-    },
-    "list": {
-      "empty": {
-        "heading": "לא נמצאו תפקידים",
-        "description": "צור תפקידים לניהול גישה בלוח הניהול שלך."
-      },
-      "filtered": {
-        "heading": "אין תוצאות",
-        "description": "אין תפקידים התואמים את קריטריוני הסינון הנוכחיים."
-      }
-    }
-  },
-  "policies": {
-    "domain": "מדיניות",
-    "subtitle": "הגדר את ההרשאות שתפקידים יכולים להעניק.",
-    "create": {
-      "header": "צור מדיניות",
-      "hint": "הגדר הרשאה חדשה שניתן לצרף לתפקידים.",
-      "successToast": "המדיניות {{key}} נוצרה"
-    },
-    "edit": {
-      "header": "ערוך מדיניות",
-      "successToast": "המדיניות {{key}} עודכנה"
-    },
-    "delete": {
-      "title": "מחק מדיניות",
-      "description": "אתה עומד למחוק את המדיניות {{key}}. פעולה זו אינה ניתנת לביטול.",
-      "successToast": "המדיניות {{key}} נמחקה"
-    },
-    "fields": {
-      "roles": "תפקידים",
-      "users": "משתמשים"
-    },
-    "list": {
-      "empty": {
-        "heading": "לא נמצאה מדיניות",
-        "description": "צור מדיניות לניהול ההרשאות שתפקידים יכולים להעניק."
-      },
-      "filtered": {
-        "heading": "אין תוצאות",
-        "description": "אין מדיניות התואמת את קריטריוני הסינון הנוכחיים."
-      }
-    },
-    "roles": {
-      "list": {
-        "noRecordsMessage": "אין תפקידים הכוללים מדיניות זו עדיין."
-      },
-      "empty": {
-        "heading": "אין תפקידים",
-        "description": "אין תפקידים הכוללים מדיניות זו עדיין."
-      }
-    }
   },
   "translations": {
     "domain": "תרגומים",
@@ -3895,57 +3762,6 @@
       "continueWithProvider": "המשך עם {{provider}}",
       "or": "או",
       "provisioningFailed": "לא הצלחנו להשלים את הכניסה שלך. צור קשר עם מנהל המערכת."
-    }
-  },
-  "permissions": {
-    "accessDenied": {
-      "title": "הגישה נדחתה",
-      "description": "אין לך הרשאה לגשת לדף זה.",
-      "requiredPermission": "הרשאה נדרשת: {{permission}}",
-      "action": "אין לך הרשאה לבצע פעולה זו."
-    },
-    "requiredPermissions": {
-      "title": "הרשאות נדרשות",
-      "none": "לא הוצהרו הרשאות בתצוגה זו.",
-      "anyOf": "אחת מ",
-      "allOf": "כל",
-      "source": "מקור: {{source}}"
-    },
-    "resources": {
-      "customer": "לקוח",
-      "customer_group": "קבוצת לקוחות",
-      "order": "הזמנה",
-      "product": "מוצר",
-      "product_category": "קטגוריית מוצר",
-      "product_collection": "קולקציית מוצרים",
-      "product_tag": "תגית מוצר",
-      "product_type": "סוג מוצר",
-      "inventory": "מלאי",
-      "reservation": "הזמנה",
-      "promotion": "מבצע",
-      "campaign": "קמפיין",
-      "price_list": "רשימת מחירים",
-      "region": "אזור",
-      "store": "חנות",
-      "user": "משתמש",
-      "role": "תפקיד",
-      "permission": "הרשאה",
-      "sales_channel": "ערוץ מכירה",
-      "stock_location": "מיקום מלאי",
-      "shipping_profile": "פרופיל משלוח",
-      "shipping_option": "אפשרות משלוח",
-      "tax_region": "אזור מס",
-      "api_key": "מפתח API",
-      "return_reason": "סיבת החזרה",
-      "refund_reason": "סיבת החזר",
-      "workflow": "תהליך עבודה",
-      "translation": "תרגום"
-    },
-    "actions": {
-      "read": "צפייה",
-      "create": "יצירה",
-      "update": "עריכה",
-      "delete": "מחיקה"
     }
   }
 }

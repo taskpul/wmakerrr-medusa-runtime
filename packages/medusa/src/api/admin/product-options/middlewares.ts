@@ -3,9 +3,7 @@ import {
   validateAndTransformQuery,
 } from "@medusajs/framework"
 import { MiddlewareRoute } from "@medusajs/framework/http"
-import { PolicyOperation } from "@medusajs/framework/utils"
 import * as QueryConfig from "./query-config"
-import { Entities } from "./query-config"
 import {
   AdminCreateProductOption,
   AdminGetProductOptionParams,
@@ -17,15 +15,6 @@ import {
 } from "./validators"
 
 export const adminProductOptionRoutesMiddlewares: MiddlewareRoute[] = [
-  {
-    matcher: "/admin/product-options/*",
-    policies: [
-      {
-        resource: Entities.product_option,
-        operation: PolicyOperation.read,
-      },
-    ],
-  },
   {
     method: ["GET"],
     matcher: "/admin/product-options",
@@ -56,12 +45,6 @@ export const adminProductOptionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductOptionsTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.product_option,
-        operation: PolicyOperation.create,
-      },
-    ],
   },
   {
     method: ["POST"],
@@ -73,23 +56,6 @@ export const adminProductOptionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.retrieveProductOptionsTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.product_option,
-        operation: PolicyOperation.update,
-      },
-    ],
-  },
-  {
-    method: ["DELETE"],
-    matcher: "/admin/product-options/:id",
-    middlewares: [],
-    policies: [
-      {
-        resource: Entities.product_option,
-        operation: PolicyOperation.delete,
-      },
-    ],
   },
   {
     method: ["GET"],
@@ -100,16 +66,6 @@ export const adminProductOptionRoutesMiddlewares: MiddlewareRoute[] = [
         QueryConfig.listProductOptionValuesTransformQueryConfig
       ),
     ],
-    policies: [
-      {
-        resource: Entities.product_option,
-        operation: PolicyOperation.read,
-      },
-      {
-        resource: Entities.product_option_value,
-        operation: PolicyOperation.read,
-      },
-    ],
   },
   {
     method: ["GET"],
@@ -119,12 +75,6 @@ export const adminProductOptionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetProductOptionValueParams,
         QueryConfig.retrieveProductOptionValuesTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.product_option_value,
-        operation: PolicyOperation.read,
-      },
     ],
   },
   {
@@ -136,31 +86,6 @@ export const adminProductOptionRoutesMiddlewares: MiddlewareRoute[] = [
         AdminGetProductOptionValueParams,
         QueryConfig.retrieveProductOptionValuesTransformQueryConfig
       ),
-    ],
-    policies: [
-      {
-        resource: Entities.product_option,
-        operation: PolicyOperation.update,
-      },
-      {
-        resource: Entities.product_option_value,
-        operation: PolicyOperation.update,
-      },
-    ],
-  },
-  {
-    method: ["DELETE"],
-    matcher: "/admin/product-options/:id/values/:value_id",
-    middlewares: [],
-    policies: [
-      {
-        resource: Entities.product_option,
-        operation: PolicyOperation.update,
-      },
-      {
-        resource: Entities.product_option_value,
-        operation: PolicyOperation.delete,
-      },
     ],
   },
 ]

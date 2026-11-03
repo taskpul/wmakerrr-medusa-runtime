@@ -8,6 +8,7 @@ import {
 } from "@medusajs/framework/utils"
 import { WorkflowLoader } from "@medusajs/framework/workflows"
 import { MedusaContainer } from "@medusajs/types"
+import path from "path"
 import { runMigrationScripts } from "../db/run-scripts"
 
 // ─── Mocks ────────────────────────────────────────────────────────────────────
@@ -43,7 +44,6 @@ jest.mock("@medusajs/framework/utils", () => ({
   },
   getResolvedPlugins: jest.fn(),
   mergePluginModules: jest.fn(),
-  PolicyOperation: {},
   Modules: { SEARCH: "search" },
 }))
 
@@ -68,7 +68,9 @@ function buildContainer(
 
   return {
     resolve: jest.fn((key: string) => {
-      if (key in store) return store[key]
+      if (key in store) {
+        return store[key]
+      }
       throw new Error(`[mock container] Nothing registered for key: ${key}`)
     }),
     register: jest.fn(),
@@ -205,7 +207,9 @@ describe("runMigrationScripts", () => {
     it("calls onApplicationPrepareShutdown and onApplicationShutdown in finally block", async () => {
       const container = buildContainer()
 
-      const onApplicationPrepareShutdown = jest.fn().mockResolvedValue(undefined)
+      const onApplicationPrepareShutdown = jest
+        .fn()
+        .mockResolvedValue(undefined)
       const onApplicationShutdown = jest.fn().mockResolvedValue(undefined)
 
       ;(MedusaAppLoader as jest.Mock).mockImplementation(() => ({
@@ -243,10 +247,7 @@ describe("runMigrationScripts", () => {
 
   describe("WorkflowLoader", () => {
     it("instantiates WorkflowLoader with the resolved plugin workflow paths", async () => {
-      const plugins = [
-        { resolve: "/app" },
-        { resolve: "/plugins/my-plugin" },
-      ]
+      const plugins = [{ resolve: "/app" }, { resolve: "/plugins/my-plugin" }]
       ;(getResolvedPlugins as jest.Mock).mockResolvedValue(plugins)
 
       const container = buildContainer()
@@ -260,7 +261,10 @@ describe("runMigrationScripts", () => {
       expect(WorkflowLoader).toHaveBeenCalledTimes(1)
       const [paths, resolvedContainer] = (WorkflowLoader as jest.Mock).mock
         .calls[0]
-      expect(paths).toEqual(["/app/workflows", "/plugins/my-plugin/workflows"])
+      expect(paths).toEqual([
+        path.join("/app", "workflows"),
+        path.join("/plugins/my-plugin", "workflows"),
+      ])
       expect(resolvedContainer).toBe(container)
     })
 
@@ -287,7 +291,9 @@ describe("runMigrationScripts", () => {
         load: jest.fn().mockImplementation(async () => {
           callOrder.push("MedusaAppLoader.load")
           return {
-            onApplicationPrepareShutdown: jest.fn().mockResolvedValue(undefined),
+            onApplicationPrepareShutdown: jest
+              .fn()
+              .mockResolvedValue(undefined),
             onApplicationShutdown: jest.fn().mockResolvedValue(undefined),
             onApplicationStart: jest.fn().mockImplementation(async () => {
               callOrder.push("onApplicationStart")

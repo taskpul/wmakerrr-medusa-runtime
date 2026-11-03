@@ -20,7 +20,6 @@ import {
   Action,
   ActionMenu,
 } from "../../../../../components/common/action-menu"
-import { PermissionGuard } from "../../../../../components/common/permission-guard"
 import { _DataTable } from "../../../../../components/table/data-table"
 import { useBatchCustomerCustomerGroups } from "../../../../../hooks/api"
 import {
@@ -31,7 +30,6 @@ import { useCustomerGroupTableColumns } from "../../../../../hooks/table/columns
 import { useCustomerGroupTableFilters } from "../../../../../hooks/table/filters/use-customer-group-table-filters"
 import { useCustomerGroupTableQuery } from "../../../../../hooks/table/query/use-customer-group-table-query"
 import { useDataTable } from "../../../../../hooks/use-data-table"
-import { useCustomerPermissions } from "../../../../../hooks/use-resource-permissions"
 
 type CustomerGroupSectionProps = {
   customer: HttpTypes.AdminCustomer
@@ -44,7 +42,7 @@ export const CustomerGroupSection = ({
   customer,
 }: CustomerGroupSectionProps) => {
   const prompt = usePrompt()
-  const { canUpdate } = useCustomerPermissions()
+  const canUpdate = true
 
   const [rowSelection, setRowSelection] = useState<RowSelectionState>({})
   const { raw, searchParams } = useCustomerGroupTableQuery({
@@ -141,13 +139,11 @@ export const CustomerGroupSection = ({
     <Container className="divide-y p-0">
       <div className="flex items-center justify-between px-6 py-4">
         <Heading level="h2">{t("customerGroups.domain")}</Heading>
-        <PermissionGuard resource="customer" operation="update">
-          <Link to={`/customers/${customer.id}/add-customer-groups`}>
-            <Button variant="secondary" size="small">
-              {t("general.add")}
-            </Button>
-          </Link>
-        </PermissionGuard>
+        <Link to={`/customers/${customer.id}/add-customer-groups`}>
+          <Button variant="secondary" size="small">
+            {t("general.add")}
+          </Button>
+        </Link>
       </div>
       <_DataTable
         table={table}
@@ -184,7 +180,7 @@ export const CustomerGroupRowActions = ({
 }) => {
   const prompt = usePrompt()
   const { t } = useTranslation()
-  const { canUpdate } = useCustomerPermissions()
+  const canUpdate = true
 
   const { mutateAsync } = useRemoveCustomersFromGroup(group.id)
 
@@ -244,7 +240,7 @@ const columnHelper = createColumnHelper<HttpTypes.AdminCustomerGroup>()
 
 const useColumns = (customerId: string) => {
   const columns = useCustomerGroupTableColumns()
-  const { canUpdate } = useCustomerPermissions()
+  const canUpdate = true
 
   return useMemo(
     () => [

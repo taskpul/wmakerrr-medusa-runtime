@@ -30,7 +30,6 @@ export const Modules = {
   SETTINGS: "settings",
   CACHING: "caching",
   TRANSLATION: "translation",
-  RBAC: "rbac",
 } as const
 
 export const MODULE_PACKAGE_NAMES = {
@@ -65,7 +64,6 @@ export const MODULE_PACKAGE_NAMES = {
   [Modules.SETTINGS]: "@medusajs/medusa/settings",
   [Modules.CACHING]: "@medusajs/medusa/caching",
   [Modules.TRANSLATION]: "@medusajs/medusa/translation",
-  [Modules.RBAC]: "@medusajs/medusa/rbac",
 }
 
 export const REVERSED_MODULE_PACKAGE_NAMES = Object.entries(

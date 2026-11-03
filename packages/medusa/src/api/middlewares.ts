@@ -29,7 +29,6 @@ import { adminProductVariantRoutesMiddlewares } from "./admin/product-variants/m
 import { adminProductRoutesMiddlewares } from "./admin/products/middlewares"
 import { adminPromotionRoutesMiddlewares } from "./admin/promotions/middlewares"
 import { adminPropertyLabelsMiddlewares } from "./admin/property-labels/middlewares"
-import { adminRbacRoutesMiddlewares } from "./admin/rbac/middlewares"
 import { adminRefundReasonsRoutesMiddlewares } from "./admin/refund-reasons/middlewares"
 import { adminRegionRoutesMiddlewares } from "./admin/regions/middlewares"
 import { adminReservationRoutesMiddlewares } from "./admin/reservations/middlewares"
@@ -106,7 +105,6 @@ export default defineMiddlewares([
   ...adminReturnRoutesMiddlewares,
   ...storeRegionRoutesMiddlewares,
   ...adminRegionRoutesMiddlewares,
-  ...adminRbacRoutesMiddlewares,
   ...adminUserRoutesMiddlewares,
   ...adminInviteRoutesMiddlewares,
   ...adminTaxRateRoutesMiddlewares,

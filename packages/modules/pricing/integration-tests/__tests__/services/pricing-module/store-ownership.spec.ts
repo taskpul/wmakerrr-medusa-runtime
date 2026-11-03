@@ -101,6 +101,89 @@ moduleIntegrationTestRunner<IPricingModuleService>({
         ).resolves.toEqual(expect.objectContaining({ id: priceSetB.id }))
       })
 
+      it("rejects upserting another Store's price set", async () => {
+        const priceSetB = await service.createPriceSets(
+          {
+            prices: [{ amount: 2000, currency_code: "eur" }],
+          },
+          storeB
+        )
+        const foreignPrice = priceSetB.prices![0]
+
+        await expect(
+          service.upsertPriceSets(
+            {
+              id: priceSetB.id,
+              prices: [{ amount: 100, currency_code: "eur" }],
+            },
+            storeA
+          )
+        ).rejects.toThrow("Price sets do not belong to the active Store")
+
+        const unchanged = await service.retrievePriceSet(
+          priceSetB.id,
+          { relations: ["prices"] },
+          storeB
+        )
+        expect(unchanged.prices).toEqual([
+          expect.objectContaining({ id: foreignPrice.id, amount: 2000 }),
+        ])
+      })
+
+      it("rejects foreign price IDs on every price upsert path", async () => {
+        const priceSetA = await service.createPriceSets({}, storeA)
+        const priceSetB = await service.createPriceSets(
+          {
+            prices: [{ amount: 2000, currency_code: "eur" }],
+          },
+          storeB
+        )
+        const foreignPrice = priceSetB.prices![0]
+        const [priceListA] = await service.createPriceLists(
+          [
+            {
+              title: "Store A sale",
+              description: "Store A prices only",
+            },
+          ],
+          storeA
+        )
+        const attackPrice = {
+          id: foreignPrice.id,
+          price_set_id: priceSetA.id,
+          amount: 100,
+          currency_code: "eur",
+        }
+
+        await expect(
+          service.addPrices(
+            [{ priceSetId: priceSetA.id, prices: [attackPrice] }],
+            storeA
+          )
+        ).rejects.toThrow("Prices do not belong to the active Store")
+        await expect(
+          service.addPriceListPrices(
+            [{ price_list_id: priceListA.id, prices: [attackPrice] }],
+            storeA
+          )
+        ).rejects.toThrow("Prices do not belong to the active Store")
+        await expect(
+          service.updatePriceListPrices(
+            [{ price_list_id: priceListA.id, prices: [attackPrice] }],
+            storeA
+          )
+        ).rejects.toThrow("Prices do not belong to the active Store")
+
+        const unchanged = await service.retrievePriceSet(
+          priceSetB.id,
+          { relations: ["prices"] },
+          storeB
+        )
+        expect(unchanged.prices).toEqual([
+          expect.objectContaining({ id: foreignPrice.id, amount: 2000 }),
+        ])
+      })
+
       it("keeps price-preference uniqueness inside each Store", async () => {
         const preference = {
           attribute: "currency_code",

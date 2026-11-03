@@ -128,6 +128,20 @@ export class PricingStoreOwnership {
     }
   }
 
+  assertReferencedRecordsOwned(
+    records: { id?: string }[],
+    ownedRecords: { id: string }[],
+    entityName: string,
+    ownerDescription: string
+  ): void {
+    this.assertOnlyOwnedIds(
+      records.flatMap((record) => (record.id ? [record.id] : [])),
+      ownedRecords.map((record) => record.id),
+      entityName,
+      ownerDescription
+    )
+  }
+
   async assertOwnedIds(
     service: ModulesSdkTypes.IMedusaInternalService<any>,
     ids: string[],

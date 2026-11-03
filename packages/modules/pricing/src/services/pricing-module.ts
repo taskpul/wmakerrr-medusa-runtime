@@ -793,6 +793,13 @@ export default class PricingModuleService
     data: ServiceTypes.UpdatePriceSetInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof PriceSet>[]> {
+    await this.storeOwnership_.assertOwnedIds(
+      this.priceSetService_,
+      data.map(({ id }) => id),
+      "Price sets",
+      sharedContext
+    )
+
     const normalizedData = await this.normalizeUpdateData(data)
 
     const priceSetIds = normalizedData.map(({ id }) => id)
@@ -812,9 +819,9 @@ export default class PricingModuleService
 
     const prices = normalizedData.flatMap((priceSet) => priceSet.prices || [])
 
-    this.storeOwnership_.assertOnlyOwnedIds(
-      prices.flatMap((price) => (price.id ? [price.id] : [])),
-      existingPricesMap.keys(),
+    this.storeOwnership_.assertReferencedRecordsOwned(
+      prices,
+      existingPrices,
       "Prices",
       "the active price set"
     )
@@ -1451,6 +1458,12 @@ export default class PricingModuleService
     ])
 
     const existingPrices = priceSetPrices as unknown as PricingTypes.PriceDTO[]
+    this.storeOwnership_.assertReferencedRecordsOwned(
+      prices,
+      existingPrices,
+      "Prices",
+      "the active Store and target price set"
+    )
 
     const pricesToUpsert = input
       .flatMap((addPrice) =>
@@ -1654,6 +1667,12 @@ export default class PricingModuleService
     ])
 
     const existingPrices = priceListPrices as unknown as PricingTypes.PriceDTO[]
+    this.storeOwnership_.assertReferencedRecordsOwned(
+      prices,
+      existingPrices,
+      "Prices",
+      "the active Store and target price list"
+    )
 
     const pricesToUpsert = data
       .flatMap((addPrice) =>
@@ -1739,6 +1758,12 @@ export default class PricingModuleService
     ])
 
     const existingPrices = priceListPrices as unknown as PricingTypes.PriceDTO[]
+    this.storeOwnership_.assertReferencedRecordsOwned(
+      prices,
+      existingPrices,
+      "Prices",
+      "the active Store and target price list"
+    )
 
     const pricesToUpsert = data
       .flatMap((addPrice) =>

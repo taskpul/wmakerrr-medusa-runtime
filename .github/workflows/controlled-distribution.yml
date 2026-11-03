@@ -29,8 +29,10 @@ jobs:
     env:
       UPSTREAM_REVISION: cfff3f57381873097dcc77851038d5dbe8f5839c
     steps:
-      - name: Enable Git long paths
-        run: git config --global core.longpaths true
+      - name: Configure deterministic Git worktree
+        run: |
+          git config --global core.longpaths true
+          git config --global core.autocrlf true
 
       - name: Check out governance tooling
         uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09
@@ -68,16 +70,16 @@ jobs:
         working-directory: candidate
         run: node .yarn/releases/yarn-3.2.1.cjs install --immutable
 
-      - name: Build complete public workspace
-        working-directory: candidate
-        run: node .yarn/releases/yarn-3.2.1.cjs build
-
       - name: Verify provenance and compatibility
         working-directory: candidate
         run: |
           node .royalroyals/verify-bootstrap.mjs
           node .royalroyals/verify-baseline.mjs
           node .royalroyals/verify-public-api.mjs
+
+      - name: Build complete public workspace
+        working-directory: candidate
+        run: node .yarn/releases/yarn-3.2.1.cjs build
 
       - name: Create immutable evidence record
         env:

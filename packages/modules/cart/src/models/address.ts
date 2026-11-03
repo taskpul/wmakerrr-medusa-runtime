@@ -1,9 +1,11 @@
 import { model } from "@medusajs/framework/utils"
+import { CART_DEDICATED_STORE_ID } from "../store-isolation"
 
 const Address = model.define(
   { tableName: "cart_address", name: "Address" },
   {
     id: model.id({ prefix: "caaddr" }).primaryKey(),
+    store_id: model.text().default(CART_DEDICATED_STORE_ID),
     customer_id: model.text().nullable(),
     company: model.text().nullable(),
     first_name: model.text().nullable(),

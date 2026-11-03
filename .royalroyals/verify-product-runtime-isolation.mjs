@@ -55,12 +55,10 @@ const requiredMarkers = {
     "AsyncLocalStorage<Context>",
     "Store context cannot be rebound during workflow execution",
   ],
-  index: [
-    "scopeProductIndexQuery_",
-    "A global Index reset is unavailable in shared Store mode",
-  ],
+  index: ["scopeStoreOwnedIndexQuery_", `where "data"->>'store_id' = ?`],
   indexSync: [
-    "Shared Product index synchronization requires a Store context",
+    "Shared index synchronization requires a Store context",
+    "filters.store_id = storeId",
     `"data"->>'store_id'`,
   ],
   link: [

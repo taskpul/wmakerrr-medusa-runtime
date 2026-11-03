@@ -2,12 +2,14 @@ import { model } from "@medusajs/framework/utils"
 import Cart from "./cart"
 import LineItemAdjustment from "./line-item-adjustment"
 import LineItemTaxLine from "./line-item-tax-line"
+import { CART_DEDICATED_STORE_ID } from "../store-isolation"
 
 const LineItem = model
   .define(
     { name: "LineItem", tableName: "cart_line_item" },
     {
       id: model.id({ prefix: "cali" }).primaryKey(),
+      store_id: model.text().default(CART_DEDICATED_STORE_ID),
       title: model.text(),
       subtitle: model.text().nullable(),
       thumbnail: model.text().nullable(),

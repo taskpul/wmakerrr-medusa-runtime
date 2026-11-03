@@ -1,11 +1,13 @@
 import { model } from "@medusajs/framework/utils"
 import LineItem from "./line-item"
+import { CART_DEDICATED_STORE_ID } from "../store-isolation"
 
 const LineItemAdjustment = model
   .define(
     { name: "LineItemAdjustment", tableName: "cart_line_item_adjustment" },
     {
       id: model.id({ prefix: "caliadj" }).primaryKey(),
+      store_id: model.text().default(CART_DEDICATED_STORE_ID),
       description: model.text().nullable(),
       code: model.text().nullable(),
       amount: model.bigNumber(),
@@ -24,7 +26,7 @@ const LineItemAdjustment = model
       on: ["promotion_id"],
       where: "deleted_at IS NULL AND promotion_id IS NOT NULL",
     },
-     {
+    {
       name: "IDX_cart_line_item_adjustment_item_id",
       on: ["item_id"],
       where: "deleted_at IS NULL",

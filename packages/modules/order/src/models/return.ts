@@ -5,10 +5,12 @@ import { Order } from "./order"
 import { OrderShipping } from "./order-shipping-method"
 import { ReturnItem } from "./return-item"
 import { OrderTransaction } from "./transaction"
+import { ORDER_DEDICATED_STORE_ID } from "../store-isolation"
 
 const _Return = model
   .define("Return", {
     id: model.id({ prefix: "return" }).primaryKey(),
+    store_id: model.text().default(ORDER_DEDICATED_STORE_ID),
     order_version: model.number(),
     display_id: model.autoincrement(),
     status: model.enum(ReturnStatus).default(ReturnStatus.OPEN),

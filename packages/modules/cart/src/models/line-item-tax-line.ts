@@ -1,5 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 import LineItem from "./line-item"
+import { CART_DEDICATED_STORE_ID } from "../store-isolation"
 
 /**
  * A tax line applied to a cart line item.
@@ -12,6 +13,7 @@ const LineItemTaxLine = model
     },
     {
       id: model.id({ prefix: "calitxl" }).primaryKey(),
+      store_id: model.text().default(CART_DEDICATED_STORE_ID),
       /**
        * The description of the tax line.
        */

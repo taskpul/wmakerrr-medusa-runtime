@@ -13,34 +13,35 @@ const postgresProvider = (mode: "dedicated" | "shared") => {
   return provider
 }
 
-describe("Product Index Store isolation", () => {
-  it("fails closed when a shared Product query has no Store", () => {
+describe("Store-owned Index isolation", () => {
+  it("fails closed when a shared query has no Store", () => {
     const service = indexService("shared")
 
     expect(() =>
-      service.scopeProductIndexQuery_(
+      service.scopeStoreOwnedIndexQuery_(
         { fields: ["product.id"], filters: {} },
         {}
       )
-    ).toThrow("Index Product operations in shared mode require Context.storeId")
+    ).toThrow("Index operations in shared mode require Context.storeId")
   })
 
-  it("overwrites an untrusted Product Store filter before pagination", () => {
-    const service = indexService("shared")
-    const scoped = service.scopeProductIndexQuery_(
-      {
-        fields: ["product.id"],
-        filters: { product: { store_id: "store_foreign", title: "Shirt" } },
-        pagination: { skip: 10, take: 10 },
-      },
-      { storeId: "store_a" }
-    )
+  it.each(["product", "product_variant", "price", "sales_channel"])(
+    "overwrites an untrusted %s Store filter before pagination",
+    (entry) => {
+      const service = indexService("shared")
+      const scoped = service.scopeStoreOwnedIndexQuery_(
+        {
+          fields: [`${entry}.id`],
+          filters: { [entry]: { store_id: "store_foreign" } },
+          pagination: { skip: 10, take: 10 },
+        },
+        { storeId: "store_a" }
+      )
 
-    expect(scoped.filters).toEqual({
-      product: { store_id: "store_a", title: "Shirt" },
-    })
-    expect(scoped.pagination).toEqual({ skip: 10, take: 10 })
-  })
+      expect(scoped.filters).toEqual({ [entry]: { store_id: "store_a" } })
+      expect(scoped.pagination).toEqual({ skip: 10, take: 10 })
+    }
+  )
 
   it("preserves the dedicated Index query contract", () => {
     const service = indexService("dedicated")
@@ -49,9 +50,9 @@ describe("Product Index Store isolation", () => {
       filters: { product: { title: "Shirt" } },
     }
 
-    expect(service.scopeProductIndexQuery_(config, {})).toBe(config)
+    expect(service.scopeStoreOwnedIndexQuery_(config, {})).toBe(config)
     expect(() =>
-      service.scopeProductIndexQuery_(config, { storeId: "store_foreign" })
+      service.scopeStoreOwnedIndexQuery_(config, { storeId: "store_foreign" })
     ).toThrow("Index context does not match the dedicated Store")
   })
 

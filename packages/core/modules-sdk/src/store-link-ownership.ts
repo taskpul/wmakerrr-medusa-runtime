@@ -441,6 +441,61 @@ async function assertStoreSafeStockLocationLinks(
   }
 }
 
+async function assertCertifiedStoreOwnedEndpoints(
+  modulesMap: ModuleMap,
+  links: LinkDefinition[],
+  sharedContext: Context
+): Promise<void> {
+  const definitions = [
+    [Modules.PROMOTION, "promotion_id", "listPromotions"],
+    [Modules.CUSTOMER, "customer_id", "listCustomers"],
+    [Modules.CART, "cart_id", "listCarts"],
+    [Modules.PAYMENT, "payment_collection_id", "listPaymentCollections"],
+    [Modules.PAYMENT, "account_holder_id", "listAccountHolders"],
+    [Modules.ORDER, "order_id", "listOrders"],
+    [Modules.ORDER, "return_id", "listReturns"],
+    [Modules.ORDER, "claim_id", "listOrderClaims"],
+    [Modules.ORDER, "exchange_id", "listOrderExchanges"],
+    [Modules.API_KEY, "publishable_key_id", "listApiKeys"],
+    [Modules.API_KEY, "api_key_id", "listApiKeys"],
+    [Modules.SALES_CHANNEL, "sales_channel_id", "listSalesChannels"],
+  ] as const
+
+  for (const [moduleKey, endpointKey, method] of definitions) {
+    const service = findModule(modulesMap, moduleKey, (keys) =>
+      keys.includes(endpointKey)
+    )
+    if (!service) {
+      continue
+    }
+    const serviceName = service.__definition.key
+    const ids = deduplicate(
+      links.flatMap((link) =>
+        values(link[serviceName]?.[endpointKey])
+      ) as string[]
+    )
+    if (!ids.length) {
+      continue
+    }
+    const records = await service[method](
+      { id: ids },
+      { select: ["id"] },
+      sharedContext
+    )
+    if (
+      arrayDifference(
+        ids,
+        records.map((record) => record.id)
+      ).length
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        `${moduleKey} link endpoint does not belong to the active Store`
+      )
+    }
+  }
+}
+
 export async function assertStoreSafeLinks(
   modulesMap: ModuleMap,
   links: LinkDefinition[],
@@ -450,4 +505,5 @@ export async function assertStoreSafeLinks(
   await assertStoreSafeFulfillmentLinks(modulesMap, links, sharedContext)
   await assertStoreSafeInventoryLinks(modulesMap, links, sharedContext)
   await assertStoreSafeStockLocationLinks(modulesMap, links, sharedContext)
+  await assertCertifiedStoreOwnedEndpoints(modulesMap, links, sharedContext)
 }

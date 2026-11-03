@@ -3,6 +3,7 @@ import Address from "./address"
 import CreditLine from "./credit-line"
 import LineItem from "./line-item"
 import ShippingMethod from "./shipping-method"
+import { CART_DEDICATED_STORE_ID } from "../store-isolation"
 
 /**
  * Represents a shopping cart containing items and associated data.
@@ -13,6 +14,7 @@ const Cart = model
      * The unique identifier of the cart.
      */
     id: model.id({ prefix: "cart" }).primaryKey(),
+    store_id: model.text().default(CART_DEDICATED_STORE_ID),
     /**
      * The ID of the region the cart belongs to.
      */

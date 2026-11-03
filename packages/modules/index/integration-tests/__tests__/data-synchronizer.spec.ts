@@ -1,12 +1,11 @@
 import { InferEntityType } from "@medusajs/framework/types"
-import { toMikroORMEntity } from "@medusajs/framework/utils"
+import {
+  runWithMedusaContext,
+  toMikroORMEntity,
+} from "@medusajs/framework/utils"
 import { IndexData, IndexRelation } from "@models"
 import { DataSynchronizer } from "../../src/services/data-synchronizer"
-import {
-  createIndexTestBed,
-  IndexModuleTestBed,
-  schema,
-} from "../__fixtures__"
+import { createIndexTestBed, IndexModuleTestBed, schema } from "../__fixtures__"
 
 jest.setTimeout(300000)
 
@@ -315,5 +314,111 @@ describe("DataSynchronizer", () => {
       expect(acknowledgements).toEqual([result])
       expect(testBed.query.calls).toHaveLength(0)
     })
+  })
+})
+
+describe("DataSynchronizer shared Store isolation", () => {
+  let testBed: IndexModuleTestBed
+
+  beforeAll(async () => {
+    const sharedSchema = schema.replace(
+      "id: ID",
+      "id: ID\n    store_id: String"
+    )
+    testBed = await createIndexTestBed({
+      schema: sharedSchema,
+      storeIsolation: { mode: "shared" },
+    })
+  })
+
+  afterAll(async () => {
+    await testBed.teardown()
+  })
+
+  it("filters source rows before pagination", async () => {
+    const synchronizer =
+      testBed.container.resolve<DataSynchronizer>("dataSynchronizer")
+    testBed.query.seed("product", [
+      { id: "prod_a", store_id: "store_a", title: "A" },
+      { id: "prod_b", store_id: "store_b", title: "B" },
+    ])
+
+    await runWithMedusaContext({ storeId: "store_a" }, () =>
+      synchronizer.syncEntity({
+        entityName: "Product",
+        ack: async () => undefined,
+      })
+    )
+
+    expect(testBed.query.calls[0]).toEqual(
+      expect.objectContaining({
+        entity: "product",
+        fields: ["id", "store_id"],
+        filters: { store_id: "store_a" },
+      })
+    )
+    const indexed = await testBed
+      .forkManager()
+      .find(toMikroORMEntity(IndexData), {})
+    expect(indexed).toEqual([
+      expect.objectContaining({
+        id: "prod_a",
+        data: expect.objectContaining({ store_id: "store_a" }),
+      }),
+    ])
+  })
+})
+
+describe("Index reset shared Store isolation", () => {
+  let testBed: IndexModuleTestBed
+
+  beforeAll(async () => {
+    const sharedSchema = schema.replace(
+      "id: ID",
+      "id: ID\n    store_id: String"
+    )
+    testBed = await createIndexTestBed({
+      schema: sharedSchema,
+      workerMode: "server",
+      storeIsolation: { mode: "shared" },
+    })
+  })
+
+  afterAll(async () => {
+    await testBed.teardown()
+  })
+
+  it("removes only the active Store before requesting a rebuild", async () => {
+    const manager = testBed.forkManager()
+    manager.persist([
+      manager.create(toMikroORMEntity(IndexData), {
+        id: "prod_a",
+        name: "Product",
+        data: { id: "prod_a", store_id: "store_a" },
+      }),
+      manager.create(toMikroORMEntity(IndexData), {
+        id: "prod_b",
+        name: "Product",
+        data: { id: "prod_b", store_id: "store_b" },
+      }),
+    ])
+    await manager.flush()
+
+    await testBed.module.sync({ strategy: "reset" }, { storeId: "store_a" })
+
+    const remaining = await testBed
+      .forkManager()
+      .find(toMikroORMEntity(IndexData), {})
+    expect(remaining).toEqual([
+      expect.objectContaining({
+        id: "prod_b",
+        data: expect.objectContaining({ store_id: "store_b" }),
+      }),
+    ])
+    expect(testBed.eventBus.emitted).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ data: { store_id: "store_a" } }),
+      ])
+    )
   })
 })

@@ -7,6 +7,7 @@ import type {
 import {
   deduplicate,
   GraphQLUtils,
+  getActiveMedusaContext,
   MedusaError,
 } from "@medusajs/framework/utils"
 import { CachingDefaultProvider, InjectedDependencies } from "@types"
@@ -25,6 +26,10 @@ export default class CachingModuleService implements ICachingModuleService {
   protected ongoingRequests: Map<string, Promise<any>> = new Map()
 
   protected ttl: number
+  protected readonly storeIsolation_: {
+    mode: "dedicated" | "shared"
+    storeId: string
+  }
 
   static traceGet?: (
     cacheGetFn: () => Promise<any>,
@@ -49,7 +54,8 @@ export default class CachingModuleService implements ICachingModuleService {
   constructor(
     container: InjectedDependencies,
     protected readonly moduleDeclaration:
-      { options: { ttl?: number } } | { ttl?: number }
+      | { options: { ttl?: number; store_isolation?: any } }
+      | { ttl?: number; store_isolation?: any }
   ) {
     this.container = container
     this.providerService = container.cacheProviderService
@@ -65,8 +71,48 @@ export default class CachingModuleService implements ICachingModuleService {
         : moduleDeclaration
 
     this.ttl = moduleOptions.ttl ?? ONE_HOUR_IN_SECOND
+    this.storeIsolation_ = {
+      mode: moduleOptions.store_isolation?.mode ?? "dedicated",
+      storeId:
+        moduleOptions.store_isolation?.store_id ?? "__medusa_dedicated__",
+    }
 
     this.logger = container.logger ?? (console as unknown as Logger)
+  }
+
+  protected resolveStoreId_(): string | undefined {
+    const requested = getActiveMedusaContext()?.storeId?.trim()
+    if (this.storeIsolation_.mode === "shared") {
+      if (!requested) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Caching operations in shared mode require Store context"
+        )
+      }
+      return requested
+    }
+    if (requested && requested !== this.storeIsolation_.storeId) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Caching context does not match the dedicated Store"
+      )
+    }
+    return undefined
+  }
+
+  protected scopeCacheOptions_<T extends { key?: string; tags?: string[] }>(
+    options: T
+  ): T {
+    const storeId = this.resolveStoreId_()
+    if (!storeId) {
+      return options
+    }
+    const prefix = `store:${storeId}:`
+    return {
+      ...options,
+      key: options.key ? `${prefix}${options.key}` : undefined,
+      tags: options.tags?.map((tag) => `${prefix}${tag}`),
+    }
   }
 
   __hooks = {
@@ -147,6 +193,7 @@ export default class CachingModuleService implements ICachingModuleService {
   }
 
   async get(options: { key?: string; tags?: string[]; providers?: string[] }) {
+    options = this.scopeCacheOptions_(options)
     if (CachingModuleService.traceGet) {
       return await CachingModuleService.traceGet(
         () => this.get_(options),
@@ -228,6 +275,7 @@ export default class CachingModuleService implements ICachingModuleService {
     providers?: string[]
     options?: { autoInvalidate?: boolean }
   }) {
+    options = this.scopeCacheOptions_(options)
     if (CachingModuleService.traceSet) {
       return await CachingModuleService.traceSet(
         () => this.set_(options),
@@ -272,7 +320,7 @@ export default class CachingModuleService implements ICachingModuleService {
     // see from the data needs: link tables, relations selected without their id, or
     // entities that affect the data without appearing in it.
     const computed =
-      !tags || computeAutomaticTags ? await this.strategy.computeTags(data) : []
+      !tags || computeAutomaticTags ? await this.computeTags(data) : []
     const tags_ = tags ? deduplicate([...tags, ...computed]) : computed
 
     let providers_: string[] | { id: string; ttl?: number }[] = [
@@ -337,6 +385,7 @@ export default class CachingModuleService implements ICachingModuleService {
     options?: { autoInvalidate?: boolean }
     providers?: string[]
   }) {
+    options = this.scopeCacheOptions_(options)
     if (CachingModuleService.traceClear) {
       return await CachingModuleService.traceClear(
         () => this.clear_(options),
@@ -408,13 +457,18 @@ export default class CachingModuleService implements ICachingModuleService {
   }
 
   async computeKey(input: object): Promise<string> {
-    return await this.strategy.computeKey(input)
+    const storeId = this.resolveStoreId_()
+    return await this.strategy.computeKey(
+      storeId ? { store_id: storeId, input } : input
+    )
   }
 
   async computeTags(
     input: object,
     options?: Record<string, any>
   ): Promise<string[]> {
-    return await this.strategy.computeTags(input, options)
+    const tags = await this.strategy.computeTags(input, options)
+    const storeId = this.resolveStoreId_()
+    return storeId ? tags.map((tag) => `store:${storeId}:${tag}`) : tags
   }
 }

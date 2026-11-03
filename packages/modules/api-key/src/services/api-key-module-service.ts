@@ -22,6 +22,9 @@ import {
   MedusaError,
   MedusaService,
   promiseAll,
+  StoreIsolationGeneratedCrudInput,
+  StoreIsolationGeneratedCrudResult,
+  StoreIsolationManager,
 } from "@medusajs/framework/utils"
 import { ApiKey } from "@models"
 import {
@@ -51,6 +54,7 @@ export class ApiKeyModuleService
   protected readonly apiKeyService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof ApiKey>
   >
+  protected readonly storeIsolation_: StoreIsolationManager<any>
 
   constructor(
     { baseRepository, apiKeyService }: InjectedDependencies,
@@ -60,10 +64,31 @@ export class ApiKeyModuleService
     super(...arguments)
     this.baseRepository_ = baseRepository
     this.apiKeyService_ = apiKeyService
+    this.storeIsolation_ = new StoreIsolationManager({
+      domain: "API Key",
+      moduleOptions: moduleDeclaration,
+      services: { ApiKey: apiKeyService },
+    })
   }
 
   __joinerConfig(): ModuleJoinerConfig {
     return joinerConfig
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeIsolation_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: StoreIsolationGeneratedCrudInput
+  ): Promise<unknown[]> {
+    return this.storeIsolation_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: StoreIsolationGeneratedCrudResult
+  ): Promise<void> {
+    this.storeIsolation_.validateGeneratedMethodResult(input)
   }
 
   @InjectManager()
@@ -85,13 +110,16 @@ export class ApiKeyModuleService
 
     const unrevokedApiKeys = (
       await this.apiKeyService_.list(
-        {
-          id: ids,
-          $or: [
-            { revoked_at: { $eq: null } },
-            { revoked_at: { $gt: new Date() } },
-          ],
-        },
+        this.storeIsolation_.scope(
+          {
+            id: ids,
+            $or: [
+              { revoked_at: { $eq: null } },
+              { revoked_at: { $gt: new Date() } },
+            ],
+          },
+          sharedContext
+        ),
         { select: ["id"] },
         sharedContext
       )
@@ -175,7 +203,7 @@ export class ApiKeyModuleService
     }
 
     const createdApiKeys = await this.apiKeyService_.create(
-      normalizedInput,
+      this.storeIsolation_.stamp(normalizedInput, sharedContext),
       sharedContext
     )
 
@@ -301,6 +329,12 @@ export class ApiKeyModuleService
     normalizedInput: UpdateApiKeyInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ApiKey>[]> {
+    await this.storeIsolation_.assertOwnedIds(
+      this.apiKeyService_,
+      normalizedInput.map((key) => key.id),
+      "API keys",
+      sharedContext
+    )
     const updateRequest = normalizedInput.map((k) => ({
       id: k.id,
       title: k.title,
@@ -320,6 +354,13 @@ export class ApiKeyModuleService
     config?: FindConfig<ApiKeyTypes.ApiKeyDTO>,
     sharedContext?: Context
   ): Promise<ApiKeyTypes.ApiKeyDTO> {
+    await this.storeIsolation_.assertOwnedIds(
+      this.apiKeyService_,
+      [id],
+      "API key",
+      sharedContext ?? {},
+      true
+    )
     const apiKey = await this.apiKeyService_.retrieve(id, config, sharedContext)
 
     return await this.baseRepository_.serialize<ApiKeyTypes.ApiKeyDTO>(
@@ -338,7 +379,7 @@ export class ApiKeyModuleService
     sharedContext?: Context
   ): Promise<ApiKeyTypes.ApiKeyDTO[]> {
     const apiKeys = await this.apiKeyService_.list(
-      filters,
+      this.storeIsolation_.scope(filters ?? {}, sharedContext ?? {}),
       config,
       sharedContext
     )
@@ -359,7 +400,7 @@ export class ApiKeyModuleService
     sharedContext?: Context
   ): Promise<[ApiKeyTypes.ApiKeyDTO[], number]> {
     const [apiKeys, count] = await this.apiKeyService_.listAndCount(
-      filters,
+      this.storeIsolation_.scope(filters ?? {}, sharedContext ?? {}),
       config,
       sharedContext
     )
@@ -414,7 +455,13 @@ export class ApiKeyModuleService
     normalizedInput: RevokeApiKeyInput[],
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ApiKey>[]> {
-    await this.validateRevokeApiKeys_(normalizedInput)
+    await this.validateRevokeApiKeys_(normalizedInput, sharedContext)
+    await this.storeIsolation_.assertOwnedIds(
+      this.apiKeyService_,
+      normalizedInput.map((key) => key.id),
+      "API keys",
+      sharedContext
+    )
 
     const updateRequest = normalizedInput.map((k) => {
       const revokedAt = new Date()
@@ -511,7 +558,7 @@ export class ApiKeyModuleService
 
     if (isObject(idOrSelector)) {
       const apiKeys = await this.apiKeyService_.list(
-        idOrSelector,
+        this.storeIsolation_.scope(idOrSelector, sharedContext),
         {},
         sharedContext
       )
@@ -551,11 +598,14 @@ export class ApiKeyModuleService
     }
 
     const revokedApiKeys = await this.apiKeyService_.list(
-      {
-        id: data.map((k) => k.id),
-        type: ApiKeyType.SECRET,
-        revoked_at: { $lt: new Date() },
-      },
+      this.storeIsolation_.scope(
+        {
+          id: data.map((k) => k.id),
+          type: ApiKeyType.SECRET,
+          revoked_at: { $lt: new Date() },
+        },
+        sharedContext
+      ),
       {},
       sharedContext
     )

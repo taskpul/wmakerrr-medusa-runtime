@@ -1,8 +1,10 @@
 import { model } from "@medusajs/framework/utils"
+import { API_KEY_DEDICATED_STORE_ID } from "../store-isolation"
 
 const ApiKey = model
   .define("ApiKey", {
     id: model.id({ prefix: "apk" }).primaryKey(),
+    store_id: model.text().default(API_KEY_DEDICATED_STORE_ID),
     token: model.text(),
     salt: model.text(),
     redacted: model.text().searchable(),

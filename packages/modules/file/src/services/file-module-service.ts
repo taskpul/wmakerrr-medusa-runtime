@@ -11,7 +11,7 @@ import {
 } from "@medusajs/framework/types"
 import type { Readable, Writable } from "stream"
 
-import { MedusaError } from "@medusajs/framework/utils"
+import { getActiveMedusaContext, MedusaError } from "@medusajs/framework/utils"
 import { joinerConfig } from "../joiner-config"
 import FileProviderService from "./file-provider-service"
 
@@ -21,8 +21,57 @@ type InjectedDependencies = {
 
 export default class FileModuleService implements FileTypes.IFileModuleService {
   protected readonly fileProviderService_: FileProviderService
-  constructor({ fileProviderService }: InjectedDependencies) {
+  protected readonly storeIsolation_: {
+    mode: "dedicated" | "shared"
+    storeId: string
+  }
+  constructor(
+    { fileProviderService }: InjectedDependencies,
+    moduleDeclaration: any = {}
+  ) {
     this.fileProviderService_ = fileProviderService
+    const options = moduleDeclaration.options ?? moduleDeclaration
+    this.storeIsolation_ = {
+      mode: options.store_isolation?.mode ?? "dedicated",
+      storeId: options.store_isolation?.store_id ?? "__medusa_dedicated__",
+    }
+  }
+
+  protected resolveStoreId_(context?: Context): string | undefined {
+    const requested =
+      (context as Context & { storeId?: string })?.storeId?.trim() ??
+      getActiveMedusaContext()?.storeId?.trim()
+    if (this.storeIsolation_.mode === "shared") {
+      if (!requested) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "File operations in shared mode require Store context"
+        )
+      }
+      return requested
+    }
+    if (requested && requested !== this.storeIsolation_.storeId) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "File context does not match the dedicated Store"
+      )
+    }
+    return undefined
+  }
+
+  protected scopeFileKey_(key: string, context?: Context): string {
+    const storeId = this.resolveStoreId_(context)
+    if (!storeId) {
+      return key
+    }
+    const prefix = `stores/${storeId}/`
+    if (key.startsWith("stores/") && !key.startsWith(prefix)) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "File key belongs to another Store"
+      )
+    }
+    return key.startsWith(prefix) ? key : `${prefix}${key}`
   }
 
   __joinerConfig(): ModuleJoinerConfig {
@@ -40,13 +89,19 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
   createFiles(data: CreateFileDTO, sharedContext?: Context): Promise<FileDTO>
 
   async createFiles(
-    data: CreateFileDTO[] | CreateFileDTO
+    data: CreateFileDTO[] | CreateFileDTO,
+    sharedContext?: Context
   ): Promise<FileDTO[] | FileDTO> {
     const input = Array.isArray(data) ? data : [data]
     // TODO: Validate file mime type, have config for allowed types
 
     const files = await Promise.all(
-      input.map((file) => this.fileProviderService_.upload(file))
+      input.map((file) =>
+        this.fileProviderService_.upload({
+          ...file,
+          filename: this.scopeFileKey_(file.filename, sharedContext),
+        })
+      )
     )
     const result = files.map((file) => ({
       id: file.key,
@@ -66,12 +121,18 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
   ): Promise<UploadFileUrlDTO>
 
   async getUploadFileUrls(
-    data: GetUploadFileUrlDTO[] | GetUploadFileUrlDTO
+    data: GetUploadFileUrlDTO[] | GetUploadFileUrlDTO,
+    sharedContext?: Context
   ): Promise<UploadFileUrlDTO[] | UploadFileUrlDTO> {
     const input = Array.isArray(data) ? data : [data]
 
     const result = await Promise.all(
-      input.map((file) => this.fileProviderService_.getPresignedUploadUrl(file))
+      input.map((file) =>
+        this.fileProviderService_.getPresignedUploadUrl({
+          ...file,
+          filename: this.scopeFileKey_(file.filename, sharedContext),
+        })
+      )
     )
 
     return Array.isArray(data) ? result : result[0]
@@ -79,16 +140,20 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
 
   async deleteFiles(ids: string[], sharedContext?: Context): Promise<void>
   async deleteFiles(id: string, sharedContext?: Context): Promise<void>
-  async deleteFiles(ids: string[] | string): Promise<void> {
+  async deleteFiles(
+    ids: string[] | string,
+    sharedContext?: Context
+  ): Promise<void> {
     const input = Array.isArray(ids) ? ids : [ids]
     await this.fileProviderService_.delete(
       input.map((id) => {
-        return { fileKey: id }
+        return { fileKey: this.scopeFileKey_(id, sharedContext) }
       })
     )
   }
 
   async retrieveFile(id: string): Promise<FileDTO> {
+    id = this.scopeFileKey_(id)
     const res = await this.fileProviderService_.getPresignedDownloadUrl({
       fileKey: id,
     })
@@ -111,7 +176,9 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
       )
     }
 
-    const ids = Array.isArray(filters?.id) ? filters?.id : [filters?.id]
+    const ids = (Array.isArray(filters?.id) ? filters?.id : [filters?.id]).map(
+      (id) => this.scopeFileKey_(id, sharedContext)
+    )
 
     const res = await Promise.all(
       ids.map(async (id) => {
@@ -137,7 +204,9 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
       )
     }
 
-    const ids = Array.isArray(filters?.id) ? filters?.id : [filters?.id]
+    const ids = (Array.isArray(filters?.id) ? filters?.id : [filters?.id]).map(
+      (id) => this.scopeFileKey_(id, sharedContext)
+    )
 
     const res = await Promise.all(
       ids.map(async (id) => {
@@ -159,7 +228,9 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
    * writeable.pipe(stream)
    */
   getDownloadStream(id: string): Promise<Readable> {
-    return this.fileProviderService_.getDownloadStream({ fileKey: id })
+    return this.fileProviderService_.getDownloadStream({
+      fileKey: this.scopeFileKey_(id),
+    })
   }
 
   /**
@@ -170,7 +241,9 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
    * contents.toString('utf-8')
    */
   getAsBuffer(id: string): Promise<Buffer> {
-    return this.fileProviderService_.getAsBuffer({ fileKey: id })
+    return this.fileProviderService_.getAsBuffer({
+      fileKey: this.scopeFileKey_(id),
+    })
   }
 
   /**
@@ -191,6 +264,9 @@ export default class FileModuleService implements FileTypes.IFileModuleService {
     url: string
     fileKey: string
   }> {
-    return this.fileProviderService_.getUploadStream(data)
+    return this.fileProviderService_.getUploadStream({
+      ...data,
+      filename: this.scopeFileKey_(data.filename),
+    })
   }
 }

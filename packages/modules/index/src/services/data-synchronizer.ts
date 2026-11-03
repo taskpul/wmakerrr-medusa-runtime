@@ -26,7 +26,9 @@ export class DataSynchronizer {
   #storeIsolation?: IndexTypes.IndexModuleOptions["store_isolation"]
 
   #isStoreOwnedEntity(entity: string) {
-    return entity === "Product" || entity === "ProductVariant"
+    return ["Product", "ProductVariant", "Price", "SalesChannel"].includes(
+      entity
+    )
   }
 
   #resolveStoreId(entity: string): string | undefined {
@@ -38,7 +40,7 @@ export class DataSynchronizer {
       if (!requestedStoreId) {
         throw new MedusaError(
           MedusaError.Types.NOT_ALLOWED,
-          "Shared Product index synchronization requires a Store context"
+          "Shared index synchronization requires a Store context"
         )
       }
       return requestedStoreId
@@ -48,7 +50,7 @@ export class DataSynchronizer {
     if (requestedStoreId && requestedStoreId !== configuredStoreId) {
       throw new MedusaError(
         MedusaError.Types.NOT_ALLOWED,
-        "Product index synchronization does not match the dedicated Store"
+        "Index synchronization does not match the dedicated Store"
       )
     }
     return undefined
@@ -181,7 +183,9 @@ export class DataSynchronizer {
               select: ["last_key"],
             }
           ),
-      this.#updatedStatus(entity, IndexMetadataStatus.PROCESSING),
+      storeId
+        ? Promise.resolve()
+        : this.#updatedStatus(entity, IndexMetadataStatus.PROCESSING),
       this.#container.manager.execute(
         `UPDATE "index_data" SET "staled_at" = NOW() WHERE "name" = ? ${storeCondition}`,
         storeParams
@@ -240,7 +244,9 @@ export class DataSynchronizer {
 
     if (finalAcknoledgement.done) {
       await promiseAll([
-        this.#updatedStatus(entity, IndexMetadataStatus.DONE),
+        storeId
+          ? Promise.resolve()
+          : this.#updatedStatus(entity, IndexMetadataStatus.DONE),
         storeId
           ? Promise.resolve()
           : this.#indexSyncService.update({
@@ -256,7 +262,9 @@ export class DataSynchronizer {
     }
 
     if (finalAcknoledgement.err) {
-      await this.#updatedStatus(entity, IndexMetadataStatus.ERROR)
+      if (!storeId) {
+        await this.#updatedStatus(entity, IndexMetadataStatus.ERROR)
+      }
     }
   }
 
@@ -324,9 +332,14 @@ export class DataSynchronizer {
     const batchSize = Math.min(pagination.batchSize ?? 100, 100)
     const limit = pagination.limit ?? Infinity
     let error = null
+    const storeId = this.#resolveStoreId(entityName)
 
     while (processed < limit) {
       const filters: Record<string, any> = {}
+
+      if (storeId) {
+        filters.store_id = storeId
+      }
 
       if (currentCursor) {
         filters[entityPrimaryKey] = { $gt: currentCursor }
@@ -341,8 +354,8 @@ export class DataSynchronizer {
         fields:
           this.#storeIsolation?.mode === "shared" &&
           this.#isStoreOwnedEntity(entityName)
-          ? [entityPrimaryKey, "store_id"]
-          : [entityPrimaryKey],
+            ? [entityPrimaryKey, "store_id"]
+            : [entityPrimaryKey],
         filters,
         pagination: {
           order: {

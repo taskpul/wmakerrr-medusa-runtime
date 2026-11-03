@@ -1,10 +1,12 @@
 import { model, RefundStatus } from "@medusajs/framework/utils"
 import Payment from "./payment"
 import RefundReason from "./refund-reason"
+import { PAYMENT_DEDICATED_STORE_ID } from "../store-isolation"
 
 const Refund = model
   .define("Refund", {
     id: model.id({ prefix: "ref" }).primaryKey(),
+    store_id: model.text().default(PAYMENT_DEDICATED_STORE_ID),
     amount: model.bigNumber(),
     status: model.enum(RefundStatus).default(RefundStatus.PENDING),
     idempotency_key: model.text().nullable(),

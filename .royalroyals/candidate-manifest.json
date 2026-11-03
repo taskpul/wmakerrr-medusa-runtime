@@ -22,16 +22,16 @@
       "status": "local-verified",
       "upstreamRevision": "cfff3f57381873097dcc77851038d5dbe8f5839c",
       "packageCount": 79,
-      "publicSourceFileCount": 1321,
+      "publicSourceFileCount": 1322,
       "approvedLicenseExceptions": 28,
-      "approvedControlledDistributionExtensions": 34,
+      "approvedControlledDistributionExtensions": 36,
       "verifier": {
         "path": ".royalroyals/verify-public-api.mjs",
-        "sha256": "bb33f58bda3963a772370deb34a179c0fcf403b281fb2e0bc19a55927ada104b"
+        "sha256": "2c9d8c5fe45b96951cc6705e5cd345745b38915628d928c5fed5cba3339c423c"
       },
       "exceptionLedger": {
         "path": ".royalroyals/public-api-exceptions.json",
-        "sha256": "2ad7d2104dd7181744ff948a0ecd3f1d82fcaa57749fd9d4e9f8ed3f32b12b31"
+        "sha256": "242203568ea35373d7904379dfb52a61972e9a990a0a1905425678b50a30386a"
       }
     },
     "pricingIsolation": {
@@ -87,7 +87,7 @@
       "attackCases": 32,
       "verifier": {
         "path": ".royalroyals/verify-product-runtime-isolation.mjs",
-        "sha256": "50410b2fbede57e7e0cee4542d0a1ae8d344eaa396c107dad2710dd21f60e883"
+        "sha256": "915ef949329ef31e7122c5b0477bc8bf19f9eef6cc9300d431df9292473e7ffa"
       },
       "sharedProduction": "disabled",
       "admissionEffect": "none"
@@ -141,6 +141,27 @@
       "sharedProduction": "disabled",
       "admissionEffect": "none"
     },
+    "phase7Closure": {
+      "status": "local-engineering-complete",
+      "phases": ["7G-8", "7G-9", "7G-10", "7G-11", "7G-12", "7G-13", "7G-14"],
+      "implementationSlices": 7,
+      "attackCases": 24,
+      "affectedPackageBuilds": 15,
+      "contract": {
+        "path": ".royalroyals/phase-7-closure-boundary.json",
+        "sha256": "5524c0ea29cfe2186a779e68bee5d0846016154e10fd4e0489b554b2fe0d5f94"
+      },
+      "verifier": {
+        "path": ".royalroyals/verify-phase-7-closure.mjs",
+        "sha256": "7144b81cc162e4eccd99f67f7b56ffeaeca0cf4faee6c6e733a0e4a081c999f4"
+      },
+      "runbook": {
+        "path": ".royalroyals/PHASE-7-CLOSURE.md",
+        "sha256": "a34444339a0568a8e241affbcb3bead7233c2d3ea13bc04665b8cf88336524bc"
+      },
+      "sharedProduction": "disabled",
+      "admissionEffect": "none"
+    },
     "commands": [
       "yarn install --immutable",
       "yarn build",
@@ -154,6 +175,7 @@
       "node .royalroyals/verify-fulfillment-shipping-inventory.mjs",
       "node .royalroyals/verify-fulfillment-runtime-isolation.mjs",
       "node .royalroyals/verify-inventory-stock-boundary.mjs",
+      "node .royalroyals/verify-phase-7-closure.mjs",
       "yarn workspace @medusajs/fulfillment test --runInBand",
       "yarn workspace @medusajs/fulfillment test:integration --runTestsByPath integration-tests/__tests__/fulfillment-module-service/store-ownership-persistence.spec.ts integration-tests/__tests__/fulfillment-module-service/store-ownership-service.spec.ts integration-tests/__tests__/fulfillment-module-service/store-ownership-dedicated.spec.ts --runInBand",
       "yarn workspace @medusajs/modules-sdk test --runInBand src/__tests__/remote-link.spec.ts",

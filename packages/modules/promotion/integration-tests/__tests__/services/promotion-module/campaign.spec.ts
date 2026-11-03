@@ -26,6 +26,7 @@ moduleIntegrationTestRunner<IPromotionModuleService>({
           expect(campaigns).toEqual([
             {
               id: "campaign-id-1",
+              store_id: "__medusa_dedicated__",
               name: "campaign 1",
               description: "test description",
 
@@ -39,6 +40,7 @@ moduleIntegrationTestRunner<IPromotionModuleService>({
             },
             {
               id: "campaign-id-2",
+              store_id: "__medusa_dedicated__",
               name: "campaign 1",
               description: "test description",
 
@@ -199,7 +201,7 @@ moduleIntegrationTestRunner<IPromotionModuleService>({
             .catch((e) => e)
 
           expect(error.message).toEqual(
-            "Promotion campaign with campaign_identifier: test, already exists."
+            "Promotion campaign with store_id: __medusa_dedicated__, campaign_identifier: test, already exists."
           )
         })
       })

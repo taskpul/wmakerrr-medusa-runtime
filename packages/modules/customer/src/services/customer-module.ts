@@ -20,7 +20,12 @@ import {
   isString,
   MedusaContext,
   MedusaService,
+  MedusaError,
+  StoreIsolationGeneratedCrudInput,
+  StoreIsolationGeneratedCrudResult,
+  StoreIsolationManager,
 } from "@medusajs/framework/utils"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import {
   Customer,
   CustomerAddress,
@@ -28,6 +33,7 @@ import {
   CustomerGroupCustomer,
 } from "@models"
 import { joinerConfig } from "../joiner-config"
+import { setCustomerStoreDatabaseContext } from "../database-context"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -64,6 +70,8 @@ export default class CustomerModuleService
   protected customerGroupCustomerService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof CustomerGroupCustomer>
   >
+  protected readonly storeIsolation_: StoreIsolationManager<any>
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -83,10 +91,72 @@ export default class CustomerModuleService
     this.customerAddressService_ = customerAddressService
     this.customerGroupService_ = customerGroupService
     this.customerGroupCustomerService_ = customerGroupCustomerService
+    this.storeIsolation_ = new StoreIsolationManager({
+      domain: "Customer",
+      moduleOptions: moduleDeclaration,
+      services: {
+        Customer: customerService,
+        CustomerAddress: customerAddressService,
+        CustomerGroup: customerGroupService,
+        CustomerGroupCustomer: customerGroupCustomerService,
+      },
+    })
   }
 
   __joinerConfig(): ModuleJoinerConfig {
     return joinerConfig
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeIsolation_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeIsolation_.resolveStoreId(context)
+    const execute = async (manager: SqlEntityManager, scoped: Context) => {
+      scoped.storeId ??= storeId
+      const activeStoreId = this.databaseStoreContexts_.get(manager)
+      if (activeStoreId && activeStoreId !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Customer transaction is already bound to another Store"
+        )
+      }
+      if (!activeStoreId) {
+        await setCustomerStoreDatabaseContext(
+          manager,
+          storeId,
+          this.storeIsolation_.isShared
+        )
+        this.databaseStoreContexts_.set(manager, storeId)
+      }
+      return await task(scoped)
+    }
+    const transactionManager = context.transactionManager as
+      SqlEntityManager | undefined
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      { manager: context.manager as SqlEntityManager | undefined } as any
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: StoreIsolationGeneratedCrudInput
+  ): Promise<unknown[]> {
+    return this.storeIsolation_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: StoreIsolationGeneratedCrudResult
+  ): Promise<void> {
+    this.storeIsolation_.validateGeneratedMethodResult(input)
   }
 
   // @ts-expect-error

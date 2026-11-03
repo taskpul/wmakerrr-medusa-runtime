@@ -1,12 +1,14 @@
 import { PromotionUtils, model } from "@medusajs/framework/utils"
 import Promotion from "./promotion"
 import PromotionRule from "./promotion-rule"
+import { PROMOTION_DEDICATED_STORE_ID } from "../store-ownership"
 
 const ApplicationMethod = model
   .define(
     { name: "ApplicationMethod", tableName: "promotion_application_method" },
     {
       id: model.id({ prefix: "proappmet" }).primaryKey(),
+      store_id: model.text().default(PROMOTION_DEDICATED_STORE_ID),
       value: model.bigNumber().nullable(),
       currency_code: model.text().nullable(),
       max_quantity: model.number().nullable(),
@@ -36,6 +38,11 @@ const ApplicationMethod = model
     }
   )
   .indexes([
+    {
+      name: "IDX_promotion_application_method_store_id_id",
+      on: ["store_id", "id"],
+      unique: true,
+    },
     {
       on: ["currency_code"],
       where: "deleted_at IS NOT NULL",

@@ -350,7 +350,22 @@ for (const packageEntry of packageGraph.packages) {
       continue
     }
     if (currentSource !== null && upstreamSource === null) {
-      errors.push(`unapproved public API source addition: ${path}`)
+      const currentDigest = sourceSha256(currentSource)
+      if (
+        exception?.upstreamSha256 === null &&
+        exception.currentSha256 === currentDigest &&
+        hasApprovedReason(exception)
+      ) {
+        observedExceptions.add(path)
+      } else {
+        suggestions.push({
+          path,
+          upstreamSha256: null,
+          currentSha256: currentDigest,
+          reason: "Controlled-distribution public extension.",
+        })
+        errors.push(`unapproved public API source addition: ${path}`)
+      }
       continue
     }
     if (currentSource === null || upstreamSource === null) continue

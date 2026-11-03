@@ -1,10 +1,12 @@
 import { model, PaymentSessionStatus } from "@medusajs/framework/utils"
 import Payment from "./payment"
 import PaymentCollection from "./payment-collection"
+import { PAYMENT_DEDICATED_STORE_ID } from "../store-isolation"
 
 const PaymentSession = model
   .define("PaymentSession", {
     id: model.id({ prefix: "payses" }).primaryKey(),
+    store_id: model.text().default(PAYMENT_DEDICATED_STORE_ID),
     currency_code: model.text(),
     amount: model.bigNumber(),
     provider_id: model.text(),

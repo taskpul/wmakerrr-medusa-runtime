@@ -1,5 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 import ShippingMethod from "./shipping-method"
+import { CART_DEDICATED_STORE_ID } from "../store-isolation"
 
 /**
  * A tax line applied to a cart shipping method.
@@ -12,6 +13,7 @@ const ShippingMethodTaxLine = model
     },
     {
       id: model.id({ prefix: "casmtxl" }).primaryKey(),
+      store_id: model.text().default(CART_DEDICATED_STORE_ID),
       /**
        * The description of the tax line.
        */

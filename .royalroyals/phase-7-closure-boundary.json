@@ -1,0 +1,158 @@
+{
+  "contractVersion": 1,
+  "status": "local-engineering-complete",
+  "scope": "Phase 7 shared-cell commerce isolation",
+  "implementationSlices": [
+    {
+      "id": "7G-8",
+      "name": "Promotions and campaigns",
+      "status": "local-complete"
+    },
+    { "id": "7G-9", "name": "Customers", "status": "local-complete" },
+    { "id": "7G-10", "name": "Cart and Payment", "status": "local-complete" },
+    { "id": "7G-11", "name": "Orders", "status": "local-complete" },
+    {
+      "id": "7G-12",
+      "name": "API keys and Sales Channels",
+      "status": "local-complete"
+    },
+    {
+      "id": "7G-13",
+      "name": "Tenant-safe shared services",
+      "status": "local-complete"
+    },
+    {
+      "id": "7G-14",
+      "name": "Cross-resource attack proof and local evidence",
+      "status": "local-complete"
+    }
+  ],
+  "resourceGroups": {
+    "promotion": {
+      "directStoreTables": 7,
+      "parentDerivedTables": 3,
+      "requestRole": "medusa_promotion_request"
+    },
+    "customer": {
+      "directStoreTables": 4,
+      "parentDerivedTables": 0,
+      "requestRole": "medusa_customer_request"
+    },
+    "cart": {
+      "directStoreTables": 9,
+      "parentDerivedTables": 0,
+      "requestRole": "medusa_cart_request"
+    },
+    "payment": {
+      "directStoreTables": 6,
+      "parentDerivedTables": 1,
+      "requestRole": "medusa_payment_request",
+      "globalReferenceTables": ["payment_provider", "refund_reason"]
+    },
+    "order": {
+      "directStoreTables": 6,
+      "parentDerivedTables": 17,
+      "requestRole": "medusa_order_request"
+    },
+    "apiKey": {
+      "directStoreTables": 1,
+      "requestRole": null,
+      "exception": "Exact secret authentication is a platform lookup that discovers the owning Store; management operations are Store-scoped and ownership is immutable."
+    },
+    "salesChannel": {
+      "directStoreTables": 1,
+      "requestRole": "medusa_sales_channel_request"
+    },
+    "notification": {
+      "directStoreTables": 1,
+      "requestRole": "medusa_notification_request"
+    }
+  },
+  "sharedServices": [
+    "Cache keys and automatic tags are Store-prefixed.",
+    "File keys are restricted to stores/<store-id>/.",
+    "Event metadata carries Store provenance and subscribers restore it.",
+    "Index filters, synchronization, pagination, stale cleanup, and reset are Store-partitioned.",
+    "Notification idempotency and delivery records are Store-scoped."
+  ],
+  "attackMatrix": [
+    {
+      "id": "P7-01",
+      "proof": "shared operation without Store context is rejected"
+    },
+    {
+      "id": "P7-02",
+      "proof": "dedicated operation with a foreign Store context is rejected"
+    },
+    { "id": "P7-03", "proof": "foreign Store identifiers cannot be retrieved" },
+    {
+      "id": "P7-04",
+      "proof": "list and count queries are Store-filtered in SQL"
+    },
+    {
+      "id": "P7-05",
+      "proof": "created records receive the active Store owner"
+    },
+    { "id": "P7-06", "proof": "Store owner updates are rejected" },
+    {
+      "id": "P7-07",
+      "proof": "cross-Store parent-child relationships are rejected"
+    },
+    { "id": "P7-08", "proof": "request-role RLS hides foreign Promotion data" },
+    { "id": "P7-09", "proof": "request-role RLS hides foreign Customer data" },
+    { "id": "P7-10", "proof": "request-role RLS hides foreign Cart data" },
+    { "id": "P7-11", "proof": "request-role RLS hides foreign Payment data" },
+    {
+      "id": "P7-12",
+      "proof": "request-role RLS hides foreign Order roots and children"
+    },
+    { "id": "P7-13", "proof": "request-role RLS hides foreign Sales Channels" },
+    { "id": "P7-14", "proof": "request-role RLS hides foreign Notifications" },
+    {
+      "id": "P7-15",
+      "proof": "API key management is scoped while secret authentication resolves ownership"
+    },
+    {
+      "id": "P7-16",
+      "proof": "cross-module links validate every certified endpoint owner"
+    },
+    {
+      "id": "P7-17",
+      "proof": "cache keys and computed tags cannot collide across Stores"
+    },
+    { "id": "P7-18", "proof": "foreign Store file keys are rejected" },
+    {
+      "id": "P7-19",
+      "proof": "events reject missing or conflicting Store provenance"
+    },
+    {
+      "id": "P7-20",
+      "proof": "event subscribers execute inside the event Store context"
+    },
+    { "id": "P7-21", "proof": "Index filtering occurs before pagination" },
+    {
+      "id": "P7-22",
+      "proof": "Index reset deletes only the active Store partition"
+    },
+    {
+      "id": "P7-23",
+      "proof": "notification idempotency cannot collide across Stores"
+    },
+    {
+      "id": "P7-24",
+      "proof": "all migrations are additive and retain explicit down paths"
+    }
+  ],
+  "admission": {
+    "sharedProduction": "disabled",
+    "candidateStatus": "draft-unsigned",
+    "candidateGatesChanged": [],
+    "requiresBeforeActivation": [
+      "protected immutable CI evidence",
+      "independent review",
+      "upgrade and rollback rehearsal",
+      "signed package and evidence digests",
+      "application admission of the exact digest"
+    ]
+  }
+}

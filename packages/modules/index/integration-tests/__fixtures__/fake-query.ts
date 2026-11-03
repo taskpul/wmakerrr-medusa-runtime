@@ -59,6 +59,11 @@ export class FakeQuery {
       )
     }
 
+    const storeIdFilter = config.filters?.store_id
+    if (typeof storeIdFilter === "string") {
+      records = records.filter((record) => record.store_id === storeIdFilter)
+    }
+
     const idOrder = config.pagination?.order?.id
     if (idOrder) {
       const direction = idOrder.toLowerCase() === "desc" ? -1 : 1

@@ -206,7 +206,7 @@ export default class LocalEventBusService extends AbstractEventBusModuleService 
 
     const wrappedSubscriber = async (data: Event) => {
       try {
-        await subscriber(data)
+        await this.runWithEventStoreContext_(data, () => subscriber(data))
       } catch (err) {
         this.logger_.error(
           `An error occurred while processing ${event.toString()}:`

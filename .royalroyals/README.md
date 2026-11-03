@@ -224,6 +224,23 @@ later phase must implement Store-native commerce boundaries and produce
 immutable CI evidence for every gate before the application can admit a package
 set.
 
+### Phase 7 local closure
+
+Phase 7G-8 through 7G-14 close the remaining local engineering boundaries for
+Promotions, Customers, Cart/Payment, Orders, API keys/Sales Channels,
+Notifications, tenant-safe shared services, and the final cross-resource attack
+matrix. The work extends the canonical modules and central link boundary.
+
+```bash
+node .royalroyals/verify-phase-7-closure.mjs
+```
+
+The closure contract records seven locally complete slices and 24 attacks.
+Shared production remains disabled: the candidate is still unsigned,
+unpublished, unconsumed, and all twelve admission gates remain pending until
+protected immutable evidence, review, rehearsal, signing, and explicit
+application admission are complete.
+
 ## Repository governance
 
 The upstream Medusa workflows and Dependabot configuration are excluded from

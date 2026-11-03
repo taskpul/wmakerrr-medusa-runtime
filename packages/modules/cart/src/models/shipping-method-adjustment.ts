@@ -1,5 +1,6 @@
 import { model } from "@medusajs/framework/utils"
 import ShippingMethod from "./shipping-method"
+import { CART_DEDICATED_STORE_ID } from "../store-isolation"
 
 const ShippingMethodAdjustment = model
   .define(
@@ -9,6 +10,7 @@ const ShippingMethodAdjustment = model
     },
     {
       id: model.id({ prefix: "casmadj" }).primaryKey(),
+      store_id: model.text().default(CART_DEDICATED_STORE_ID),
       description: model.text().nullable(),
       code: model.text().nullable(),
       amount: model.bigNumber(),

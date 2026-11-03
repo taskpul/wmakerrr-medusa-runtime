@@ -98,7 +98,7 @@ export default class IndexModuleService
       if (!requestedStoreId) {
         throw new MedusaError(
           MedusaError.Types.NOT_ALLOWED,
-          "Index Product operations in shared mode require Context.storeId"
+          "Index operations in shared mode require Context.storeId"
         )
       }
       return requestedStoreId
@@ -113,12 +113,14 @@ export default class IndexModuleService
     return configuredStoreId
   }
 
-  private scopeProductIndexQuery_<TEntry extends string>(
+  private scopeStoreOwnedIndexQuery_<TEntry extends string>(
     config: IndexTypes.IndexQueryConfig<TEntry>,
     context: Context
   ): IndexTypes.IndexQueryConfig<TEntry> {
     const entry = String(config.fields?.[0] ?? "").split(".")[0]
-    if (entry !== "product" && entry !== "product_variant") {
+    if (
+      !["product", "product_variant", "price", "sales_channel"].includes(entry)
+    ) {
       return config
     }
 
@@ -242,7 +244,7 @@ export default class IndexModuleService
           await this.dataSynchronizer_.syncEntities(entitiesMetadataChanged)
         } else if (entitiesMetadataChanged.length) {
           this.logger_.warn(
-            "[Index engine] Shared Product index changes require an explicit Store-scoped sync"
+            "[Index engine] Shared Store index changes require an explicit Store-scoped sync"
           )
         }
       }
@@ -257,7 +259,7 @@ export default class IndexModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<IndexTypes.QueryResultSet<TEntry>> {
     return await this.storageProvider_.query(
-      this.scopeProductIndexQuery_(config, sharedContext),
+      this.scopeStoreOwnedIndexQuery_(config, sharedContext),
       sharedContext
     )
   }
@@ -294,7 +296,9 @@ export default class IndexModuleService
     )) {
       this.eventBusModuleService_.subscribe(eventName, async (event: Event) => {
         const storeId = this.resolveStoreId_({
-          storeId: (event.data as { store_id?: string })?.store_id,
+          storeId:
+            (event.data as { store_id?: string })?.store_id ??
+            (event.metadata as { store_id?: string } | undefined)?.store_id,
         })
         await runWithMedusaContext({ storeId }, () => this[methodName]())
       })
@@ -387,12 +391,6 @@ export default class IndexModuleService
     }
 
     const storeId = this.resolveStoreId_(sharedContext)
-    if (this.isSharedStoreIsolation_ && strategy === "reset") {
-      throw new MedusaError(
-        MedusaError.Types.NOT_ALLOWED,
-        "A global Index reset is unavailable in shared Store mode"
-      )
-    }
 
     await runWithMedusaContext({ storeId }, async () => {
       switch (strategy) {
@@ -416,6 +414,16 @@ export default class IndexModuleService
    */
   private async continueSync() {
     if (!this.#isWorkerMode) {
+      if (this.isSharedStoreIsolation_) {
+        await this.eventBusModuleService_.emit({
+          name: IndexModuleService.SyncSubscribersDescriptor.continueSync
+            .eventName,
+          data: { store_id: this.resolveStoreId_() },
+          options: { internal: true },
+        })
+        return
+      }
+
       await this.baseRepository_.transaction(async (transactionManager) => {
         await this.indexMetadataService_.update(
           {
@@ -449,7 +457,7 @@ export default class IndexModuleService
     }
 
     try {
-      const entities = await this.configurationChecker_.checkChanges()
+      const entities = await this.entitiesForSync_()
 
       if (!entities.length) {
         return
@@ -464,6 +472,15 @@ export default class IndexModuleService
 
   private async fullSync() {
     if (!this.#isWorkerMode) {
+      if (this.isSharedStoreIsolation_) {
+        await this.eventBusModuleService_.emit({
+          name: IndexModuleService.SyncSubscribersDescriptor.fullSync.eventName,
+          data: { store_id: this.resolveStoreId_() },
+          options: { internal: true },
+        })
+        return
+      }
+
       await this.baseRepository_.transaction(async (transactionManager) => {
         await promiseAll([
           this.indexMetadataService_.update(
@@ -505,7 +522,7 @@ export default class IndexModuleService
     }
 
     try {
-      const entities = await this.configurationChecker_.checkChanges()
+      const entities = await this.entitiesForSync_()
 
       if (!entities.length) {
         return
@@ -522,6 +539,29 @@ export default class IndexModuleService
     if (!this.#isWorkerMode) {
       await this.baseRepository_.transaction(
         async (transactionManager: SqlEntityManager) => {
+          const storeId = this.resolveStoreId_()
+          if (this.isSharedStoreIsolation_) {
+            await transactionManager.execute(
+              `with "deleted_data" as (
+                delete from "index_data"
+                where "data"->>'store_id' = ?
+                returning "id"
+              )
+              delete from "index_relation"
+              where ("parent_id" in (select "id" from "deleted_data"))
+                 or ("child_id" in (select "id" from "deleted_data"))`,
+              [storeId]
+            )
+
+            await this.eventBusModuleService_.emit({
+              name: IndexModuleService.SyncSubscribersDescriptor.resetSync
+                .eventName,
+              data: { store_id: storeId },
+              options: { internal: true },
+            })
+            return
+          }
+
           const metadata = transactionManager.getDriver().getMetadata()
           const truncableTables = [
             toMikroORMEntity(IndexData),
@@ -551,7 +591,7 @@ export default class IndexModuleService
     }
 
     try {
-      const changes = await this.configurationChecker_.checkChanges()
+      const changes = await this.entitiesForSync_()
 
       if (!changes.length) {
         return
@@ -562,5 +602,17 @@ export default class IndexModuleService
       this.logger_.error(e)
       throw new Error("[Index engine] Failed to reset sync")
     }
+  }
+
+  private async entitiesForSync_() {
+    const changed = await this.configurationChecker_.checkChanges()
+    if (!this.isSharedStoreIsolation_) {
+      return changed
+    }
+
+    return await this.indexMetadataService_.list(
+      {},
+      { select: ["entity", "fields", "fields_hash"] }
+    )
   }
 }

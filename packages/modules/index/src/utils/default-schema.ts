@@ -29,6 +29,7 @@ export const defaultSchema = `
   
   type Price @Listeners(values: ["${Modules.PRICING}.price.created", "${Modules.PRICING}.price.updated", "${Modules.PRICING}.price.deleted", "${Modules.PRICING}.price.restored"]) {
     id: ID
+    store_id: String
     amount: Float
     currency_code: String
     price_list_id: String
@@ -36,6 +37,7 @@ export const defaultSchema = `
 
   type SalesChannel @Listeners(values: ["${Modules.SALES_CHANNEL}.sales-channel.created", "${Modules.SALES_CHANNEL}.sales-channel.updated", "${Modules.SALES_CHANNEL}.sales-channel.deleted", "${Modules.SALES_CHANNEL}.sales-channel.restored"]) {
     id: ID
+    store_id: String
     is_disabled: Boolean
   }
 `

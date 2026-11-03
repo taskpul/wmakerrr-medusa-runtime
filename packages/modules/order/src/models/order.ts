@@ -6,10 +6,12 @@ import { OrderItem } from "./order-item"
 import { OrderShipping } from "./order-shipping-method"
 import { OrderSummary } from "./order-summary"
 import { OrderTransaction } from "./transaction"
+import { ORDER_DEDICATED_STORE_ID } from "../store-isolation"
 
 const _Order = model
   .define("Order", {
     id: model.id({ prefix: "order" }).primaryKey(),
+    store_id: model.text().default(ORDER_DEDICATED_STORE_ID),
     /**
      * An auto-incremented display ID for the order.
      */

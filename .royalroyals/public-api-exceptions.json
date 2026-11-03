@@ -94,6 +94,12 @@
       "reason": "License-driven removal of an excluded Enterprise contract."
     },
     {
+      "path": "packages/core/utils/src/event-bus/index.ts",
+      "upstreamSha256": "e0267ad4da01bd879b10baa858a99bd8d6853a8cf4dffac8e9d8caf4625cda47",
+      "currentSha256": "d25cf5e8e2059dcfe3ed75ca44259c33b272f470e568a1bef300f3e65c6b25a1",
+      "reason": "Controlled-distribution Store provenance enforcement for emitted events and Store-context restoration for subscriber execution."
+    },
+    {
       "path": "packages/core/utils/src/index.ts",
       "upstreamSha256": "91aeac76624ba75ad37ac2f5154d8183fefcd82c9471da942fc86cfabfc7ac58",
       "currentSha256": "804810ad3c8c78e5ffaa2393192ca33a79af4bf466893337a244544462fce94b",
@@ -120,8 +126,14 @@
     {
       "path": "packages/core/utils/src/modules-sdk/index.ts",
       "upstreamSha256": "a08a54db2c9bc9029f6124eaa459efb5177ebe77e34f03546ba8ea06adfe2415",
-      "currentSha256": "845cc7c3ce030174e0073ae0148aca572d7c457a80551ce68aa8fd8f01cce55e",
-      "reason": "License-driven removal of an excluded Enterprise contract."
+      "currentSha256": "999e40c251cdd2168956efdc451ca56aaa328695e598e7054312930dc4c5c921",
+      "reason": "License-driven removal of an excluded Enterprise contract plus export of the controlled-distribution Store isolation boundary."
+    },
+    {
+      "path": "packages/core/utils/src/modules-sdk/store-isolation-manager.ts",
+      "upstreamSha256": null,
+      "currentSha256": "293ff2b4f39aaf78e5faf069caad7aaa8afcfc10461fce093995a918df7b11b2",
+      "reason": "Controlled-distribution canonical Store isolation manager for generated CRUD across certified commerce modules."
     },
     {
       "path": "packages/core/utils/src/modules-sdk/modules-to-container-types.ts",
@@ -377,7 +389,7 @@
     }
   ],
   "evidence": {
-    "publicFileCount": 1321,
-    "verifierSha256": "bb33f58bda3963a772370deb34a179c0fcf403b281fb2e0bc19a55927ada104b"
+    "publicFileCount": 1322,
+    "verifierSha256": "2c9d8c5fe45b96951cc6705e5cd345745b38915628d928c5fed5cba3339c423c"
   }
 }

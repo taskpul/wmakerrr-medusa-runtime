@@ -17,9 +17,14 @@ import {
   MedusaService,
   NotificationStatus,
   promiseAll,
+  StoreIsolationGeneratedCrudInput,
+  StoreIsolationGeneratedCrudResult,
+  StoreIsolationManager,
 } from "@medusajs/framework/utils"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { Notification } from "@models"
 import NotificationProviderService from "./notification-provider"
+import { setNotificationStoreDatabaseContext } from "../database-context"
 
 type InjectedDependencies = {
   logger?: Logger
@@ -41,6 +46,8 @@ export default class NotificationModuleService
     typeof Notification
   >
   protected readonly notificationProviderService_: NotificationProviderService
+  protected readonly storeIsolation_: StoreIsolationManager<any>
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     {
@@ -55,6 +62,62 @@ export default class NotificationModuleService
     this.baseRepository_ = baseRepository
     this.notificationService_ = notificationService
     this.notificationProviderService_ = notificationProviderService
+    this.storeIsolation_ = new StoreIsolationManager({
+      domain: "Notification",
+      moduleOptions: moduleDeclaration,
+      services: { Notification: notificationService },
+    })
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeIsolation_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeIsolation_.resolveStoreId(context)
+    const execute = async (manager: SqlEntityManager, scoped: Context) => {
+      scoped.storeId ??= storeId
+      const active = this.databaseStoreContexts_.get(manager)
+      if (active && active !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Notification transaction is already bound to another Store"
+        )
+      }
+      if (!active) {
+        await setNotificationStoreDatabaseContext(
+          manager,
+          storeId,
+          this.storeIsolation_.isShared
+        )
+        this.databaseStoreContexts_.set(manager, storeId)
+      }
+      return await task(scoped)
+    }
+    const transactionManager = context.transactionManager as SqlEntityManager
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      { manager: context.manager as SqlEntityManager | undefined } as any
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: StoreIsolationGeneratedCrudInput
+  ): Promise<unknown[]> {
+    return this.storeIsolation_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: StoreIsolationGeneratedCrudResult
+  ): Promise<void> {
+    this.storeIsolation_.validateGeneratedMethodResult(input)
   }
 
   // @ts-expect-error
@@ -110,74 +173,87 @@ export default class NotificationModuleService
       .filter(Boolean)
 
     let { notificationsToProcess, createdNotifications } =
-      await this.baseRepository_.transaction(async (txManager) => {
-        const context = {
-          ...sharedContext,
-          transactionManager: txManager,
-        }
+      await this.baseRepository_.transaction(
+        async (txManager) => {
+          const context = {
+            ...sharedContext,
+            transactionManager: txManager,
+          }
 
-        const alreadySentNotifications = await this.notificationService_.list(
-          {
-            idempotency_key: idempotencyKeys,
-          },
-          {},
-          context
-        )
-
-        const existsMap = new Map(
-          alreadySentNotifications.map((n) => [n.idempotency_key as string, n])
-        )
-
-        const notificationsToProcess = data.filter(
-          (entry) =>
-            !entry.idempotency_key ||
-            !existsMap.has(entry.idempotency_key) ||
-            (existsMap.has(entry.idempotency_key) &&
-              existsMap.get(entry.idempotency_key)!.status ===
-                NotificationStatus.FAILURE)
-        )
-
-        const channels = notificationsToProcess.map((not) => not.channel)
-        const providers =
-          await this.notificationProviderService_.getProviderForChannels(
-            channels,
+          const alreadySentNotifications = await this.notificationService_.list(
+            this.storeIsolation_.scope(
+              {
+                idempotency_key: idempotencyKeys,
+              },
+              context
+            ),
+            {},
             context
           )
 
-        // Create the notifications to be sent to prevent concurrent actions listing the same notifications
-        const normalizedNotificationsToProcess = notificationsToProcess.map(
-          (entry) => {
-            const provider = providers.find((provider) =>
-              provider?.channels.includes(entry.channel)
+          const existsMap = new Map(
+            alreadySentNotifications.map((n) => [
+              n.idempotency_key as string,
+              n,
+            ])
+          )
+
+          const notificationsToProcess = data.filter(
+            (entry) =>
+              !entry.idempotency_key ||
+              !existsMap.has(entry.idempotency_key) ||
+              (existsMap.has(entry.idempotency_key) &&
+                existsMap.get(entry.idempotency_key)!.status ===
+                  NotificationStatus.FAILURE)
+          )
+
+          const channels = notificationsToProcess.map((not) => not.channel)
+          const providers =
+            await this.notificationProviderService_.getProviderForChannels(
+              channels,
+              context
             )
 
-            return {
-              provider,
-              data: {
-                id: generateEntityId(undefined, "noti"),
-                ...entry,
-                provider_id: provider?.id,
-              },
+          // Create the notifications to be sent to prevent concurrent actions listing the same notifications
+          const normalizedNotificationsToProcess = notificationsToProcess.map(
+            (entry) => {
+              const provider = providers.find((provider) =>
+                provider?.channels.includes(entry.channel)
+              )
+
+              return {
+                provider,
+                data: {
+                  id: generateEntityId(undefined, "noti"),
+                  ...entry,
+                  provider_id: provider?.id,
+                },
+              }
             }
-          }
-        )
-
-        const toCreate = normalizedNotificationsToProcess
-          .filter(
-            (e) =>
-              !e.data.idempotency_key || !existsMap.has(e.data.idempotency_key)
           )
-          .map((e) => e.data)
 
-        const createdNotifications = toCreate.length
-          ? await this.notificationService_.create(toCreate, context)
-          : []
+          const toCreate = normalizedNotificationsToProcess
+            .filter(
+              (e) =>
+                !e.data.idempotency_key ||
+                !existsMap.has(e.data.idempotency_key)
+            )
+            .map((e) => e.data)
 
-        return {
-          notificationsToProcess: normalizedNotificationsToProcess,
-          createdNotifications,
-        }
-      })
+          const createdNotifications = toCreate.length
+            ? await this.notificationService_.create(
+                this.storeIsolation_.stamp(toCreate, context),
+                context
+              )
+            : []
+
+          return {
+            notificationsToProcess: normalizedNotificationsToProcess,
+            createdNotifications,
+          }
+        },
+        { manager: sharedContext.transactionManager as any } as any
+      )
 
     const notificationToUpdate: { id: string; external_id?: string }[] = []
 

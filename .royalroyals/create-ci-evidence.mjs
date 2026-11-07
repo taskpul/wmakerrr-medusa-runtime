@@ -80,6 +80,8 @@ const evidence = {
   commands: [
     "yarn install --immutable",
     "yarn build",
+    "yarn workspace @medusajs/draft-order build:plugin",
+    "yarn workspace @medusajs/loyalty-plugin build:plugin",
     "node .royalroyals/verify-bootstrap.mjs",
     "node .royalroyals/verify-baseline.mjs",
     "node .royalroyals/verify-public-api.mjs",

@@ -1,8 +1,10 @@
 import { createHash } from "node:crypto"
-import { mkdir, readFile, writeFile } from "node:fs/promises"
+import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
 import { spawnSync } from "node:child_process"
+import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
+import { gzipSync } from "node:zlib"
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const outputDirectory = process.argv[2]
@@ -48,6 +50,74 @@ const packageFileName = ({ name, version }) => {
   return `${normalizedName}-${version}.tgz`
 }
 
+const hiddenPackageContent = new Map([
+  ["@medusajs/draft-order", [".medusa/server"]],
+  ["@medusajs/loyalty-plugin", [".medusa/server"]],
+])
+
+const addHiddenPackageContent = async ({ archive, packageEntry }) => {
+  const content = hiddenPackageContent.get(packageEntry.name)
+  if (!content) {
+    return
+  }
+
+  const stagingDirectory = await mkdtemp(join(tmpdir(), "rr-package-"))
+  try {
+    const unpack = spawnSync(
+      "tar",
+      ["-xzf", archive, "-C", stagingDirectory],
+      { cwd: root, stdio: "inherit" }
+    )
+    if (unpack.status !== 0) {
+      throw new Error(`Failed to unpack ${packageEntry.name}`)
+    }
+
+    for (const target of content) {
+      await cp(
+        join(root, packageEntry.path, target),
+        join(stagingDirectory, "package", target),
+        { recursive: true }
+      )
+    }
+
+    await rm(archive, { force: true })
+    const deterministicOptions = [
+      "--format=ustar",
+      "--mtime=2000-01-01",
+      ...(process.platform === "win32"
+        ? []
+        : [
+            "--sort=name",
+            "--owner=0",
+            "--group=0",
+            "--numeric-owner",
+          ]),
+    ]
+    const uncompressedArchive = join(stagingDirectory, "package.tar")
+    const repack = spawnSync(
+      "tar",
+      [
+        ...deterministicOptions,
+        "-cf",
+        uncompressedArchive,
+        "-C",
+        stagingDirectory,
+        "package",
+      ],
+      { cwd: root, stdio: "inherit" }
+    )
+    if (repack.status !== 0) {
+      throw new Error(`Failed to repack ${packageEntry.name}`)
+    }
+    await writeFile(
+      archive,
+      gzipSync(await readFile(uncompressedArchive), { level: 9, mtime: 0 })
+    )
+  } finally {
+    await rm(stagingDirectory, { recursive: true, force: true })
+  }
+}
+
 const entries = []
 const names = new Set()
 const files = new Set()
@@ -90,6 +160,7 @@ for (const packageEntry of [...graph.packages].sort((left, right) =>
   if (pack.status !== 0) {
     throw new Error(`Failed to pack ${packageEntry.name}`)
   }
+  await addHiddenPackageContent({ archive, packageEntry })
   entries.push({
     name: packageEntry.name,
     version: packageEntry.version,

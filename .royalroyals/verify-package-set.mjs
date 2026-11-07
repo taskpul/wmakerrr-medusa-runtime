@@ -1,7 +1,8 @@
 import { createHash } from "node:crypto"
 import { spawnSync } from "node:child_process"
-import { readFile, readdir } from "node:fs/promises"
+import { mkdtemp, readFile, readdir, rm } from "node:fs/promises"
 import { dirname, join, resolve } from "node:path"
+import { tmpdir } from "node:os"
 import { fileURLToPath } from "node:url"
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
@@ -21,6 +22,75 @@ const manifest = JSON.parse(
 const errors = []
 const sha256 = async (path) =>
   createHash("sha256").update(await readFile(path)).digest("hex")
+const packageTargets = (value) => {
+  if (typeof value === "string") {
+    return [value]
+  }
+  if (Array.isArray(value)) {
+    return value.flatMap(packageTargets)
+  }
+  if (value && typeof value === "object") {
+    return Object.values(value).flatMap(packageTargets)
+  }
+  return []
+}
+const upstreamMissingDeclaredContent = new Map([
+  ["@medusajs/medusa", new Set(["oas"])],
+  ["@medusajs/ui", new Set(["styles.css"])],
+])
+const isUpstreamMissingDeclaredContent = (packageName, target) =>
+  upstreamMissingDeclaredContent.get(packageName)?.has(target) ?? false
+const targetExists = (target, archiveEntries) => {
+  const normalizedTarget = target.replace(/^\.\//, "")
+  const archiveTarget = `package/${normalizedTarget}`
+  const wildcard = archiveTarget.indexOf("*")
+  if (wildcard !== -1) {
+    const prefix = archiveTarget.slice(0, wildcard)
+    return [...archiveEntries].some((path) => path.startsWith(prefix))
+  }
+  return archiveEntries.has(archiveTarget) ||
+    [...archiveEntries].some((path) => path.startsWith(`${archiveTarget}/`))
+}
+const unresolvedWorkspaceAlias =
+  /(?:require\(\s*|from\s+|import\(\s*)["'](@models|@providers|@repositories|@services|@types|@utils)(?:\/[^"']*)?["']/
+const findUnresolvedWorkspaceAlias = async (archive) => {
+  const stagingDirectory = await mkdtemp(join(tmpdir(), "rr-verify-package-"))
+  try {
+    const unpack = spawnSync(
+      "tar",
+      ["-xzf", archive, "-C", stagingDirectory],
+      { encoding: "utf8" }
+    )
+    if (unpack.status !== 0) {
+      throw new Error("archive cannot be extracted")
+    }
+
+    const visit = async (directory) => {
+      for (const entry of await readdir(directory, { withFileTypes: true })) {
+        const path = join(directory, entry.name)
+        if (entry.isDirectory()) {
+          const match = await visit(path)
+          if (match) {
+            return match
+          }
+          continue
+        }
+        if (!/\.(c|m)?js$/.test(entry.name)) {
+          continue
+        }
+        const source = await readFile(path, "utf8")
+        const match = source.match(unresolvedWorkspaceAlias)
+        if (match) {
+          return { alias: match[1], path }
+        }
+      }
+    }
+
+    return await visit(join(stagingDirectory, "package"))
+  } finally {
+    await rm(stagingDirectory, { recursive: true, force: true })
+  }
+}
 
 if (manifest.contractVersion !== 1 || manifest.status !== "unsigned") {
   errors.push("release manifest must be an unsigned contract version 1 candidate")
@@ -92,12 +162,20 @@ for (const entry of releasePackages) {
       errors.push(`release package ${entry.name} archive cannot be listed`)
       continue
     }
-    const unsafeEntry = archiveEntries.stdout
+    const packedEntries = new Set(archiveEntries.stdout
       .split(/\r?\n/)
-      .filter(Boolean)
+      .filter(Boolean))
+    const unsafeEntry = [...packedEntries]
       .find((path) => !path.startsWith("package/") || path.includes("../"))
     if (unsafeEntry) {
       errors.push(`release package ${entry.name} contains unsafe path ${unsafeEntry}`)
+    } else {
+      const unresolvedAlias = await findUnresolvedWorkspaceAlias(archive)
+      if (unresolvedAlias) {
+        errors.push(
+          `release package ${entry.name} contains unresolved workspace alias ${unresolvedAlias.alias}`
+        )
+      }
     }
     const packedManifest = spawnSync(
       "tar",
@@ -114,6 +192,16 @@ for (const entry of releasePackages) {
       packedPackage.version !== entry.version
     ) {
       errors.push(`release package ${entry.name} archive identity does not match`)
+    }
+    const declaredTargets = packageTargets(packedPackage.files)
+      .filter((target) => !target.startsWith("!"))
+    for (const target of new Set(declaredTargets)) {
+      if (
+        !isUpstreamMissingDeclaredContent(entry.name, target) &&
+        !targetExists(target, packedEntries)
+      ) {
+        errors.push(`release package ${entry.name} is missing declared package content ${target}`)
+      }
     }
   } catch {
     errors.push(`release package ${entry.name} archive is invalid or missing`)

@@ -213,6 +213,13 @@ jobs:
       - name: Build complete public workspace
         run: node .yarn/releases/yarn-3.2.1.cjs build
 
+      - name: Build publish-only plugin outputs
+        env:
+          NODE_ENV: production
+        run: |
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/draft-order build:plugin
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/loyalty-plugin build:plugin
+
       - name: Prove Store isolation boundaries
         run: |
           node .royalroyals/verify-pricing-isolation.mjs

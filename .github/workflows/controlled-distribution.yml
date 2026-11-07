@@ -167,11 +167,11 @@ jobs:
           fi
 
   candidate-security:
-    name: Candidate Pricing security
+    name: Candidate isolation security
     if: github.event_name == 'workflow_dispatch'
     needs: classify
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     services:
       postgres:
         image: postgres:15
@@ -205,21 +205,36 @@ jobs:
       - name: Install immutable dependencies
         run: node .yarn/releases/yarn-3.2.1.cjs install --immutable
 
-      - name: Build Store ownership packages
-        run: >-
-          node .yarn/releases/yarn-3.2.1.cjs turbo run build
-          --filter=@medusajs/pricing...
-          --filter=@medusajs/core-flows
-          --filter=@medusajs/workflows-sdk
-          --filter=@medusajs/orchestration
-          --no-daemon
+      - name: Build complete public workspace
+        run: node .yarn/releases/yarn-3.2.1.cjs build
 
-      - name: Prove Pricing Store ownership
+      - name: Prove Store isolation boundaries
         run: |
           node .royalroyals/verify-pricing-isolation.mjs
+          node .royalroyals/verify-product-catalog-inventory.mjs
+          node .royalroyals/verify-product-persistence-isolation.mjs
+          node .royalroyals/verify-product-runtime-isolation.mjs
+          node .royalroyals/verify-fulfillment-shipping-inventory.mjs
+          node .royalroyals/verify-fulfillment-runtime-isolation.mjs
+          node .royalroyals/verify-inventory-stock-boundary.mjs
+          node .royalroyals/verify-phase-7-closure.mjs
           node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/workflows-sdk test --runInBand src/utils/composer/__tests__/compose.spec.ts
           node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/core-flows test --runInBand src/product/steps/__tests__/create-variant-pricing-link.spec.ts
           node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/pricing test:integration --runTestsByPath integration-tests/__tests__/services/pricing-module/store-ownership.spec.ts integration-tests/__tests__/services/pricing-module/store-ownership-dedicated.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/product test:integration --runTestsByPath integration-tests/__tests__/product-module-service/store-ownership-persistence.spec.ts integration-tests/__tests__/product-module-service/store-ownership-service.spec.ts integration-tests/__tests__/product-module-service/store-ownership-dedicated.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/fulfillment test:integration --runTestsByPath integration-tests/__tests__/fulfillment-module-service/store-ownership-persistence.spec.ts integration-tests/__tests__/fulfillment-module-service/store-ownership-service.spec.ts integration-tests/__tests__/fulfillment-module-service/store-ownership-dedicated.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/inventory test:integration --runTestsByPath integration-tests/__tests__/store-ownership.spec.ts integration-tests/__tests__/store-ownership-persistence.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/stock-location test:integration --runTestsByPath integration-tests/__tests__/store-ownership.spec.ts integration-tests/__tests__/store-ownership-persistence.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/promotion test:integration --runTestsByPath integration-tests/__tests__/store-isolation.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/customer test:integration --runTestsByPath integration-tests/__tests__/store-isolation.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/cart test:integration --runTestsByPath integration-tests/__tests__/store-isolation.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/payment test:integration --runTestsByPath integration-tests/__tests__/store-isolation.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/order test:integration --runTestsByPath integration-tests/__tests__/store-isolation.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/api-key test:integration --runTestsByPath integration-tests/__tests__/store-isolation.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/sales-channel test:integration --runTestsByPath integration-tests/__tests__/store-isolation.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/notification test:integration --runTestsByPath integration-tests/__tests__/store-isolation.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/index test:integration --runTestsByPath integration-tests/__tests__/data-synchronizer.spec.ts --runInBand
+          node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/modules-sdk test --runInBand src/__tests__/store-link-ownership.spec.ts
 
   evidence:
     name: Immutable candidate evidence
@@ -289,8 +304,11 @@ jobs:
           node .royalroyals/verify-pricing-isolation.mjs
           node .royalroyals/verify-product-catalog-inventory.mjs
           node .royalroyals/verify-product-persistence-isolation.mjs
+          node .royalroyals/verify-product-runtime-isolation.mjs
           node .royalroyals/verify-fulfillment-shipping-inventory.mjs
           node .royalroyals/verify-fulfillment-runtime-isolation.mjs
+          node .royalroyals/verify-inventory-stock-boundary.mjs
+          node .royalroyals/verify-phase-7-closure.mjs
 
       - name: Build complete public workspace
         working-directory: candidate

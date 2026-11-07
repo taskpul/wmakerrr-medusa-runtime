@@ -247,6 +247,9 @@ jobs:
         run: |
           node .royalroyals/create-package-set.mjs "$RUNNER_TEMP/controlled-package-set"
           node .royalroyals/verify-package-set.mjs "$RUNNER_TEMP/controlled-package-set"
+          node .royalroyals/create-package-set.mjs "$RUNNER_TEMP/controlled-package-set-reproduction"
+          node .royalroyals/verify-package-set.mjs "$RUNNER_TEMP/controlled-package-set-reproduction"
+          diff --recursive --brief "$RUNNER_TEMP/controlled-package-set" "$RUNNER_TEMP/controlled-package-set-reproduction"
 
       - name: Upload immutable package set
         id: package-set

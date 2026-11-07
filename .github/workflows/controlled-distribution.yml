@@ -197,6 +197,11 @@ jobs:
           persist-credentials: false
           ref: ${{ inputs.candidate_ref }}
 
+      - name: Resolve immutable candidate revision
+        id: candidate
+        shell: bash
+        run: echo "revision=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
       - name: Set up Node.js
         uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444
         with:
@@ -235,6 +240,30 @@ jobs:
           node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/notification test:integration --runTestsByPath integration-tests/__tests__/store-isolation.spec.ts --runInBand
           node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/index test:integration --runTestsByPath integration-tests/__tests__/data-synchronizer.spec.ts --runInBand
           node .yarn/releases/yarn-3.2.1.cjs workspace @medusajs/modules-sdk test --runInBand src/__tests__/store-link-ownership.spec.ts
+
+      - name: Create and verify immutable package set
+        env:
+          CANDIDATE_REVISION: ${{ steps.candidate.outputs.revision }}
+        run: |
+          node .royalroyals/create-package-set.mjs "$RUNNER_TEMP/controlled-package-set"
+          node .royalroyals/verify-package-set.mjs "$RUNNER_TEMP/controlled-package-set"
+          node .royalroyals/create-package-set.mjs "$RUNNER_TEMP/controlled-package-set-reproduction"
+          node .royalroyals/verify-package-set.mjs "$RUNNER_TEMP/controlled-package-set-reproduction"
+          diff --recursive --brief "$RUNNER_TEMP/controlled-package-set" "$RUNNER_TEMP/controlled-package-set-reproduction"
+
+      - name: Upload immutable package set
+        id: package-set
+        uses: actions/upload-artifact@330a01c490aca151604b8cf639adc76d48f6c5d4
+        with:
+          name: controlled-package-set-${{ steps.candidate.outputs.revision }}
+          path: ${{ runner.temp }}/controlled-package-set
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Report package-set artifact digest
+        env:
+          ARTIFACT_DIGEST: ${{ steps.package-set.outputs.artifact-digest }}
+        run: echo "Package-set artifact SHA-256 ${ARTIFACT_DIGEST}"
 
   evidence:
     name: Immutable candidate evidence

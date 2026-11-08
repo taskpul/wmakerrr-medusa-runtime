@@ -38,18 +38,22 @@ API Key Module for Medusa: manages publishable and secret API keys, including cr
 
 ## At a glance
 
-| | |
-| --- | --- |
-| Package | `@medusajs/api-key` |
-| Type | Commerce Module |
-| Module key | `Modules.API_KEY` (`"api_key"`) |
-| Registered by default | Yes |
-| Import from | `@medusajs/medusa/api-key` |
+|                       |                                 |
+| --------------------- | ------------------------------- |
+| Package               | `@medusajs/api-key`             |
+| Type                  | Commerce Module                 |
+| Module key            | `Modules.API_KEY` (`"api_key"`) |
+| Registered by default | Yes                             |
+| Import from           | `@medusajs/medusa/api-key`      |
 
 ## Features
 
 - Create `publishable` and `secret` API keys.
 - Revoke keys and authenticate requests with a key's token.
+- Isolate key management and authentication by Store when the module runs in
+  shared mode.
+- Idempotently provision a deterministic Store-scoped secret through the
+  trusted runtime-bootstrap boundary.
 
 ## Installation
 
@@ -64,6 +68,20 @@ import { Modules } from "@medusajs/framework/utils"
 
 const apiKeyModuleService = container.resolve(Modules.API_KEY)
 ```
+
+## Shared Store isolation
+
+Configure `store_isolation.mode` as `"shared"` only in the controlled shared
+runtime. Every management and authentication call must then include the active
+`storeId` in its Medusa context; missing Store context fails closed. Keys from
+one Store cannot be listed, retrieved, authenticated, updated, or deleted from
+another Store context.
+
+`provisionSecretApiKey` is reserved for trusted control-plane bootstrap code.
+It accepts a deterministic 256-bit hexadecimal secret, serializes concurrent
+provisioning for the same Store token and purpose, and returns the existing key
+on an identical replay. Do not expose this method from an untrusted HTTP route
+or return its raw token after bootstrap.
 
 ## Resources
 

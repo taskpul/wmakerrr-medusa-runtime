@@ -78,5 +78,58 @@ moduleIntegrationTestRunner<IApiKeyModuleService>({
       )
       await expect(service.authenticate(token, storeB)).resolves.toBe(false)
     })
+
+    it("serializes concurrent Store credential provisioning", async () => {
+      const token = `sk_${"b".repeat(64)}`
+      const results = await Promise.all(
+        Array.from({ length: 5 }, () =>
+          service.provisionSecretApiKey(
+            {
+              title: "Concurrent Store gateway",
+              token,
+              created_by: "control-plane",
+            },
+            storeA
+          )
+        )
+      )
+
+      expect(new Set(results.map((result) => result.id)).size).toBe(1)
+      await expect(service.authenticate(token, storeA)).resolves.toEqual(
+        expect.objectContaining({
+          id: results[0].id,
+          store_id: "store_a",
+        })
+      )
+    })
+
+    it("rejects concurrent reuse of one Store credential for two purposes", async () => {
+      const token = `sk_${"c".repeat(64)}`
+      const results = await Promise.allSettled([
+        service.provisionSecretApiKey(
+          {
+            title: "Store gateway alpha",
+            token,
+            created_by: "control-plane",
+          },
+          storeA
+        ),
+        service.provisionSecretApiKey(
+          {
+            title: "Store gateway beta",
+            token,
+            created_by: "control-plane",
+          },
+          storeA
+        ),
+      ])
+
+      expect(
+        results.filter((result) => result.status === "fulfilled")
+      ).toHaveLength(1)
+      expect(
+        results.filter((result) => result.status === "rejected")
+      ).toHaveLength(1)
+    })
   },
 })

@@ -51,6 +51,11 @@ if (!packageSetDirectory || !registryValue) {
 }
 
 const registry = new URL(registryValue)
+const registryArguments = [
+  "--registry",
+  registry.href,
+  `--@medusajs:registry=${registry.href}`,
+]
 const isLoopback = ["localhost", "127.0.0.1", "::1"].includes(registry.hostname)
 if (registry.protocol !== "https:" && !isLoopback) {
   throw new Error("Controlled package registries must use HTTPS")
@@ -90,14 +95,7 @@ const npm = (arguments_, options = {}) =>
 
 for (const packageEntry of manifest.packages) {
   const spec = `${packageEntry.name}@${packageEntry.version}`
-  const lookup = npm([
-    "view",
-    spec,
-    "version",
-    "--json",
-    "--registry",
-    registry.href,
-  ])
+  const lookup = npm(["view", spec, "version", "--json", ...registryArguments])
   if (lookup.status === 0) {
     const downloadDirectory = await mkdtemp(join(tmpdir(), "sellmatter-npm-"))
     try {
@@ -108,8 +106,7 @@ for (const packageEntry of manifest.packages) {
         "--ignore-scripts",
         "--pack-destination",
         downloadDirectory,
-        "--registry",
-        registry.href,
+        ...registryArguments,
       ])
       if (download.status !== 0) {
         throw new Error(`Unable to verify published package ${spec}`)
@@ -140,8 +137,7 @@ for (const packageEntry of manifest.packages) {
       "--ignore-scripts",
       "--tag",
       "sellmatter",
-      "--registry",
-      registry.href,
+      ...registryArguments,
     ],
     { stdio: "inherit" }
   )

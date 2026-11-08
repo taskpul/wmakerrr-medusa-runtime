@@ -26,6 +26,7 @@ import {
   StoreIsolationGeneratedCrudResult,
   StoreIsolationManager,
 } from "@medusajs/framework/utils"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { ApiKey } from "@models"
 import {
   CreateApiKeyDTO,
@@ -220,6 +221,28 @@ export class ApiKeyModuleService
         MedusaError.Types.INVALID_DATA,
         "A provisioned secret API key must be a 256-bit hexadecimal token"
       )
+    }
+
+    const manager = sharedContext.transactionManager as SqlEntityManager
+    const knex = manager?.getTransactionContext()
+    if (!knex) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "Secret API key provisioning must run inside a transaction"
+      )
+    }
+
+    const storeId = this.storeIsolation_.resolveStoreId(sharedContext)
+    const lockKeys = [
+      `purpose:${storeId}:${data.title}`,
+      `token:${storeId}:${data.token}`,
+    ]
+      .map((value) => crypto.createHash("sha256").update(value).digest("hex"))
+      .sort()
+
+    await knex.raw("SET LOCAL lock_timeout = '3s'")
+    for (const lockKey of lockKeys) {
+      await knex.raw("SELECT pg_advisory_xact_lock(hashtext(?))", [lockKey])
     }
 
     const existing = await this.authenticate_(data.token, sharedContext)

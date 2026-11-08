@@ -106,6 +106,12 @@ async function assertStoreSafeProductLinks(
     keys.includes("inventory_item_id")
   )
   const inventoryServiceName = inventoryService?.__definition.key
+  const salesChannelService = findModule(
+    modulesMap,
+    Modules.SALES_CHANNEL,
+    (keys) => keys.includes("sales_channel_id")
+  )
+  const salesChannelServiceName = salesChannelService?.__definition.key
   const linkedModules = deduplicate(
     productLinks.flatMap((link) =>
       Object.keys(link).filter(
@@ -120,7 +126,8 @@ async function assertStoreSafeProductLinks(
       (moduleName) =>
         moduleName !== pricingServiceName &&
         moduleName !== fulfillmentServiceName &&
-        moduleName !== inventoryServiceName
+        moduleName !== inventoryServiceName &&
+        moduleName !== salesChannelServiceName
     )
   ) {
     throw new MedusaError(

@@ -76,6 +76,7 @@ const middlewares = defineMiddlewares([
   },
   {
     matcher: /^\/admin(\/.*)?$/,
+    preAuthentication: true,
     middlewares: [adminRegexMiddleware],
   },
   {

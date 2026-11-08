@@ -65,6 +65,12 @@ export type MiddlewareRoute = {
   matcher: string | RegExp
   bodyParser?: ParserConfig
   additionalDataValidator?: ZodRawShape
+  /**
+   * Run this middleware after body parsing but before the framework's route
+   * authentication middleware. This is reserved for trusted request-context
+   * resolvers that authentication itself depends on.
+   */
+  preAuthentication?: boolean
   middlewares?: MiddlewareFunction[]
 }
 
@@ -99,6 +105,7 @@ export type MiddlewareDescriptor = {
   matcher: string | RegExp
   methods?: MiddlewareVerb | MiddlewareVerb[]
   handler: MiddlewareFunction
+  preAuthentication?: boolean
 }
 
 export type BodyParserConfigRoute = {

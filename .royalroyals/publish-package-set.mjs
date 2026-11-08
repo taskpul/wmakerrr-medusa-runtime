@@ -51,6 +51,7 @@ const npm = (arguments_, options = {}) =>
   spawnSync(npmCommand, arguments_, {
     cwd: root,
     encoding: "utf8",
+    shell: process.platform === "win32",
     ...options,
   })
 
@@ -94,7 +95,9 @@ for (const packageEntry of manifest.packages) {
     continue
   }
   if (!/E404|404 Not Found/i.test(`${lookup.stdout}\n${lookup.stderr}`)) {
-    throw new Error(`Unable to query ${spec} in the controlled registry`)
+    throw new Error(
+      `Unable to query ${spec} in the controlled registry: ${lookup.error?.message ?? lookup.stderr ?? "unknown npm failure"}`
+    )
   }
 
   const publish = npm(

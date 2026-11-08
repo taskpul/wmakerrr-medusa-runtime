@@ -19,10 +19,15 @@ import {
   normalizeCurrencyCode,
   promiseAll,
   removeUndefined,
+  StoreIsolationGeneratedCrudInput,
+  StoreIsolationGeneratedCrudResult,
+  StoreIsolationManager,
 } from "@medusajs/framework/utils"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 
 import { Store, StoreCurrency, StoreLocale } from "@models"
 import { UpdateStoreInput } from "@types"
+import { setStoreDatabaseContext } from "../database-context"
 
 type InjectedDependencies = {
   baseRepository: DAL.RepositoryService
@@ -41,6 +46,8 @@ export default class StoreModuleService
   protected readonly storeService_: ModulesSdkTypes.IMedusaInternalService<
     InferEntityType<typeof Store>
   >
+  protected readonly storeIsolation_: StoreIsolationManager<any>
+  private readonly databaseStoreContexts_ = new WeakMap<object, string>()
 
   constructor(
     { baseRepository, storeService }: InjectedDependencies,
@@ -50,6 +57,63 @@ export default class StoreModuleService
     super(...arguments)
     this.baseRepository_ = baseRepository
     this.storeService_ = storeService
+    this.storeIsolation_ = new StoreIsolationManager({
+      domain: "Store",
+      moduleOptions: moduleDeclaration,
+      services: { Store: storeService },
+      unscopedModels: ["StoreCurrency", "StoreLocale"],
+    })
+  }
+
+  __storeIsolationMode(): "dedicated" | "shared" {
+    return this.storeIsolation_.isShared ? "shared" : "dedicated"
+  }
+
+  protected async withManagerContext_<T>(
+    context: Context,
+    task: (context: Context) => Promise<T>
+  ): Promise<T> {
+    const storeId = this.storeIsolation_.resolveStoreId(context)
+    const execute = async (manager: SqlEntityManager, scoped: Context) => {
+      scoped.storeId ??= storeId
+      const active = this.databaseStoreContexts_.get(manager)
+      if (active && active !== storeId) {
+        throw new MedusaError(
+          MedusaError.Types.NOT_ALLOWED,
+          "Store transaction is already bound to another Store"
+        )
+      }
+      if (!active) {
+        await setStoreDatabaseContext(
+          manager,
+          storeId,
+          this.storeIsolation_.isShared
+        )
+        this.databaseStoreContexts_.set(manager, storeId)
+      }
+      return await task(scoped)
+    }
+    const transactionManager = context.transactionManager as SqlEntityManager
+    if (transactionManager) {
+      return await execute(transactionManager, context)
+    }
+    return await this.baseRepository_.transaction<SqlEntityManager>(
+      async (manager) =>
+        await execute(manager, { ...context, transactionManager: manager }),
+      { manager: context.manager as SqlEntityManager | undefined } as any
+    )
+  }
+
+  protected async prepareGeneratedMethodArgs_(
+    input: StoreIsolationGeneratedCrudInput
+  ): Promise<unknown[]> {
+    return this.storeIsolation_.prepareGeneratedMethodArgs(input)
+  }
+
+  protected async validateGeneratedMethodResult_(
+    input: StoreIsolationGeneratedCrudResult
+  ): Promise<void> {
+    this.storeIsolation_.validateGeneratedMethodResult(input)
   }
 
   // @ts-expect-error

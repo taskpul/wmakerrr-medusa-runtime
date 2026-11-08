@@ -59,7 +59,7 @@ export default defineMiddlewares({
 - `src/loaders/index.ts`: feature flags (app first, then `src/feature-flags`) and config, container, links, modules (`MedusaAppLoader`), workflows, subscribers, jobs, then entry points: `loaders/api.ts` (`ApiLoader` over this package's `src/api` plus each plugin's and the app's `api` dir) and `loaders/admin.ts`. It runs `createDefaultsWorkflow` for dedicated runtimes and skips global defaults when `TENANT_PLACEMENT_MODE=shared-cell`; shared applications must provision defaults inside an authenticated Store context.
 - `src/subscribers/`: `payment-webhook.ts` (handles `PaymentWebhookEvents.WebhookReceived`, emitted by `src/api/hooks/payment/[provider]/route.ts` after confirming the provider is configured), `configurable-notifications.ts`, `search-ingestion.ts`. `src/jobs/` is currently empty.
 - `src/commands/`: `develop`, `start`, `build`, `exec`, `user`, `lint`, `mcloud`, `db/*` (`migrate`, `rollback`, `generate`, `setup`, `create`, `sync-links`, `run-scripts`, `migrate-search`), `plugin/*`. `@medusajs/cli` resolves them via `@medusajs/medusa/commands/<command>`.
-- `src/migration-scripts/`: one-off data migrations run by `medusa db:migrate` (unless `skipScripts`) via `commands/db/run-scripts.ts`, alongside each plugin's `migration-scripts` dir.
+- `src/migration-scripts/`: one-off data migrations run by `medusa db:migrate` (unless `skipScripts`) via `commands/db/run-scripts.ts`, alongside each plugin's `migration-scripts` dir. Global default-data migrations skip `TENANT_PLACEMENT_MODE=shared-cell`; Store-scoped provisioning owns equivalent shared-Cell defaults.
 - `src/modules/<name>.ts`: `export *` + default from the module package, plus `export const discoveryPath = require.resolve("<pkg>")`.
 
 ## Development

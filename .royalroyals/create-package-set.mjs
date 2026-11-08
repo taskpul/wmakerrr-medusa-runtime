@@ -146,6 +146,32 @@ const packedTargetExists = async (target) => {
   return false
 }
 
+const resolvePackedAliasTarget = async ({
+  distDirectory,
+  sourcePath,
+  alias,
+  suffix,
+}) => {
+  const relativeSource = relative(distDirectory, sourcePath)
+  const sourceSegments = relativeSource.split(/[\\/]/).filter(Boolean)
+  const roots = sourceSegments.length > 1
+    ? [join(distDirectory, sourceSegments[0]), distDirectory]
+    : [distDirectory]
+
+  for (const root of roots) {
+    const target = join(
+      root,
+      alias,
+      ...suffix.replace(/^\//, "").split("/").filter(Boolean)
+    )
+    if (await packedTargetExists(target)) {
+      return target
+    }
+  }
+
+  return null
+}
+
 const rewritePackedWorkspaceAliases = async (packageDirectory) => {
   const distDirectory = join(packageDirectory, "dist")
   if (!(await pathExists(distDirectory))) {
@@ -165,29 +191,28 @@ const rewritePackedWorkspaceAliases = async (packageDirectory) => {
 
       const source = await readFile(path, "utf8")
       const aliases = [...source.matchAll(workspaceAliasPattern)]
+      const aliasTargets = new Map()
       for (const match of aliases) {
         const alias = match[2] ?? match[3]
         const suffix = match[4] ?? ""
-        const target = join(
+        const target = await resolvePackedAliasTarget({
           distDirectory,
+          sourcePath: path,
           alias,
-          ...suffix.replace(/^\//, "").split("/").filter(Boolean)
-        )
-        if (!(await packedTargetExists(target))) {
+          suffix,
+        })
+        if (!target) {
           throw new Error(
             `Packed workspace alias @${alias}${suffix} in ${path} does not resolve`
           )
         }
+        aliasTargets.set(`${alias}\0${suffix}`, target)
       }
       const rewritten = source.replace(
         workspaceAliasPattern,
         (match, quote, rootAlias, directAlias, suffix = "") => {
           const alias = rootAlias ?? directAlias
-          const target = join(
-            distDirectory,
-            alias,
-            ...suffix.replace(/^\//, "").split("/").filter(Boolean)
-          )
+          const target = aliasTargets.get(`${alias}\0${suffix}`)
           let importPath = relative(dirname(path), target).replaceAll("\\", "/")
           if (!importPath.startsWith(".")) {
             importPath = `./${importPath}`

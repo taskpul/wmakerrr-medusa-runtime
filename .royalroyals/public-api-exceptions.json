@@ -52,16 +52,28 @@
       "reason": "License-driven removal of an excluded Enterprise contract."
     },
     {
+      "path": "packages/core/framework/src/http/middlewares/authenticate-middleware.ts",
+      "upstreamSha256": "5598f7aafc7472427ae4dce8f47704922f40f9dd0591d455e48a6df83f5c9574",
+      "currentSha256": "bd90c868887f90188bebb142b615c079411be8980599e24deadfa4f458201e63",
+      "reason": "Controlled-distribution Store-scoped API-key authentication using the verified request Store context."
+    },
+    {
       "path": "packages/core/framework/src/http/router.ts",
       "upstreamSha256": "dc96b43ace69d7a44a8ca70f9634293fe7a70de613e0667734823ae93f419c4f",
-      "currentSha256": "1fa29cc1dde7f804cd32c1c86552da6b425c74ab788e37858579143764d672cc",
-      "reason": "License-driven removal of an excluded Enterprise contract."
+      "currentSha256": "4425224ca103452ea2bc6c31bb0cb997b51860bd2b682e89baedc78530bc88bc",
+      "reason": "License-driven removal of an excluded Enterprise contract plus controlled-distribution pre-authentication Store-context middleware ordering."
     },
     {
       "path": "packages/core/framework/src/http/types.ts",
       "upstreamSha256": "23733d4183574c2b13f8dfee42a395aab7feb199fa7493e4f02a68fe5385f259",
-      "currentSha256": "b21880a47576dbea04da5fe4ed473ae2f67f0914a5570107fcf16df3c08f3302",
-      "reason": "License-driven removal of an excluded Enterprise contract."
+      "currentSha256": "7321383b47e36088c177a2e66fdca995a606f457cb7302ac4ee332d527df3d4e",
+      "reason": "License-driven removal of an excluded Enterprise contract plus the controlled-distribution pre-authentication Store-context contract."
+    },
+    {
+      "path": "packages/core/framework/src/http/utils/define-middlewares.ts",
+      "upstreamSha256": "ecbac5a71fb9f0ca6b70734bee95eaa80cd5234611539e9d356cbb89fca6b792",
+      "currentSha256": "2188463e673b1699e311e229c7b9eda3372589e8579e111c3e8b2efa8b43bf42",
+      "reason": "Controlled-distribution declaration of trusted pre-authentication Store-context middleware."
     },
     {
       "path": "packages/core/framework/src/http/utils/get-query-config.ts",
@@ -74,6 +86,12 @@
       "upstreamSha256": "dbed9b965a0d1d0d1780aae0e7a6476f1048692775c93d11bb4d122ddd670a07",
       "currentSha256": "b70141bd514f0dd8def813d3c6c5c7712ca03cb6d9ca9a6fd5a365d7f0ad40b1",
       "reason": "License-driven removal of an excluded Enterprise contract."
+    },
+    {
+      "path": "packages/core/framework/src/medusa-app-loader.ts",
+      "upstreamSha256": "8960453da540464a44556b58d5cd6643a9c601730fa5472f8817af5213d0137f",
+      "currentSha256": "036f465487270a663a01e049fb0706c0975a26ed7b5c72a4e3b4493f1da0116a",
+      "reason": "Controlled-distribution propagation of the primary database TLS configuration into module loaders."
     },
     {
       "path": "packages/core/framework/src/types/container.ts",

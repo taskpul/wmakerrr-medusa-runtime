@@ -24,14 +24,14 @@
       "packageCount": 79,
       "publicSourceFileCount": 1322,
       "approvedLicenseExceptions": 28,
-      "approvedControlledDistributionExtensions": 36,
+      "approvedControlledDistributionExtensions": 39,
       "verifier": {
         "path": ".royalroyals/verify-public-api.mjs",
         "sha256": "2c9d8c5fe45b96951cc6705e5cd345745b38915628d928c5fed5cba3339c423c"
       },
       "exceptionLedger": {
         "path": ".royalroyals/public-api-exceptions.json",
-        "sha256": "242203568ea35373d7904379dfb52a61972e9a990a0a1905425678b50a30386a"
+        "sha256": "2bd5041eaf855753fddd6561c9d2a8e3fe4e134c9d5165b1fc5487163f35a204"
       }
     },
     "pricingIsolation": {

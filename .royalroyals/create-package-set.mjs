@@ -10,7 +10,9 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const outputDirectory = process.argv[2]
 
 if (!outputDirectory) {
-  throw new Error("Usage: node .royalroyals/create-package-set.mjs <output-directory>")
+  throw new Error(
+    "Usage: node .royalroyals/create-package-set.mjs <output-directory>"
+  )
 }
 
 const revisionResult = spawnSync("git", ["rev-parse", "HEAD"], {
@@ -18,7 +20,9 @@ const revisionResult = spawnSync("git", ["rev-parse", "HEAD"], {
   encoding: "utf8",
 })
 if (revisionResult.status !== 0) {
-  throw new Error(`Unable to resolve candidate revision: ${revisionResult.stderr}`)
+  throw new Error(
+    `Unable to resolve candidate revision: ${revisionResult.stderr}`
+  )
 }
 
 const sourceRevision = revisionResult.stdout.trim()
@@ -32,6 +36,22 @@ if (
   throw new Error("Checked-out revision does not match CANDIDATE_REVISION")
 }
 
+const worktreeResult = spawnSync(
+  "git",
+  ["status", "--porcelain", "--untracked-files=all"],
+  { cwd: root, encoding: "utf8" }
+)
+if (worktreeResult.status !== 0) {
+  throw new Error(
+    `Unable to inspect candidate worktree: ${worktreeResult.stderr}`
+  )
+}
+if (worktreeResult.stdout.trim()) {
+  throw new Error(
+    "Controlled packages must be built from a clean immutable commit"
+  )
+}
+
 const graph = JSON.parse(
   await readFile(join(root, ".royalroyals/public-package-graph.json"), "utf8")
 )
@@ -42,8 +62,15 @@ if (graph.packageCount !== graph.packages.length || !graph.packages.length) {
 const output = resolve(outputDirectory)
 await mkdir(output)
 
+const releaseVersion = `${graph.upstreamVersion}-sellmatter.${sourceRevision.slice(0, 12)}`
+const controlledPackageNames = new Set(
+  graph.packages.map((entry) => entry.name)
+)
+
 const sha256 = async (path) =>
-  createHash("sha256").update(await readFile(path)).digest("hex")
+  createHash("sha256")
+    .update(await readFile(path))
+    .digest("hex")
 
 const packageFileName = ({ name, version }) => {
   const normalizedName = name.replace(/^@/, "").replaceAll("/", "-")
@@ -55,24 +82,37 @@ const hiddenPackageContent = new Map([
   ["@medusajs/loyalty-plugin", [".medusa/server"]],
 ])
 
-const addHiddenPackageContent = async ({ archive, packageEntry }) => {
-  const content = hiddenPackageContent.get(packageEntry.name)
-  if (!content) {
-    return
+const rewriteControlledDependencies = (manifest) => {
+  for (const field of [
+    "dependencies",
+    "devDependencies",
+    "peerDependencies",
+    "optionalDependencies",
+  ]) {
+    if (!manifest[field]) {
+      continue
+    }
+    for (const dependency of Object.keys(manifest[field])) {
+      if (controlledPackageNames.has(dependency)) {
+        manifest[field][dependency] = releaseVersion
+      }
+    }
   }
+}
 
+const rewritePackage = async ({ archive, packageEntry }) => {
+  const content = hiddenPackageContent.get(packageEntry.name)
   const stagingDirectory = await mkdtemp(join(tmpdir(), "rr-package-"))
   try {
-    const unpack = spawnSync(
-      "tar",
-      ["-xzf", archive, "-C", stagingDirectory],
-      { cwd: root, stdio: "inherit" }
-    )
+    const unpack = spawnSync("tar", ["-xzf", archive, "-C", stagingDirectory], {
+      cwd: root,
+      stdio: "inherit",
+    })
     if (unpack.status !== 0) {
       throw new Error(`Failed to unpack ${packageEntry.name}`)
     }
 
-    for (const target of content) {
+    for (const target of content ?? []) {
       await cp(
         join(root, packageEntry.path, target),
         join(stagingDirectory, "package", target),
@@ -80,18 +120,30 @@ const addHiddenPackageContent = async ({ archive, packageEntry }) => {
       )
     }
 
+    const packedManifestPath = join(stagingDirectory, "package", "package.json")
+    const packedManifest = JSON.parse(
+      await readFile(packedManifestPath, "utf8")
+    )
+    if (
+      packedManifest.name !== packageEntry.name ||
+      packedManifest.version !== packageEntry.version
+    ) {
+      throw new Error(`Packed identity does not match ${packageEntry.name}`)
+    }
+    packedManifest.version = releaseVersion
+    rewriteControlledDependencies(packedManifest)
+    await writeFile(
+      packedManifestPath,
+      `${JSON.stringify(packedManifest, null, 2)}\n`
+    )
+
     await rm(archive, { force: true })
     const deterministicOptions = [
       "--format=ustar",
       "--mtime=2000-01-01",
       ...(process.platform === "win32"
         ? []
-        : [
-            "--sort=name",
-            "--owner=0",
-            "--group=0",
-            "--numeric-owner",
-          ]),
+        : ["--sort=name", "--owner=0", "--group=0", "--numeric-owner"]),
     ]
     const uncompressedArchive = join(stagingDirectory, "package.tar")
     const repack = spawnSync(
@@ -136,10 +188,15 @@ for (const packageEntry of [...graph.packages].sort((left, right) =>
     manifest.name !== packageEntry.name ||
     manifest.version !== packageEntry.version
   ) {
-    throw new Error(`Public graph does not match ${packageEntry.path}/package.json`)
+    throw new Error(
+      `Public graph does not match ${packageEntry.path}/package.json`
+    )
   }
 
-  const file = packageFileName(packageEntry)
+  const file = packageFileName({
+    name: packageEntry.name,
+    version: releaseVersion,
+  })
   if (files.has(file)) {
     throw new Error(`Duplicate package archive name: ${file}`)
   }
@@ -160,10 +217,11 @@ for (const packageEntry of [...graph.packages].sort((left, right) =>
   if (pack.status !== 0) {
     throw new Error(`Failed to pack ${packageEntry.name}`)
   }
-  await addHiddenPackageContent({ archive, packageEntry })
+  await rewritePackage({ archive, packageEntry })
   entries.push({
     name: packageEntry.name,
-    version: packageEntry.version,
+    version: releaseVersion,
+    baseVersion: packageEntry.version,
     file,
     digest: await sha256(archive),
   })
@@ -181,7 +239,7 @@ const artifactDigest = createHash("sha256")
 const releaseManifest = {
   contractVersion: 1,
   status: "unsigned",
-  distributionVersion: `${graph.upstreamVersion}-rr.${sourceRevision.slice(0, 12)}`,
+  distributionVersion: releaseVersion,
   upstreamVersion: graph.upstreamVersion,
   sourceRepository: "https://github.com/taskpul/wmakerrr-medusa-runtime.git",
   sourceRevision,

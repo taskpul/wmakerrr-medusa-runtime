@@ -7,6 +7,7 @@ import { MedusaRequest, MedusaResponse } from "../../types"
 type ResolveOverrides = {
   jwtSecret?: string
   apiKeyModule?: { authenticate: jest.Mock }
+  storeContext?: { storeId: string }
 }
 
 const createRequest = (
@@ -36,13 +37,22 @@ const createRequest = (
       )
     }
 
+    if (key === "storeContext") {
+      return overrides.storeContext
+    }
+
     return undefined
   })
 
   return {
     headers: { authorization },
     session,
-    scope: { resolve },
+    scope: {
+      resolve,
+      hasRegistration: jest.fn(
+        (key: string) => key === "storeContext" && !!overrides.storeContext
+      ),
+    },
   } as unknown as MedusaRequest
 }
 
@@ -326,11 +336,33 @@ describe("authenticate middleware", () => {
 
     await authenticate("user", authTypes)(req, res, next)
 
-    expect(apiKeyModule.authenticate).toHaveBeenCalledWith("sk_test_123")
+    expect(apiKeyModule.authenticate).toHaveBeenCalledWith(
+      "sk_test_123",
+      undefined
+    )
     expect(next).toHaveBeenCalledTimes(1)
     expect(res.status).not.toHaveBeenCalled()
     expect((req as any).auth_context).toEqual(
       expect.objectContaining({ actor_id: "apk_1", actor_type: "api-key" })
     )
+  })
+
+  it("authenticates a secret API key within the routed Store context", async () => {
+    const apiKeyModule = {
+      authenticate: jest.fn().mockResolvedValue({ id: "apk_1" }),
+    }
+    const req = createRequest(
+      { authorization: "Basic sk_test_123" },
+      { apiKeyModule, storeContext: { storeId: "store_a" } }
+    )
+    const res = createResponse()
+    const next = jest.fn() as NextFunction
+
+    await authenticate("user", authTypes)(req, res, next)
+
+    expect(apiKeyModule.authenticate).toHaveBeenCalledWith("sk_test_123", {
+      storeId: "store_a",
+    })
+    expect(next).toHaveBeenCalledTimes(1)
   })
 })

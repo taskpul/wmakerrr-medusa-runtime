@@ -4,6 +4,7 @@ import { FindConfig } from "../common"
 import { Context } from "../shared-context"
 import {
   CreateApiKeyDTO,
+  ProvisionSecretApiKeyDTO,
   RevokeApiKeyDTO,
   UpdateApiKeyDTO,
   UpsertApiKeyDTO,
@@ -13,6 +14,16 @@ import {
  * The main service interface for the Api Key Module.
  */
 export interface IApiKeyModuleService extends IModuleService {
+  /**
+   * Idempotently provisions a caller-supplied secret key inside one Store.
+   * This is an internal runtime-bootstrap boundary and must not be exposed to
+   * untrusted HTTP clients.
+   */
+  provisionSecretApiKey(
+    data: ProvisionSecretApiKeyDTO,
+    sharedContext?: Context
+  ): Promise<ApiKeyDTO>
+
   /**
    * This method creates API keys.
    *

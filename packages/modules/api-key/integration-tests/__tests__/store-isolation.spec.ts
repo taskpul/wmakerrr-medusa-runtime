@@ -43,8 +43,14 @@ moduleIntegrationTestRunner<IApiKeyModuleService>({
         expect.objectContaining({ id: keyA.id, store_id: "store_a" }),
       ])
 
-      await expect(service.authenticate(keyB.token)).resolves.toEqual(
-        expect.objectContaining({ id: keyB.id, store_id: "store_b" })
+      await expect(service.authenticate(keyA.token, storeA)).resolves.toEqual(
+        expect.objectContaining({ id: keyA.id, store_id: "store_a" })
+      )
+      await expect(service.authenticate(keyB.token, storeA)).resolves.toBe(
+        false
+      )
+      await expect(service.authenticate(keyB.token)).rejects.toThrow(
+        "API Key operations in shared mode require Context.storeId"
       )
 
       await expect(
@@ -53,6 +59,24 @@ moduleIntegrationTestRunner<IApiKeyModuleService>({
           ["store_b", keyA.id]
         )
       ).rejects.toThrow(/immutable/i)
+    })
+
+    it("idempotently provisions deterministic Store credentials", async () => {
+      const token = `sk_${"a".repeat(64)}`
+      const first = await service.provisionSecretApiKey(
+        { title: "Store gateway", token, created_by: "control-plane" },
+        storeA
+      )
+      const replay = await service.provisionSecretApiKey(
+        { title: "Store gateway", token, created_by: "control-plane" },
+        storeA
+      )
+
+      expect(replay.id).toBe(first.id)
+      await expect(service.authenticate(token, storeA)).resolves.toEqual(
+        expect.objectContaining({ id: first.id, store_id: "store_a" })
+      )
+      await expect(service.authenticate(token, storeB)).resolves.toBe(false)
     })
   },
 })

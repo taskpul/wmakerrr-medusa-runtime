@@ -207,7 +207,14 @@ const getApiKeyInfo = async (req: MedusaRequest): Promise<ApiKeyDTO | null> => {
     Modules.API_KEY
   ) as IApiKeyModuleService
   try {
-    const apiKey = await apiKeyModule.authenticate(normalizedToken)
+    const storeContext = req.scope.hasRegistration("storeContext")
+      ? req.scope.resolve<{ storeId?: string }>("storeContext")
+      : undefined
+    const storeId = storeContext?.storeId?.trim()
+    const apiKey = await apiKeyModule.authenticate(
+      normalizedToken,
+      storeId ? { storeId } : undefined
+    )
     if (!apiKey) {
       return null
     }

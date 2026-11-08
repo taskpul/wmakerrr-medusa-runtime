@@ -9,7 +9,9 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const packageSetDirectory = process.argv[2]
 
 if (!packageSetDirectory) {
-  throw new Error("Usage: node .royalroyals/verify-package-set.mjs <package-set-directory>")
+  throw new Error(
+    "Usage: node .royalroyals/verify-package-set.mjs <package-set-directory>"
+  )
 }
 
 const directory = resolve(packageSetDirectory)
@@ -17,11 +19,17 @@ const graph = JSON.parse(
   await readFile(join(root, ".royalroyals/public-package-graph.json"), "utf8")
 )
 const manifest = JSON.parse(
-  await readFile(join(directory, "controlled-distribution-release.json"), "utf8")
+  await readFile(
+    join(directory, "controlled-distribution-release.json"),
+    "utf8"
+  )
 )
 const errors = []
+const expectedDistributionVersion = `${graph.upstreamVersion}-sellmatter.${manifest.sourceRevision?.slice(0, 12)}`
 const sha256 = async (path) =>
-  createHash("sha256").update(await readFile(path)).digest("hex")
+  createHash("sha256")
+    .update(await readFile(path))
+    .digest("hex")
 const packageTargets = (value) => {
   if (typeof value === "string") {
     return [value]
@@ -48,19 +56,19 @@ const targetExists = (target, archiveEntries) => {
     const prefix = archiveTarget.slice(0, wildcard)
     return [...archiveEntries].some((path) => path.startsWith(prefix))
   }
-  return archiveEntries.has(archiveTarget) ||
+  return (
+    archiveEntries.has(archiveTarget) ||
     [...archiveEntries].some((path) => path.startsWith(`${archiveTarget}/`))
+  )
 }
 const unresolvedWorkspaceAlias =
   /(?:require\(\s*|from\s+|import\(\s*)["'](@models|@providers|@repositories|@services|@types|@utils)(?:\/[^"']*)?["']/
 const findUnresolvedWorkspaceAlias = async (archive) => {
   const stagingDirectory = await mkdtemp(join(tmpdir(), "rr-verify-package-"))
   try {
-    const unpack = spawnSync(
-      "tar",
-      ["-xzf", archive, "-C", stagingDirectory],
-      { encoding: "utf8" }
-    )
+    const unpack = spawnSync("tar", ["-xzf", archive, "-C", stagingDirectory], {
+      encoding: "utf8",
+    })
     if (unpack.status !== 0) {
       throw new Error("archive cannot be extracted")
     }
@@ -93,13 +101,17 @@ const findUnresolvedWorkspaceAlias = async (archive) => {
 }
 
 if (manifest.contractVersion !== 1 || manifest.status !== "unsigned") {
-  errors.push("release manifest must be an unsigned contract version 1 candidate")
+  errors.push(
+    "release manifest must be an unsigned contract version 1 candidate"
+  )
 }
 if (!/^[a-f0-9]{40}$/.test(manifest.sourceRevision)) {
   errors.push("release manifest source revision is not immutable")
 }
 if (manifest.upstreamVersion !== graph.upstreamVersion) {
-  errors.push("release manifest upstream version does not match the public graph")
+  errors.push(
+    "release manifest upstream version does not match the public graph"
+  )
 }
 if (!Array.isArray(manifest.packages)) {
   errors.push("release manifest packages are missing")
@@ -110,10 +122,7 @@ if (
 ) {
   errors.push("release manifest source repository is not controlled")
 }
-if (
-  manifest.distributionVersion !==
-  `${graph.upstreamVersion}-rr.${manifest.sourceRevision?.slice(0, 12)}`
-) {
+if (manifest.distributionVersion !== expectedDistributionVersion) {
   errors.push("release manifest distribution version is not source-bound")
 }
 if (
@@ -128,7 +137,15 @@ if (
 const graphPackages = new Map(
   graph.packages.map((entry) => [entry.name, entry.version])
 )
-const releasePackages = Array.isArray(manifest.packages) ? manifest.packages : []
+const dependencyFields = [
+  "dependencies",
+  "devDependencies",
+  "peerDependencies",
+  "optionalDependencies",
+]
+const releasePackages = Array.isArray(manifest.packages)
+  ? manifest.packages
+  : []
 const packageNames = new Set()
 const archiveNames = new Set()
 for (const entry of releasePackages) {
@@ -136,8 +153,15 @@ for (const entry of releasePackages) {
     errors.push(`duplicate release package ${entry.name}`)
   }
   packageNames.add(entry.name)
-  if (graphPackages.get(entry.name) !== entry.version) {
-    errors.push(`release package ${entry.name} does not match the public graph`)
+  if (entry.version !== expectedDistributionVersion) {
+    errors.push(
+      `release package ${entry.name} does not use the controlled version`
+    )
+  }
+  if (graphPackages.get(entry.name) !== entry.baseVersion) {
+    errors.push(
+      `release package ${entry.name} base version does not match the public graph`
+    )
   }
   if (
     typeof entry.file !== "string" ||
@@ -162,13 +186,16 @@ for (const entry of releasePackages) {
       errors.push(`release package ${entry.name} archive cannot be listed`)
       continue
     }
-    const packedEntries = new Set(archiveEntries.stdout
-      .split(/\r?\n/)
-      .filter(Boolean))
-    const unsafeEntry = [...packedEntries]
-      .find((path) => !path.startsWith("package/") || path.includes("../"))
+    const packedEntries = new Set(
+      archiveEntries.stdout.split(/\r?\n/).filter(Boolean)
+    )
+    const unsafeEntry = [...packedEntries].find(
+      (path) => !path.startsWith("package/") || path.includes("../")
+    )
     if (unsafeEntry) {
-      errors.push(`release package ${entry.name} contains unsafe path ${unsafeEntry}`)
+      errors.push(
+        `release package ${entry.name} contains unsafe path ${unsafeEntry}`
+      )
     } else {
       const unresolvedAlias = await findUnresolvedWorkspaceAlias(archive)
       if (unresolvedAlias) {
@@ -191,16 +218,35 @@ for (const entry of releasePackages) {
       packedPackage.name !== entry.name ||
       packedPackage.version !== entry.version
     ) {
-      errors.push(`release package ${entry.name} archive identity does not match`)
+      errors.push(
+        `release package ${entry.name} archive identity does not match`
+      )
     }
-    const declaredTargets = packageTargets(packedPackage.files)
-      .filter((target) => !target.startsWith("!"))
+    for (const field of dependencyFields) {
+      for (const [dependency, version] of Object.entries(
+        packedPackage[field] ?? {}
+      )) {
+        if (
+          graphPackages.has(dependency) &&
+          version !== expectedDistributionVersion
+        ) {
+          errors.push(
+            `release package ${entry.name} has uncontrolled ${field} edge ${dependency}@${version}`
+          )
+        }
+      }
+    }
+    const declaredTargets = packageTargets(packedPackage.files).filter(
+      (target) => !target.startsWith("!")
+    )
     for (const target of new Set(declaredTargets)) {
       if (
         !isUpstreamMissingDeclaredContent(entry.name, target) &&
         !targetExists(target, packedEntries)
       ) {
-        errors.push(`release package ${entry.name} is missing declared package content ${target}`)
+        errors.push(
+          `release package ${entry.name} is missing declared package content ${target}`
+        )
       }
     }
   } catch {

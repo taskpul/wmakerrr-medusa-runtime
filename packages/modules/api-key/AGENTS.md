@@ -28,9 +28,10 @@ const matched = await apiKeyModule.authenticate("sk_...") // ApiKeyDTO | false
 ### Custom (non-generated) service methods
 
 - `createApiKeys` / `upsertApiKeys`: generate the token; the raw token is returned only in this response.
+- `provisionSecretApiKey`: trusted, idempotent Store bootstrap for a deterministic 256-bit secret; never expose it directly to untrusted HTTP clients.
 - `updateApiKeys(idOrSelector, data)`: only `title` is persisted; other fields are ignored.
 - `revoke(idOrSelector, { revoked_by, revoke_in? })`: sets `revoked_at` to now + `revoke_in` seconds.
-- `authenticate(token)`: matches an unrevoked secret key; used by the framework `authenticate` middleware for `Authorization: Basic <sk_... or base64>` headers.
+- `authenticate(token, context)`: matches an unrevoked secret key within `context.storeId`; used by the framework `authenticate` middleware for `Authorization: Basic <sk_... or base64>` headers. Shared mode fails closed when Store context is absent.
 - `deleteApiKeys`: overridden to block deleting unrevoked keys.
 - `retrieveApiKey`, `listApiKeys`, `listAndCountApiKeys`: overridden to blank `token` for secret keys and strip `salt`.
 

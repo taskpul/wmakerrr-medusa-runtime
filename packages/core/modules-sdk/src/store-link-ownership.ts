@@ -20,10 +20,10 @@ const values = (value: unknown) =>
 
 const findModule = (
   modulesMap: ModuleMap,
-  moduleKey: Modules,
+  moduleKey: Modules | undefined,
   matches: (linkableKeys: string[]) => boolean
 ) =>
-  (modulesMap.get(moduleKey) ??
+  ((moduleKey ? modulesMap.get(moduleKey) : undefined) ??
     [...modulesMap.values()].find((module) =>
       matches(Object.keys(module.__joinerConfig.linkableKeys ?? {}))
     )) as any
@@ -112,6 +112,13 @@ async function assertStoreSafeProductLinks(
     (keys) => keys.includes("sales_channel_id")
   )
   const salesChannelServiceName = salesChannelService?.__definition.key
+  const commerceOwnershipService = findModule(
+    modulesMap,
+    undefined,
+    (keys) => keys.includes("commerce_resource_ownership_id")
+  )
+  const commerceOwnershipServiceName =
+    commerceOwnershipService?.__definition.key
   const linkedModules = deduplicate(
     productLinks.flatMap((link) =>
       Object.keys(link).filter(
@@ -127,13 +134,47 @@ async function assertStoreSafeProductLinks(
         moduleName !== pricingServiceName &&
         moduleName !== fulfillmentServiceName &&
         moduleName !== inventoryServiceName &&
-        moduleName !== salesChannelServiceName
+        moduleName !== salesChannelServiceName &&
+        moduleName !== commerceOwnershipServiceName
     )
   ) {
     throw new MedusaError(
       MedusaError.Types.NOT_ALLOWED,
       "This Product link endpoint is not certified for shared Store placement"
     )
+  }
+
+  const commerceOwnershipIds = deduplicate(
+    commerceOwnershipServiceName
+      ? (productLinks.flatMap((link) =>
+          values(
+            link[commerceOwnershipServiceName]
+              ?.commerce_resource_ownership_id
+          )
+        ) as string[])
+      : []
+  )
+  if (commerceOwnershipIds.length) {
+    const ownerships =
+      await commerceOwnershipService.listCommerceResourceOwnerships(
+        {
+          id: commerceOwnershipIds,
+          store_id: sharedContext.storeId,
+        },
+        { select: ["id"] },
+        sharedContext
+      )
+    if (
+      arrayDifference(
+        commerceOwnershipIds,
+        ownerships.map((ownership) => ownership.id)
+      ).length
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Commerce ownership link endpoint does not belong to the active Store"
+      )
+    }
   }
 
   const priceSetIds = deduplicate(

@@ -22,6 +22,18 @@ const SalesChannelModule = {
   ),
 }
 
+const CommerceOwnershipModule = {
+  __definition: { key: "commerceOwnership" },
+  __joinerConfig: {
+    linkableKeys: {
+      commerce_resource_ownership_id: "CommerceResourceOwnership",
+    },
+  },
+  listCommerceResourceOwnerships: jest.fn(async (filters) =>
+    (filters.id ?? []).map((id) => ({ id }))
+  ),
+}
+
 const allModules = [
   // modules
   ProductModule,
@@ -478,6 +490,59 @@ describe("Remote Link", function () {
       )
     ).rejects.toThrow(
       "sales_channel link endpoint does not belong to the active Store"
+    )
+  })
+
+  it("allows a Store-owned Product ownership link in shared placement", async function () {
+    ProductModule.__storeIsolationMode.mockReturnValueOnce("shared")
+
+    await expect(
+      assertStoreSafeLinks(
+        new Map(
+          [...allModules, CommerceOwnershipModule].map((module) => [
+            module.__definition.key,
+            module,
+          ])
+        ) as any,
+        [
+          {
+            productService: { product_id: "prod_local" },
+            commerceOwnership: {
+              commerce_resource_ownership_id: "ownership_local",
+            },
+          },
+        ],
+        { storeId: "store_a" }
+      )
+    ).resolves.toBeUndefined()
+  })
+
+  it("rejects a foreign Product ownership link in shared placement", async function () {
+    ProductModule.__storeIsolationMode.mockReturnValueOnce("shared")
+    CommerceOwnershipModule.listCommerceResourceOwnerships.mockResolvedValueOnce(
+      []
+    )
+
+    await expect(
+      assertStoreSafeLinks(
+        new Map(
+          [...allModules, CommerceOwnershipModule].map((module) => [
+            module.__definition.key,
+            module,
+          ])
+        ) as any,
+        [
+          {
+            productService: { product_id: "prod_local" },
+            commerceOwnership: {
+              commerce_resource_ownership_id: "ownership_foreign",
+            },
+          },
+        ],
+        { storeId: "store_a" }
+      )
+    ).rejects.toThrow(
+      "Commerce ownership link endpoint does not belong to the active Store"
     )
   })
 

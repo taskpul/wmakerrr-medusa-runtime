@@ -1,8 +1,17 @@
 import { createHash } from "node:crypto"
-import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises"
+import {
+  cp,
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises"
 import { spawnSync } from "node:child_process"
 import { tmpdir } from "node:os"
-import { dirname, join, resolve } from "node:path"
+import { dirname, join, relative, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import { gzipSync } from "node:zlib"
 
@@ -100,6 +109,100 @@ const rewriteControlledDependencies = (manifest) => {
   }
 }
 
+const workspaceAliasPattern =
+  /(["'])@(models|providers|repositories|services|types|utils)(\/[^"']*)?\1/g
+const packedSourcePattern = /\.(?:(?:c|m)?js|d\.(?:c|m)?ts)$/
+
+const pathExists = async (path) => {
+  try {
+    await stat(path)
+    return true
+  } catch {
+    return false
+  }
+}
+
+const packedTargetExists = async (target) => {
+  for (const candidate of [
+    target,
+    `${target}.js`,
+    `${target}.mjs`,
+    `${target}.cjs`,
+    `${target}.json`,
+    `${target}.d.ts`,
+    `${target}.d.mts`,
+    `${target}.d.cts`,
+    join(target, "index.js"),
+    join(target, "index.mjs"),
+    join(target, "index.cjs"),
+    join(target, "index.d.ts"),
+    join(target, "index.d.mts"),
+    join(target, "index.d.cts"),
+  ]) {
+    if (await pathExists(candidate)) {
+      return true
+    }
+  }
+  return false
+}
+
+const rewritePackedWorkspaceAliases = async (packageDirectory) => {
+  const distDirectory = join(packageDirectory, "dist")
+  if (!(await pathExists(distDirectory))) {
+    return
+  }
+
+  const visit = async (directory) => {
+    for (const entry of await readdir(directory, { withFileTypes: true })) {
+      const path = join(directory, entry.name)
+      if (entry.isDirectory()) {
+        await visit(path)
+        continue
+      }
+      if (!packedSourcePattern.test(entry.name)) {
+        continue
+      }
+
+      const source = await readFile(path, "utf8")
+      const aliases = [...source.matchAll(workspaceAliasPattern)]
+      for (const match of aliases) {
+        const alias = match[2]
+        const suffix = match[3] ?? ""
+        const target = join(
+          distDirectory,
+          alias,
+          ...suffix.replace(/^\//, "").split("/").filter(Boolean)
+        )
+        if (!(await packedTargetExists(target))) {
+          throw new Error(
+            `Packed workspace alias @${alias}${suffix} in ${path} does not resolve`
+          )
+        }
+      }
+      const rewritten = source.replace(
+        workspaceAliasPattern,
+        (match, quote, alias, suffix = "") => {
+          const target = join(
+            distDirectory,
+            alias,
+            ...suffix.replace(/^\//, "").split("/").filter(Boolean)
+          )
+          let importPath = relative(dirname(path), target).replaceAll("\\", "/")
+          if (!importPath.startsWith(".")) {
+            importPath = `./${importPath}`
+          }
+          return `${quote}${importPath}${quote}`
+        }
+      )
+      if (rewritten !== source) {
+        await writeFile(path, rewritten)
+      }
+    }
+  }
+
+  await visit(distDirectory)
+}
+
 const rewritePackage = async ({ archive, packageEntry }) => {
   const content = hiddenPackageContent.get(packageEntry.name)
   const stagingDirectory = await mkdtemp(join(tmpdir(), "rr-package-"))
@@ -119,6 +222,8 @@ const rewritePackage = async ({ archive, packageEntry }) => {
         { recursive: true }
       )
     }
+
+    await rewritePackedWorkspaceAliases(join(stagingDirectory, "package"))
 
     const packedManifestPath = join(stagingDirectory, "package", "package.json")
     const packedManifest = JSON.parse(

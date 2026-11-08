@@ -83,7 +83,7 @@ const findUnresolvedWorkspaceAlias = async (archive) => {
           }
           continue
         }
-        if (!/\.(c|m)?js$/.test(entry.name)) {
+        if (!/\.(?:(?:c|m)?js|d\.(?:c|m)?ts)$/.test(entry.name)) {
           continue
         }
         const source = await readFile(path, "utf8")

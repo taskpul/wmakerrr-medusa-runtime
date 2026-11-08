@@ -43,8 +43,14 @@ moduleIntegrationTestRunner<IApiKeyModuleService>({
         expect.objectContaining({ id: keyA.id, store_id: "store_a" }),
       ])
 
-      await expect(service.authenticate(keyB.token)).resolves.toEqual(
-        expect.objectContaining({ id: keyB.id, store_id: "store_b" })
+      await expect(service.authenticate(keyA.token, storeA)).resolves.toEqual(
+        expect.objectContaining({ id: keyA.id, store_id: "store_a" })
+      )
+      await expect(service.authenticate(keyB.token, storeA)).resolves.toBe(
+        false
+      )
+      await expect(service.authenticate(keyB.token)).rejects.toThrow(
+        "API Key operations in shared mode require Context.storeId"
       )
 
       await expect(
@@ -53,6 +59,77 @@ moduleIntegrationTestRunner<IApiKeyModuleService>({
           ["store_b", keyA.id]
         )
       ).rejects.toThrow(/immutable/i)
+    })
+
+    it("idempotently provisions deterministic Store credentials", async () => {
+      const token = `sk_${"a".repeat(64)}`
+      const first = await service.provisionSecretApiKey(
+        { title: "Store gateway", token, created_by: "control-plane" },
+        storeA
+      )
+      const replay = await service.provisionSecretApiKey(
+        { title: "Store gateway", token, created_by: "control-plane" },
+        storeA
+      )
+
+      expect(replay.id).toBe(first.id)
+      await expect(service.authenticate(token, storeA)).resolves.toEqual(
+        expect.objectContaining({ id: first.id, store_id: "store_a" })
+      )
+      await expect(service.authenticate(token, storeB)).resolves.toBe(false)
+    })
+
+    it("serializes concurrent Store credential provisioning", async () => {
+      const token = `sk_${"b".repeat(64)}`
+      const results = await Promise.all(
+        Array.from({ length: 5 }, () =>
+          service.provisionSecretApiKey(
+            {
+              title: "Concurrent Store gateway",
+              token,
+              created_by: "control-plane",
+            },
+            storeA
+          )
+        )
+      )
+
+      expect(new Set(results.map((result) => result.id)).size).toBe(1)
+      await expect(service.authenticate(token, storeA)).resolves.toEqual(
+        expect.objectContaining({
+          id: results[0].id,
+          store_id: "store_a",
+        })
+      )
+    })
+
+    it("rejects concurrent reuse of one Store credential for two purposes", async () => {
+      const token = `sk_${"c".repeat(64)}`
+      const results = await Promise.allSettled([
+        service.provisionSecretApiKey(
+          {
+            title: "Store gateway alpha",
+            token,
+            created_by: "control-plane",
+          },
+          storeA
+        ),
+        service.provisionSecretApiKey(
+          {
+            title: "Store gateway beta",
+            token,
+            created_by: "control-plane",
+          },
+          storeA
+        ),
+      ])
+
+      expect(
+        results.filter((result) => result.status === "fulfilled")
+      ).toHaveLength(1)
+      expect(
+        results.filter((result) => result.status === "rejected")
+      ).toHaveLength(1)
     })
   },
 })

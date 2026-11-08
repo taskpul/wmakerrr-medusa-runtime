@@ -124,8 +124,16 @@ export class MedusaAppLoader {
       ),
     }
 
-    const driverOptions = {
-      ...(configManager.config.projectConfig.databaseDriverOptions ?? {}),
+    const configuredDriverOptions =
+      configManager.config.projectConfig.databaseDriverOptions
+    const primaryConnection =
+      injectedDependencies[ContainerRegistrationKeys.PG_CONNECTION]
+    const primarySsl = primaryConnection?.client?.config?.connection?.ssl
+    const driverOptions: Record<string, unknown> = {
+      ...(configuredDriverOptions ??
+        (primarySsl !== undefined
+          ? { connection: { ssl: primarySsl } }
+          : {})),
     }
     const pool = (driverOptions.pool as Record<string, unknown>) ?? {}
     delete driverOptions.pool
@@ -136,7 +144,7 @@ export class MedusaAppLoader {
           injectedDependencies[ContainerRegistrationKeys.PG_CONNECTION]?.client
             ?.config?.connection?.connectionString ??
           configManager.config.projectConfig.databaseUrl,
-        driverOptions: configManager.config.projectConfig.databaseDriverOptions,
+        driverOptions,
         pool: pool,
         debug: configManager.config.projectConfig.databaseLogging ?? false,
         schema: configManager.config.projectConfig.databaseSchema,

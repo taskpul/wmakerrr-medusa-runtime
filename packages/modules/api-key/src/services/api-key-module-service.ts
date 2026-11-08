@@ -26,6 +26,7 @@ import {
   StoreIsolationGeneratedCrudResult,
   StoreIsolationManager,
 } from "@medusajs/framework/utils"
+import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
 import { ApiKey } from "@models"
 import {
   CreateApiKeyDTO,
@@ -208,6 +209,94 @@ export class ApiKeyModuleService
     )
 
     return [createdApiKeys, generatedTokens]
+  }
+
+  @InjectTransactionManager()
+  async provisionSecretApiKey(
+    data: ApiKeyTypes.ProvisionSecretApiKeyDTO,
+    @MedusaContext() sharedContext: Context = {}
+  ): Promise<ApiKeyTypes.ApiKeyDTO> {
+    if (!/^sk_[a-f0-9]{64}$/.test(data.token)) {
+      throw new MedusaError(
+        MedusaError.Types.INVALID_DATA,
+        "A provisioned secret API key must be a 256-bit hexadecimal token"
+      )
+    }
+
+    const manager = sharedContext.transactionManager as SqlEntityManager
+    const knex = manager?.getTransactionContext()
+    if (!knex) {
+      throw new MedusaError(
+        MedusaError.Types.UNEXPECTED_STATE,
+        "Secret API key provisioning must run inside a transaction"
+      )
+    }
+
+    const storeId = this.storeIsolation_.resolveStoreId(sharedContext)
+    const lockKeys = [
+      `purpose:${storeId}:${data.title}`,
+      `token:${storeId}:${data.token}`,
+    ]
+      .map((value) => crypto.createHash("sha256").update(value).digest("hex"))
+      .sort()
+
+    await knex.raw("SET LOCAL lock_timeout = '3s'")
+    for (const lockKey of lockKeys) {
+      await knex.raw("SELECT pg_advisory_xact_lock(hashtext(?))", [lockKey])
+    }
+
+    const existing = await this.authenticate_(data.token, sharedContext)
+    if (existing) {
+      const serialized =
+        await this.baseRepository_.serialize<ApiKeyTypes.ApiKeyDTO>(existing, {
+          populate: true,
+        })
+      if (serialized.title !== data.title) {
+        throw new MedusaError(
+          MedusaError.Types.CONFLICT,
+          "The provisioned secret API key is already assigned to another purpose"
+        )
+      }
+      return { ...serialized, token: data.token }
+    }
+
+    const [titleConflict] = await this.apiKeyService_.list(
+      this.storeIsolation_.scope(
+        { title: data.title, type: ApiKeyType.SECRET },
+        sharedContext
+      ),
+      { take: 1 },
+      sharedContext
+    )
+    if (titleConflict) {
+      throw new MedusaError(
+        MedusaError.Types.CONFLICT,
+        "A different secret API key already uses this provisioning title"
+      )
+    }
+
+    const tokenData = await ApiKeyModuleService.hashSecretKey(data.token)
+    const [created] = await this.apiKeyService_.create(
+      this.storeIsolation_.stamp(
+        [
+          {
+            title: data.title,
+            type: ApiKeyType.SECRET,
+            created_by: data.created_by,
+            token: tokenData.hashedToken,
+            salt: tokenData.salt,
+            redacted: tokenData.redacted,
+          },
+        ],
+        sharedContext
+      ),
+      sharedContext
+    )
+    const serialized =
+      await this.baseRepository_.serialize<ApiKeyTypes.ApiKeyDTO>(created, {
+        populate: true,
+      })
+    return { ...serialized, token: data.token }
   }
 
   async upsertApiKeys(
@@ -508,17 +597,20 @@ export class ApiKeyModuleService
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ApiKey> | false> {
     const secretKeys = await this.apiKeyService_.list(
-      {
-        type: ApiKeyType.SECRET,
-        // There could be many unrevoked keys at the same time, so we narrow the list down by the redacted key.
-        // Note that the redacted key doesn't guarantee uniqueness and is not an authentication check, but just an optimization.
-        redacted: redactKey(token),
-        // If the revoke date is set in the future, it means the key is still valid.
-        $or: [
-          { revoked_at: { $eq: null } },
-          { revoked_at: { $gt: new Date() } },
-        ],
-      },
+      this.storeIsolation_.scope(
+        {
+          type: ApiKeyType.SECRET,
+          // There could be many unrevoked keys at the same time, so we narrow the list down by the redacted key.
+          // Note that the redacted key doesn't guarantee uniqueness and is not an authentication check, but just an optimization.
+          redacted: redactKey(token),
+          // If the revoke date is set in the future, it means the key is still valid.
+          $or: [
+            { revoked_at: { $eq: null } },
+            { revoked_at: { $gt: new Date() } },
+          ],
+        },
+        sharedContext
+      ),
       {
         take: undefined,
       },
@@ -632,6 +724,10 @@ export class ApiKeyModuleService
 
   protected static async generateSecretKey(): Promise<TokenDTO> {
     const token = "sk_" + crypto.randomBytes(32).toString("hex")
+    return this.hashSecretKey(token)
+  }
+
+  protected static async hashSecretKey(token: string): Promise<TokenDTO> {
     const salt = crypto.randomBytes(16).toString("hex")
     const hashed = await this.calculateHash(token, salt)
 

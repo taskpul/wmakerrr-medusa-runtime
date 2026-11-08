@@ -24,6 +24,15 @@ export interface CreateApiKeyDTO {
 }
 
 /**
+ * A deterministic secret API key supplied by trusted runtime provisioning.
+ */
+export interface ProvisionSecretApiKeyDTO {
+  title: string
+  token: string
+  created_by: string
+}
+
+/**
  * The attributes in the API key to be created or updated.
  */
 export interface UpsertApiKeyDTO {

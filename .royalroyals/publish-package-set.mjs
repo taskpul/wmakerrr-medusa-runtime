@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto"
 import { mkdtemp, readFile, rm } from "node:fs/promises"
+import { existsSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { dirname, join, resolve } from "node:path"
 import { spawnSync } from "node:child_process"
@@ -8,7 +9,40 @@ import { fileURLToPath } from "node:url"
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..")
 const packageSetDirectory = process.argv[2]
 const registryValue = process.env.CONTROLLED_NPM_REGISTRY
-const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm"
+
+const resolveNpmCli = () => {
+  if (
+    process.env.npm_execpath &&
+    /(?:^|[\\/])npm-cli\.js$/.test(process.env.npm_execpath)
+  ) {
+    return process.env.npm_execpath
+  }
+
+  if (process.platform === "win32") {
+    const command = spawnSync("where.exe", ["npm.cmd"], { encoding: "utf8" })
+    const npmCommand = command.stdout?.split(/\r?\n/).find(Boolean)
+    const npmCli = npmCommand
+      ? join(dirname(npmCommand), "node_modules", "npm", "bin", "npm-cli.js")
+      : ""
+    if (npmCli && existsSync(npmCli)) {
+      return npmCli
+    }
+  } else {
+    const command = spawnSync("npm", ["root", "--global"], {
+      encoding: "utf8",
+    })
+    const npmCli = command.stdout?.trim()
+      ? join(command.stdout.trim(), "npm", "bin", "npm-cli.js")
+      : ""
+    if (npmCli && existsSync(npmCli)) {
+      return npmCli
+    }
+  }
+
+  throw new Error("Unable to resolve the npm CLI entrypoint")
+}
+
+const npmCli = resolveNpmCli()
 
 if (!packageSetDirectory || !registryValue) {
   throw new Error(
@@ -48,10 +82,9 @@ const sha256 = async (path) =>
     .update(await readFile(path))
     .digest("hex")
 const npm = (arguments_, options = {}) =>
-  spawnSync(npmCommand, arguments_, {
+  spawnSync(process.execPath, [npmCli, ...arguments_], {
     cwd: root,
     encoding: "utf8",
-    shell: process.platform === "win32",
     ...options,
   })
 

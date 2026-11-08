@@ -110,7 +110,7 @@ const rewriteControlledDependencies = (manifest) => {
 }
 
 const workspaceAliasPattern =
-  /(["'])@(models|providers|repositories|services|types|utils)(\/[^"']*)?\1/g
+  /(["'])(?:@\/([a-zA-Z0-9._-]+)|@(models|providers|repositories|services|types|utils))(\/[^"']*)?\1/g
 const packedSourcePattern = /\.(?:(?:c|m)?js|d\.(?:c|m)?ts)$/
 
 const pathExists = async (path) => {
@@ -166,8 +166,8 @@ const rewritePackedWorkspaceAliases = async (packageDirectory) => {
       const source = await readFile(path, "utf8")
       const aliases = [...source.matchAll(workspaceAliasPattern)]
       for (const match of aliases) {
-        const alias = match[2]
-        const suffix = match[3] ?? ""
+        const alias = match[2] ?? match[3]
+        const suffix = match[4] ?? ""
         const target = join(
           distDirectory,
           alias,
@@ -181,7 +181,8 @@ const rewritePackedWorkspaceAliases = async (packageDirectory) => {
       }
       const rewritten = source.replace(
         workspaceAliasPattern,
-        (match, quote, alias, suffix = "") => {
+        (match, quote, rootAlias, directAlias, suffix = "") => {
+          const alias = rootAlias ?? directAlias
           const target = join(
             distDirectory,
             alias,

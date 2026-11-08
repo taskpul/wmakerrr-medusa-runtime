@@ -62,7 +62,7 @@ const targetExists = (target, archiveEntries) => {
   )
 }
 const unresolvedWorkspaceAlias =
-  /(?:require\(\s*|from\s+|import\(\s*)["'](@models|@providers|@repositories|@services|@types|@utils)(?:\/[^"']*)?["']/
+  /(?:require\(\s*|from\s+|import\(\s*)["'](@\/[^"']+|(?:@models|@providers|@repositories|@services|@types|@utils)(?:\/[^"']*)?)["']/
 const findUnresolvedWorkspaceAlias = async (archive) => {
   const stagingDirectory = await mkdtemp(join(tmpdir(), "rr-verify-package-"))
   try {

@@ -382,6 +382,59 @@ describe("Remote Link", function () {
     )
   })
 
+  it("allows a Store-owned Inventory ownership link in shared placement", async function () {
+    InventoryModule.__storeIsolationMode.mockReturnValueOnce("shared")
+
+    await expect(
+      assertStoreSafeLinks(
+        new Map(
+          [...allModules, CommerceOwnershipModule].map((module) => [
+            module.__definition.key,
+            module,
+          ])
+        ) as any,
+        [
+          {
+            inventoryService: { inventory_item_id: "inv_local" },
+            commerceOwnership: {
+              commerce_resource_ownership_id: "ownership_local",
+            },
+          },
+        ],
+        { storeId: "store_a" }
+      )
+    ).resolves.toBeUndefined()
+  })
+
+  it("rejects a foreign Inventory ownership link in shared placement", async function () {
+    InventoryModule.__storeIsolationMode.mockReturnValueOnce("shared")
+    CommerceOwnershipModule.listCommerceResourceOwnerships.mockResolvedValueOnce(
+      []
+    )
+
+    await expect(
+      assertStoreSafeLinks(
+        new Map(
+          [...allModules, CommerceOwnershipModule].map((module) => [
+            module.__definition.key,
+            module,
+          ])
+        ) as any,
+        [
+          {
+            inventoryService: { inventory_item_id: "inv_local" },
+            commerceOwnership: {
+              commerce_resource_ownership_id: "ownership_foreign",
+            },
+          },
+        ],
+        { storeId: "store_a" }
+      )
+    ).rejects.toThrow(
+      "Commerce ownership link endpoint does not belong to the active Store"
+    )
+  })
+
   it("rejects a foreign Fulfillment endpoint before writing a link", async function () {
     const remoteLink = new Link(allModules as any)
     FulfillmentModule.listFulfillmentSets.mockResolvedValueOnce([])

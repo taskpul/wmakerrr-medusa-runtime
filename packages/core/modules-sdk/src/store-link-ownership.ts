@@ -437,8 +437,19 @@ async function assertStoreSafeInventoryLinks(
   const stock = findModule(modulesMap, Modules.STOCK_LOCATION, (keys) =>
     keys.includes("stock_location_id")
   )
+  const commerceOwnershipService = findModule(
+    modulesMap,
+    undefined,
+    (keys) => keys.includes("commerce_resource_ownership_id")
+  )
+  const commerceOwnershipServiceName =
+    commerceOwnershipService?.__definition.key
   const allowed = new Set(
-    [product?.__definition.key, stock?.__definition.key].filter(Boolean)
+    [
+      product?.__definition.key,
+      stock?.__definition.key,
+      commerceOwnershipServiceName,
+    ].filter(Boolean)
   )
   if (
     inventoryLinks.some((link) =>
@@ -451,6 +462,39 @@ async function assertStoreSafeInventoryLinks(
       MedusaError.Types.NOT_ALLOWED,
       "This Inventory link endpoint is not certified for shared Store placement"
     )
+  }
+
+  const commerceOwnershipIds = deduplicate(
+    commerceOwnershipServiceName
+      ? (inventoryLinks.flatMap((link) =>
+          values(
+            link[commerceOwnershipServiceName]
+              ?.commerce_resource_ownership_id
+          )
+        ) as string[])
+      : []
+  )
+  if (commerceOwnershipIds.length) {
+    const ownerships =
+      await commerceOwnershipService.listCommerceResourceOwnerships(
+        {
+          id: commerceOwnershipIds,
+          store_id: sharedContext.storeId,
+        },
+        { select: ["id"] },
+        sharedContext
+      )
+    if (
+      arrayDifference(
+        commerceOwnershipIds,
+        ownerships.map((ownership) => ownership.id)
+      ).length
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Commerce ownership link endpoint does not belong to the active Store"
+      )
+    }
   }
 }
 

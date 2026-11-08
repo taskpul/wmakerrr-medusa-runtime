@@ -29,6 +29,7 @@ import { join } from "path"
 import requestIp from "request-ip"
 import adminLoader from "./admin"
 import apiLoader from "./api"
+import { shouldCreateGlobalDefaults } from "./global-defaults"
 import { loadSearchIndexes } from "./search"
 
 type Options = {
@@ -215,8 +216,10 @@ export default async ({
     ? () => {}
     : await loadEntrypoints(plugins, container, expressApp, rootDirectory)
 
-  const { createDefaultsWorkflow } = await import("@medusajs/core-flows")
-  await createDefaultsWorkflow(container).run()
+  if (shouldCreateGlobalDefaults()) {
+    const { createDefaultsWorkflow } = await import("@medusajs/core-flows")
+    await createDefaultsWorkflow(container).run()
+  }
   await onApplicationStart()
 
   const shutdown = async () => {

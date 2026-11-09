@@ -150,7 +150,7 @@
     {
       "path": "packages/core/utils/src/modules-sdk/store-isolation-manager.ts",
       "upstreamSha256": null,
-      "currentSha256": "293ff2b4f39aaf78e5faf069caad7aaa8afcfc10461fce093995a918df7b11b2",
+      "currentSha256": "bbecde2e4c17f2a5f50546e01eb000760b05efa99829329e3d071fc1c976209e",
       "reason": "Controlled-distribution canonical Store isolation manager for generated CRUD across certified commerce modules."
     },
     {

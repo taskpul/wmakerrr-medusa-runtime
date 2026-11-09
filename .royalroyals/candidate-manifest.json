@@ -31,7 +31,7 @@
       },
       "exceptionLedger": {
         "path": ".royalroyals/public-api-exceptions.json",
-        "sha256": "2bd5041eaf855753fddd6561c9d2a8e3fe4e134c9d5165b1fc5487163f35a204"
+        "sha256": "467612ec8ef08b0ab6b2a8ba8c50cfad7ba9d197117f992f08435d72f12d00b3"
       }
     },
     "pricingIsolation": {

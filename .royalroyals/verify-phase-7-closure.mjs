@@ -117,6 +117,39 @@ for (const path of [
     errors.push(`Missing executable proof: ${path}`)
 }
 
+const sharedRoleMigrationPaths = [
+  ["cart", "01"],
+  ["customer", "02"],
+  ["fulfillment", "03"],
+  ["inventory", "04"],
+  ["notification", "05"],
+  ["order", "06"],
+  ["payment", "07"],
+  ["pricing", "08"],
+  ["product", "09"],
+  ["promotion", "10"],
+  ["sales-channel", "11"],
+  ["stock-location", "12"],
+].map(
+  ([moduleName, suffix]) =>
+    `packages/modules/${moduleName}/src/migrations/` +
+    `Migration202611090200${suffix}_use_shared_store_request_role.ts`
+)
+const sharedRoleMigrationNames = await Promise.all(
+  sharedRoleMigrationPaths.map(async (path) => {
+    const source = await read(path)
+    return source.match(/export class (Migration\w+) extends Migration/)?.[1]
+  })
+)
+if (
+  sharedRoleMigrationNames.some((name) => !name) ||
+  new Set(sharedRoleMigrationNames).size !== sharedRoleMigrationPaths.length
+) {
+  errors.push(
+    "Shared Store request-role migrations must have unique identifiers"
+  )
+}
+
 if (
   contract.admission.sharedProduction !== "disabled" ||
   contract.admission.candidateGatesChanged.length

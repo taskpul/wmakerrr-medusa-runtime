@@ -18,7 +18,7 @@ const migration = sharedStoreRequestRoleMigrationSql({
   legacyRequestRole: "medusa_promotion_request",
 })
 
-export class Migration20261109020000_use_shared_store_request_role extends Migration {
+export class Migration20261109020010_use_shared_store_request_role extends Migration {
   override async up(): Promise<void> {
     migration.up.forEach((sql) => this.addSql(sql))
   }

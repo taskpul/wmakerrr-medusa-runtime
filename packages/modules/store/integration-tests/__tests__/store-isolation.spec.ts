@@ -17,22 +17,8 @@ moduleIntegrationTestRunner<IStoreModuleService>({
 
     beforeEach(async () => {
       const manager = MikroOrmWrapper.getManager()
-      await manager.execute(`do $$ begin
-        if not exists (select 1 from pg_roles where rolname = '${STORE_REQUEST_ROLE}') then
-          create role "${STORE_REQUEST_ROLE}" nologin nosuperuser nobypassrls;
-        end if;
-      end $$;`)
       await manager.execute(
         `alter role "${STORE_REQUEST_ROLE}" nologin nosuperuser nobypassrls;`
-      )
-      await manager.execute(
-        `grant usage on schema public to "${STORE_REQUEST_ROLE}";`
-      )
-      await manager.execute(
-        `grant select, insert, update, delete on all tables in schema public to "${STORE_REQUEST_ROLE}";`
-      )
-      await manager.execute(
-        `grant usage, select on all sequences in schema public to "${STORE_REQUEST_ROLE}";`
       )
     })
 

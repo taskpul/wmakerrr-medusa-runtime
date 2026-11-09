@@ -36,10 +36,7 @@
       "reservation_item.inventory_item_id -> inventory_item.id",
       "stock_location.address_id -> stock_location_address.id"
     ],
-    "requestRoles": [
-      "medusa_inventory_request",
-      "medusa_stock_location_request"
-    ]
+    "requestRoles": ["medusa_store_request"]
   },
   "invariants": [
     "The existing Inventory and Stock Location modules remain the only domain owners.",

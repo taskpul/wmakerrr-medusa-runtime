@@ -197,8 +197,8 @@ disabled until the remaining commerce resource groups and final gates close.
 Phase 7G-7 closes the canonical Inventory and Stock Location surfaces for five
 Store-owned tables: inventory items, levels, reservations, stock locations, and
 location addresses. Store-scoped SKU and level keys allow independent merchant
-catalogs while composite relationships, immutable-owner triggers, and two
-request roles enforce same-Store persistence and forced RLS.
+catalogs while composite relationships, immutable-owner triggers, and one
+restricted Store request role enforce same-Store persistence and forced RLS.
 
 Shared service operations require verified Store context; dedicated placement
 derives its immutable configured Store. Quantity aggregates filter in SQL,

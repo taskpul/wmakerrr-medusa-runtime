@@ -10,6 +10,80 @@ export type StoreIsolationOptions = {
     | { mode?: "dedicated"; store_id?: string }
 }
 
+export const SHARED_STORE_REQUEST_ROLE = "medusa_store_request"
+
+type SharedStoreRequestRoleMigrationInput = {
+  tables: readonly string[]
+  activeStoreFunction?: string
+  legacyRequestRole?: string
+}
+
+const assertSqlIdentifier = (value: string): string => {
+  if (!/^[a-z][a-z0-9_]*$/.test(value)) {
+    throw new Error(`Unsafe SQL identifier: ${value}`)
+  }
+  return `"${value}"`
+}
+
+export const sharedStoreRequestRoleMigrationSql = (
+  input: SharedStoreRequestRoleMigrationInput
+): { up: string[]; down: string[] } => {
+  if (!input.tables.length) {
+    throw new Error("Shared Store request role requires at least one table")
+  }
+  const tables = input.tables.map(assertSqlIdentifier).join(", ")
+  const activeStoreFunction = input.activeStoreFunction
+    ? assertSqlIdentifier(input.activeStoreFunction)
+    : undefined
+  const legacyRequestRole = input.legacyRequestRole
+  if (!!activeStoreFunction !== !!legacyRequestRole) {
+    throw new Error(
+      "activeStoreFunction and legacyRequestRole must be provided together"
+    )
+  }
+  if (legacyRequestRole) {
+    assertSqlIdentifier(legacyRequestRole)
+  }
+
+  const replaceActiveStoreFunction = (requestRole: string) => `
+    create or replace function ${activeStoreFunction}()
+    returns text language sql stable as $$
+      select coalesce(
+        nullif(current_setting('medusa.store_id', true), ''),
+        case when current_user <> '${requestRole}'
+          then '__medusa_dedicated__'
+        end
+      );
+    $$;
+  `
+
+  return {
+    up: [
+      `
+        do $$ begin
+          if not exists (
+            select 1 from pg_roles where rolname = '${SHARED_STORE_REQUEST_ROLE}'
+          ) then
+            create role "${SHARED_STORE_REQUEST_ROLE}" nologin nosuperuser nobypassrls;
+          end if;
+        end $$;
+      `,
+      `alter role "${SHARED_STORE_REQUEST_ROLE}" nologin nosuperuser nobypassrls;`,
+      `grant usage on schema public to "${SHARED_STORE_REQUEST_ROLE}";`,
+      `grant select, insert, update, delete on table ${tables} to "${SHARED_STORE_REQUEST_ROLE}";`,
+      ...(activeStoreFunction
+        ? [replaceActiveStoreFunction(SHARED_STORE_REQUEST_ROLE)]
+        : []),
+    ],
+    down: [
+      ...(activeStoreFunction && legacyRequestRole
+        ? [replaceActiveStoreFunction(legacyRequestRole)]
+        : []),
+      `revoke select, insert, update, delete on table ${tables} from "${SHARED_STORE_REQUEST_ROLE}";`,
+    ],
+  }
+}
+
 type OwnershipService = { list: (...args: any[]) => Promise<any[]> }
 
 export type StoreIsolationGeneratedCrudInput = {

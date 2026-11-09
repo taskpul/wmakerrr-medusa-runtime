@@ -1,6 +1,7 @@
 import { SqlEntityManager } from "@medusajs/framework/mikro-orm/postgresql"
+import { SHARED_STORE_REQUEST_ROLE } from "@medusajs/framework/utils"
 
-export const PRICING_REQUEST_ROLE = "medusa_pricing_request"
+export const PRICING_REQUEST_ROLE = SHARED_STORE_REQUEST_ROLE
 export const PRICING_STORE_SETTING = "medusa.store_id"
 
 export async function setPricingStoreDatabaseContext(

@@ -4,10 +4,11 @@ import {
   isString,
   MedusaError,
   promiseAll,
+  SHARED_STORE_REQUEST_ROLE,
 } from "@medusajs/framework/utils"
 
 export const INVENTORY_DEDICATED_STORE_ID = "__medusa_dedicated__"
-export const INVENTORY_REQUEST_ROLE = "medusa_inventory_request"
+export const INVENTORY_REQUEST_ROLE = SHARED_STORE_REQUEST_ROLE
 export const INVENTORY_STORE_SETTING = "medusa.store_id"
 
 export type InventoryModuleOptions = {

@@ -21,10 +21,10 @@ certified.
 
 Dedicated placement derives the Store from immutable module configuration.
 Shared placement requires verified `Context.storeId`, binds it to the database
-transaction, changes to a non-bypass request role, and rejects context-free or
-cross-Store work. Deployment must create and grant the two request roles named
-in the machine-readable contract; secrets and Store ownership are never read
-from request bodies.
+transaction, changes to the shared non-bypass Store request role, and rejects
+context-free or cross-Store work. Module migrations grant that role access only
+to their owned tables; secrets and Store ownership are never read from request
+bodies.
 
 The five implementation slices and 24-case attack matrix are recorded in
 `inventory-stock-boundary.json` and checked by

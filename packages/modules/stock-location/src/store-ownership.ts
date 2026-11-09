@@ -4,10 +4,11 @@ import {
   isString,
   MedusaError,
   promiseAll,
+  SHARED_STORE_REQUEST_ROLE,
 } from "@medusajs/framework/utils"
 
 export const STOCK_LOCATION_DEDICATED_STORE_ID = "__medusa_dedicated__"
-export const STOCK_LOCATION_REQUEST_ROLE = "medusa_stock_location_request"
+export const STOCK_LOCATION_REQUEST_ROLE = SHARED_STORE_REQUEST_ROLE
 export const STOCK_LOCATION_STORE_SETTING = "medusa.store_id"
 
 export type StockLocationModuleOptions = {

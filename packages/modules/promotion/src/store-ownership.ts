@@ -4,10 +4,11 @@ import {
   isString,
   MedusaError,
   promiseAll,
+  SHARED_STORE_REQUEST_ROLE,
 } from "@medusajs/framework/utils"
 
 export const PROMOTION_DEDICATED_STORE_ID = "__medusa_dedicated__"
-export const PROMOTION_REQUEST_ROLE = "medusa_promotion_request"
+export const PROMOTION_REQUEST_ROLE = SHARED_STORE_REQUEST_ROLE
 export const PROMOTION_STORE_SETTING = "medusa.store_id"
 
 export type PromotionModuleOptions = {

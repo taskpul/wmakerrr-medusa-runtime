@@ -14,6 +14,12 @@ import {
 
 type LoadedLinkModule = LoadedModule & ILinkModule
 type ModuleMap = Map<string, LoadedLinkModule>
+type StoreLinkEndpointCertifier = {
+  __assertStoreLinkEndpoints?: (
+    endpoints: Record<string, unknown>[],
+    context: Context
+  ) => Promise<void>
+}
 
 const values = (value: unknown) =>
   Array.isArray(value) ? value : value ? [value] : []
@@ -27,6 +33,11 @@ const findModule = (
     [...modulesMap.values()].find((module) =>
       matches(Object.keys(module.__joinerConfig.linkableKeys ?? {}))
     )) as any
+
+const moduleByName = (modulesMap: ModuleMap, name: string) =>
+  [...modulesMap.values()].find(
+    (module) => module.__definition.key === name
+  ) as (LoadedLinkModule & StoreLinkEndpointCertifier) | undefined
 
 async function assertStoreSafeProductLinks(
   modulesMap: ModuleMap,
@@ -112,10 +123,8 @@ async function assertStoreSafeProductLinks(
     (keys) => keys.includes("sales_channel_id")
   )
   const salesChannelServiceName = salesChannelService?.__definition.key
-  const commerceOwnershipService = findModule(
-    modulesMap,
-    undefined,
-    (keys) => keys.includes("commerce_resource_ownership_id")
+  const commerceOwnershipService = findModule(modulesMap, undefined, (keys) =>
+    keys.includes("commerce_resource_ownership_id")
   )
   const commerceOwnershipServiceName =
     commerceOwnershipService?.__definition.key
@@ -127,15 +136,35 @@ async function assertStoreSafeProductLinks(
       )
     )
   )
+  const sharedProductPlacement =
+    productService.__storeIsolationMode?.() === "shared"
+  const certifiedCustomModules = new Set<string>()
+  if (sharedProductPlacement) {
+    for (const moduleName of linkedModules) {
+      const module = moduleByName(modulesMap, moduleName)
+      if (!module?.__assertStoreLinkEndpoints) {
+        continue
+      }
+      await module.__assertStoreLinkEndpoints(
+        productLinks.map((link) => link[moduleName]).filter(Boolean) as Record<
+          string,
+          unknown
+        >[],
+        sharedContext
+      )
+      certifiedCustomModules.add(moduleName)
+    }
+  }
   if (
-    productService.__storeIsolationMode?.() === "shared" &&
+    sharedProductPlacement &&
     linkedModules.some(
       (moduleName) =>
         moduleName !== pricingServiceName &&
         moduleName !== fulfillmentServiceName &&
         moduleName !== inventoryServiceName &&
         moduleName !== salesChannelServiceName &&
-        moduleName !== commerceOwnershipServiceName
+        moduleName !== commerceOwnershipServiceName &&
+        !certifiedCustomModules.has(moduleName)
     )
   ) {
     throw new MedusaError(
@@ -148,8 +177,7 @@ async function assertStoreSafeProductLinks(
     commerceOwnershipServiceName
       ? (productLinks.flatMap((link) =>
           values(
-            link[commerceOwnershipServiceName]
-              ?.commerce_resource_ownership_id
+            link[commerceOwnershipServiceName]?.commerce_resource_ownership_id
           )
         ) as string[])
       : []
@@ -307,6 +335,10 @@ async function assertStoreSafeFulfillmentLinks(
     (keys) => keys.includes("stock_location_id")
   )
   const stockLocationServiceName = stockLocationService?.__definition.key
+  const orderService = findModule(modulesMap, Modules.ORDER, (keys) =>
+    keys.includes("order_id")
+  )
+  const orderServiceName = orderService?.__definition.key
 
   for (const link of fulfillmentLinks) {
     const fulfillmentEndpoint = link[fulfillmentServiceName]
@@ -323,7 +355,11 @@ async function assertStoreSafeFulfillmentLinks(
       link[stockLocationServiceName]?.stock_location_id &&
       (fulfillmentEndpoint.fulfillment_set_id ||
         fulfillmentEndpoint.fulfillment_provider_id)
-    if (!productLink && !pricingLink && !stockLocationLink) {
+    const orderLink =
+      orderServiceName &&
+      link[orderServiceName]?.order_id &&
+      fulfillmentEndpoint.fulfillment_id
+    if (!productLink && !pricingLink && !stockLocationLink && !orderLink) {
       throw new MedusaError(
         MedusaError.Types.NOT_ALLOWED,
         "This Fulfillment link endpoint is not certified for shared Store placement"
@@ -437,10 +473,8 @@ async function assertStoreSafeInventoryLinks(
   const stock = findModule(modulesMap, Modules.STOCK_LOCATION, (keys) =>
     keys.includes("stock_location_id")
   )
-  const commerceOwnershipService = findModule(
-    modulesMap,
-    undefined,
-    (keys) => keys.includes("commerce_resource_ownership_id")
+  const commerceOwnershipService = findModule(modulesMap, undefined, (keys) =>
+    keys.includes("commerce_resource_ownership_id")
   )
   const commerceOwnershipServiceName =
     commerceOwnershipService?.__definition.key
@@ -468,8 +502,7 @@ async function assertStoreSafeInventoryLinks(
     commerceOwnershipServiceName
       ? (inventoryLinks.flatMap((link) =>
           values(
-            link[commerceOwnershipServiceName]
-              ?.commerce_resource_ownership_id
+            link[commerceOwnershipServiceName]?.commerce_resource_ownership_id
           )
         ) as string[])
       : []

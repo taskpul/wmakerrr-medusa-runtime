@@ -127,7 +127,7 @@
       "fulfillment_item.inventory_item_id -> Inventory Item",
       "fulfillment_item.line_item_id -> Order or Cart Line Item"
     ],
-    "requestRole": "medusa_fulfillment_request",
+    "requestRole": "medusa_store_request",
     "migrationRule": "Use generated additive model migrations plus focused immutable-owner, same-Store composite relationship, request-role forced-RLS, dedicated-backfill, and executed rollback proof. Never revise historical migrations."
   },
   "links": {

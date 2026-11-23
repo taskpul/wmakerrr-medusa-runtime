@@ -83,6 +83,13 @@ export default async function assignProductsToShippingProfile({
 
   const logger = container.resolve(ContainerRegistrationKeys.LOGGER)
 
+  if (process.env.TENANT_PLACEMENT_MODE?.trim() === "shared-cell") {
+    logger.info(
+      "Skipping global product shipping profile migration in shared-cell mode"
+    )
+    return
+  }
+
   logger.info("Assigning products to shipping profile")
 
   await assignProductsToShippingProfileWorkflow(container)

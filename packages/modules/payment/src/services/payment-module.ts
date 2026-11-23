@@ -86,6 +86,7 @@ type InjectedDependencies = {
   paymentSessionService: ModulesSdkTypes.IMedusaInternalService<any>
   paymentCollectionService: ModulesSdkTypes.IMedusaInternalService<any>
   accountHolderService: ModulesSdkTypes.IMedusaInternalService<any>
+  refundReasonService: ModulesSdkTypes.IMedusaInternalService<any>
   paymentProviderService: PaymentProviderService
 }
 
@@ -153,6 +154,7 @@ export default class PaymentModuleService
       paymentProviderService,
       paymentCollectionService,
       accountHolderService,
+      refundReasonService,
     }: InjectedDependencies,
     protected readonly moduleDeclaration: InternalModuleDeclaration
   ) {
@@ -177,9 +179,9 @@ export default class PaymentModuleService
         Payment: paymentService,
         Capture: captureService,
         Refund: refundService,
+        RefundReason: refundReasonService,
         AccountHolder: accountHolderService,
       },
-      unscopedModels: ["RefundReason"],
     })
   }
 

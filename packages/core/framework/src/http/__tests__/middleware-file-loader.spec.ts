@@ -72,6 +72,7 @@ describe("Middleware file loader", () => {
           "handler": [Function],
           "matcher": /\\^\\\\/admin\\(\\\\/\\.\\*\\)\\?\\$/,
           "methods": undefined,
+          "preAuthentication": true,
         },
         {
           "handler": [Function],

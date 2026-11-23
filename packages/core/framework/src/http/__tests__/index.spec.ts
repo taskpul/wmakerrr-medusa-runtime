@@ -270,6 +270,15 @@ describe("RoutesLoader", function () {
       expect(res.text).toBe("GET /admin/protected")
     })
 
+    it("should run pre-authentication middleware before rejecting invalid admin credentials", async () => {
+      const res = await request("GET", "/admin/protected", {
+        headers: { authorization: "Basic invalid" },
+      })
+
+      expect(res.status).toBe(401)
+      expect(adminRegexMiddlewareMock).toHaveBeenCalledTimes(1)
+    })
+
     it.skip("should return 401 when admin is not authenticated", async () => {
       const res = await request("GET", "/admin/protected")
 

@@ -76,5 +76,49 @@ moduleIntegrationTestRunner<IPaymentModuleService>({
       })
       expect(foreignRows).toEqual([])
     })
+
+    it("isolates refund reasons", async () => {
+      const reasonA = await service.createRefundReasons(
+        {
+          label: "Store A reason",
+          code: "store_a_reason",
+        },
+        storeA
+      )
+      const reasonB = await service.createRefundReasons(
+        {
+          label: "Store B reason",
+          code: "store_b_reason",
+        },
+        storeB
+      )
+
+      await expect(
+        service.retrieveRefundReason(reasonB.id, {}, storeA)
+      ).rejects.toThrow(/not found/i)
+      await expect(service.listRefundReasons({}, {}, storeA)).resolves.toEqual([
+        expect.objectContaining({ id: reasonA.id, store_id: "store_a" }),
+      ])
+      await expect(
+        service.updateRefundReasons(
+          { id: reasonB.id, label: "Cross-Store update" },
+          storeA
+        )
+      ).rejects.toThrow(/do not belong to the active Store/i)
+
+      const manager = MikroOrmWrapper.getManager()
+      const foreignRows = await manager.transactional(async (transaction) => {
+        await transaction.execute(`set local role "${PAYMENT_REQUEST_ROLE}"`)
+        await transaction.execute(
+          `select set_config('${PAYMENT_STORE_SETTING}', ?, true)`,
+          ["store_b"]
+        )
+        return await transaction.execute(
+          `select "id" from "refund_reason" where "id" = ?`,
+          [reasonA.id]
+        )
+      })
+      expect(foreignRows).toEqual([])
+    })
   },
 })

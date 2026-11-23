@@ -151,5 +151,38 @@ moduleIntegrationTestRunner<IProductModuleService>({
         }),
       ])
     })
+
+    it("keeps category tree filters out of the shared Store query", async () => {
+      const category = await service.createProductCategories(
+        { name: "Store A root", handle: "store-a-root" },
+        storeA
+      )
+
+      await expect(
+        service.listProductCategories(
+          {
+            parent_category_id: null,
+            include_descendants_tree: true,
+          },
+          {},
+          storeA
+        )
+      ).resolves.toEqual([
+        expect.objectContaining({ id: category.id, store_id: "store_a" }),
+      ])
+
+      await expect(
+        service.listAndCountProductCategories(
+          { parent_category_id: null },
+          {
+            filters: { include_descendants_tree: true },
+          } as never,
+          storeA
+        )
+      ).resolves.toEqual([
+        [expect.objectContaining({ id: category.id, store_id: "store_a" })],
+        1,
+      ])
+    })
   },
 })

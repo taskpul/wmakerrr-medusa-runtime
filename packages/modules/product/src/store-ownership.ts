@@ -4,11 +4,12 @@ import {
   isString,
   MedusaError,
   promiseAll,
+  SHARED_STORE_REQUEST_ROLE,
 } from "@medusajs/framework/utils"
 import { ProductModuleOptions } from "./types/store-ownership"
 
 export const PRODUCT_DEDICATED_STORE_ID = "__medusa_dedicated__"
-export const PRODUCT_REQUEST_ROLE = "medusa_product_request"
+export const PRODUCT_REQUEST_ROLE = SHARED_STORE_REQUEST_ROLE
 export const PRODUCT_STORE_SETTING = "medusa.store_id"
 
 type StoreContext = Context & {

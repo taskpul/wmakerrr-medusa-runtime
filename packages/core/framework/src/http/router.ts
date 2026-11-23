@@ -495,6 +495,19 @@ export class ApiLoader {
       )
     }
 
+    const preAuthenticationMiddlewares = middlewares.filter(
+      (middleware) => middleware.preAuthentication
+    )
+    const routeMiddlewares = middlewares.filter(
+      (middleware) => !middleware.preAuthentication
+    )
+
+    new RoutesSorter(preAuthenticationMiddlewares)
+      .sort()
+      .forEach((middleware) => {
+        this.#registerExpressHandler(middleware)
+      })
+
     /**
      * CORS and Auth setup for admin routes
      */
@@ -544,7 +557,7 @@ export class ApiLoader {
     )
 
     const collectionToSort = ([] as (MiddlewareDescriptor | RouteDescriptor)[])
-      .concat(middlewares)
+      .concat(routeMiddlewares)
       .concat(routes)
 
     const sortedRoutes = new RoutesSorter(collectionToSort).sort()

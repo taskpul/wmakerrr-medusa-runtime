@@ -24,9 +24,9 @@ the exact secret must be resolved before its Store is known. The returned key
 supplies the owner; every management path remains Store-scoped, and its owner is
 immutable.
 
-Deployments must provision and grant the request roles named in
-`phase-7-closure-boundary.json`. Migrations define policies but do not create
-cluster-level roles.
+Shared placement uses one restricted `medusa_store_request` role across module
+transactions. Each module migration grants that role access only to its owned
+tables and keeps forced RLS bound to the transaction-local Store context.
 
 ## Shared services
 

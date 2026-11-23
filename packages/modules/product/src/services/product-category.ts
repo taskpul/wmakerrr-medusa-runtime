@@ -92,12 +92,22 @@ export default class ProductCategoryService extends MedusaInternalService<
     config: FindConfig<ProductTypes.ProductCategoryDTO> = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<InferEntityType<typeof ProductCategory>[]> {
+    const configFilters = config.filters as
+      ProductTypes.FilterableProductCategoryProps | undefined
     const transformOptions = {
-      includeDescendantsTree: filters?.include_descendants_tree || false,
-      includeAncestorsTree: filters?.include_ancestors_tree || false,
+      includeDescendantsTree:
+        filters.include_descendants_tree ||
+        configFilters?.include_descendants_tree ||
+        false,
+      includeAncestorsTree:
+        filters.include_ancestors_tree ||
+        configFilters?.include_ancestors_tree ||
+        false,
     }
     delete filters.include_descendants_tree
     delete filters.include_ancestors_tree
+    delete configFilters?.include_descendants_tree
+    delete configFilters?.include_ancestors_tree
 
     // Apply free text search filter
     if (isDefined(filters?.q)) {
@@ -126,12 +136,22 @@ export default class ProductCategoryService extends MedusaInternalService<
     config: FindConfig<ProductTypes.ProductCategoryDTO> = {},
     @MedusaContext() sharedContext: Context = {}
   ): Promise<[InferEntityType<typeof ProductCategory>[], number]> {
+    const configFilters = config.filters as
+      ProductTypes.FilterableProductCategoryProps | undefined
     const transformOptions = {
-      includeDescendantsTree: filters?.include_descendants_tree || false,
-      includeAncestorsTree: filters?.include_ancestors_tree || false,
+      includeDescendantsTree:
+        filters.include_descendants_tree ||
+        configFilters?.include_descendants_tree ||
+        false,
+      includeAncestorsTree:
+        filters.include_ancestors_tree ||
+        configFilters?.include_ancestors_tree ||
+        false,
     }
     delete filters.include_descendants_tree
     delete filters.include_ancestors_tree
+    delete configFilters?.include_descendants_tree
+    delete configFilters?.include_ancestors_tree
 
     // Apply free text search filter
     if (isDefined(filters?.q)) {

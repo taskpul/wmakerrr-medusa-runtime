@@ -49,7 +49,7 @@ Payment Module for Medusa: manages payment collections, payment sessions, paymen
 ## Features
 
 - Group payment sessions and payments for a resource in a payment collection.
-- Authorize, capture, and refund payments, with refund reasons.
+- Authorize, capture, and refund payments, with Store-owned refund reasons.
 - Store account holders to save customers' payment methods with a provider.
 - Handle provider webhook events.
 

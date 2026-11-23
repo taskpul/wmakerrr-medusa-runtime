@@ -141,6 +141,9 @@ export class MiddlewareFileLoader {
               handler: middleware,
               matcher: matcher,
               methods: route.methods,
+              ...(route.preAuthentication === true
+                ? { preAuthentication: true }
+                : {}),
             })
           })
         }

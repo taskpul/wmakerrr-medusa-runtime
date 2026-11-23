@@ -10,6 +10,29 @@ import { StockLocationFulfillmentSetLink } from "../__mocks__/stock-location-ful
 import { StockLocationModule } from "../__mocks__/stock-location-module"
 
 import { Link } from "../link"
+import { assertStoreSafeLinks } from "../store-link-ownership"
+
+const SalesChannelModule = {
+  __definition: { key: "salesChannelService" },
+  __joinerConfig: {
+    linkableKeys: { sales_channel_id: "SalesChannel" },
+  },
+  listSalesChannels: jest.fn(async (filters) =>
+    (filters.id ?? []).map((id) => ({ id }))
+  ),
+}
+
+const CommerceOwnershipModule = {
+  __definition: { key: "commerceOwnership" },
+  __joinerConfig: {
+    linkableKeys: {
+      commerce_resource_ownership_id: "CommerceResourceOwnership",
+    },
+  },
+  listCommerceResourceOwnerships: jest.fn(async (filters) =>
+    (filters.id ?? []).map((id) => ({ id }))
+  ),
+}
 
 const allModules = [
   // modules
@@ -359,6 +382,59 @@ describe("Remote Link", function () {
     )
   })
 
+  it("allows a Store-owned Inventory ownership link in shared placement", async function () {
+    InventoryModule.__storeIsolationMode.mockReturnValueOnce("shared")
+
+    await expect(
+      assertStoreSafeLinks(
+        new Map(
+          [...allModules, CommerceOwnershipModule].map((module) => [
+            module.__definition.key,
+            module,
+          ])
+        ) as any,
+        [
+          {
+            inventoryService: { inventory_item_id: "inv_local" },
+            commerceOwnership: {
+              commerce_resource_ownership_id: "ownership_local",
+            },
+          },
+        ],
+        { storeId: "store_a" }
+      )
+    ).resolves.toBeUndefined()
+  })
+
+  it("rejects a foreign Inventory ownership link in shared placement", async function () {
+    InventoryModule.__storeIsolationMode.mockReturnValueOnce("shared")
+    CommerceOwnershipModule.listCommerceResourceOwnerships.mockResolvedValueOnce(
+      []
+    )
+
+    await expect(
+      assertStoreSafeLinks(
+        new Map(
+          [...allModules, CommerceOwnershipModule].map((module) => [
+            module.__definition.key,
+            module,
+          ])
+        ) as any,
+        [
+          {
+            inventoryService: { inventory_item_id: "inv_local" },
+            commerceOwnership: {
+              commerce_resource_ownership_id: "ownership_foreign",
+            },
+          },
+        ],
+        { storeId: "store_a" }
+      )
+    ).rejects.toThrow(
+      "Commerce ownership link endpoint does not belong to the active Store"
+    )
+  })
+
   it("rejects a foreign Fulfillment endpoint before writing a link", async function () {
     const remoteLink = new Link(allModules as any)
     FulfillmentModule.listFulfillmentSets.mockResolvedValueOnce([])
@@ -421,6 +497,106 @@ describe("Remote Link", function () {
         { storeId: "store_a" }
       )
     ).resolves.toBeDefined()
+  })
+
+  it("allows a certified Product-to-Sales-Channel link for one Store", async function () {
+    ProductModule.__storeIsolationMode.mockReturnValueOnce("shared")
+
+    await expect(
+      assertStoreSafeLinks(
+        new Map(
+          [...allModules, SalesChannelModule].map((module) => [
+            module.__definition.key,
+            module,
+          ])
+        ) as any,
+        [
+          {
+            productService: { product_id: "prod_local" },
+            salesChannelService: { sales_channel_id: "sc_local" },
+          },
+        ],
+        { storeId: "store_a" }
+      )
+    ).resolves.toBeUndefined()
+  })
+
+  it("rejects a foreign Sales Channel before writing a Product link", async function () {
+    ProductModule.__storeIsolationMode.mockReturnValueOnce("shared")
+    SalesChannelModule.listSalesChannels.mockResolvedValueOnce([])
+
+    await expect(
+      assertStoreSafeLinks(
+        new Map(
+          [...allModules, SalesChannelModule].map((module) => [
+            module.__definition.key,
+            module,
+          ])
+        ) as any,
+        [
+          {
+            productService: { product_id: "prod_local" },
+            salesChannelService: { sales_channel_id: "sc_foreign" },
+          },
+        ],
+        { storeId: "store_a" }
+      )
+    ).rejects.toThrow(
+      "sales_channel link endpoint does not belong to the active Store"
+    )
+  })
+
+  it("allows a Store-owned Product ownership link in shared placement", async function () {
+    ProductModule.__storeIsolationMode.mockReturnValueOnce("shared")
+
+    await expect(
+      assertStoreSafeLinks(
+        new Map(
+          [...allModules, CommerceOwnershipModule].map((module) => [
+            module.__definition.key,
+            module,
+          ])
+        ) as any,
+        [
+          {
+            productService: { product_id: "prod_local" },
+            commerceOwnership: {
+              commerce_resource_ownership_id: "ownership_local",
+            },
+          },
+        ],
+        { storeId: "store_a" }
+      )
+    ).resolves.toBeUndefined()
+  })
+
+  it("rejects a foreign Product ownership link in shared placement", async function () {
+    ProductModule.__storeIsolationMode.mockReturnValueOnce("shared")
+    CommerceOwnershipModule.listCommerceResourceOwnerships.mockResolvedValueOnce(
+      []
+    )
+
+    await expect(
+      assertStoreSafeLinks(
+        new Map(
+          [...allModules, CommerceOwnershipModule].map((module) => [
+            module.__definition.key,
+            module,
+          ])
+        ) as any,
+        [
+          {
+            productService: { product_id: "prod_local" },
+            commerceOwnership: {
+              commerce_resource_ownership_id: "ownership_foreign",
+            },
+          },
+        ],
+        { storeId: "store_a" }
+      )
+    ).rejects.toThrow(
+      "Commerce ownership link endpoint does not belong to the active Store"
+    )
   })
 
   it("allows the certified Shipping-Option-to-Price-Set link for one Store", async function () {

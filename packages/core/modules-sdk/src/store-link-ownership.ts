@@ -14,19 +14,30 @@ import {
 
 type LoadedLinkModule = LoadedModule & ILinkModule
 type ModuleMap = Map<string, LoadedLinkModule>
+type StoreLinkEndpointCertifier = {
+  __assertStoreLinkEndpoints?: (
+    endpoints: Record<string, unknown>[],
+    context: Context
+  ) => Promise<void>
+}
 
 const values = (value: unknown) =>
   Array.isArray(value) ? value : value ? [value] : []
 
 const findModule = (
   modulesMap: ModuleMap,
-  moduleKey: Modules,
+  moduleKey: Modules | undefined,
   matches: (linkableKeys: string[]) => boolean
 ) =>
-  (modulesMap.get(moduleKey) ??
+  ((moduleKey ? modulesMap.get(moduleKey) : undefined) ??
     [...modulesMap.values()].find((module) =>
       matches(Object.keys(module.__joinerConfig.linkableKeys ?? {}))
     )) as any
+
+const moduleByName = (modulesMap: ModuleMap, name: string) =>
+  [...modulesMap.values()].find(
+    (module) => module.__definition.key === name
+  ) as (LoadedLinkModule & StoreLinkEndpointCertifier) | undefined
 
 async function assertStoreSafeProductLinks(
   modulesMap: ModuleMap,
@@ -106,6 +117,17 @@ async function assertStoreSafeProductLinks(
     keys.includes("inventory_item_id")
   )
   const inventoryServiceName = inventoryService?.__definition.key
+  const salesChannelService = findModule(
+    modulesMap,
+    Modules.SALES_CHANNEL,
+    (keys) => keys.includes("sales_channel_id")
+  )
+  const salesChannelServiceName = salesChannelService?.__definition.key
+  const commerceOwnershipService = findModule(modulesMap, undefined, (keys) =>
+    keys.includes("commerce_resource_ownership_id")
+  )
+  const commerceOwnershipServiceName =
+    commerceOwnershipService?.__definition.key
   const linkedModules = deduplicate(
     productLinks.flatMap((link) =>
       Object.keys(link).filter(
@@ -114,19 +136,73 @@ async function assertStoreSafeProductLinks(
       )
     )
   )
+  const sharedProductPlacement =
+    productService.__storeIsolationMode?.() === "shared"
+  const certifiedCustomModules = new Set<string>()
+  if (sharedProductPlacement) {
+    for (const moduleName of linkedModules) {
+      const module = moduleByName(modulesMap, moduleName)
+      if (!module?.__assertStoreLinkEndpoints) {
+        continue
+      }
+      await module.__assertStoreLinkEndpoints(
+        productLinks.map((link) => link[moduleName]).filter(Boolean) as Record<
+          string,
+          unknown
+        >[],
+        sharedContext
+      )
+      certifiedCustomModules.add(moduleName)
+    }
+  }
   if (
-    productService.__storeIsolationMode?.() === "shared" &&
+    sharedProductPlacement &&
     linkedModules.some(
       (moduleName) =>
         moduleName !== pricingServiceName &&
         moduleName !== fulfillmentServiceName &&
-        moduleName !== inventoryServiceName
+        moduleName !== inventoryServiceName &&
+        moduleName !== salesChannelServiceName &&
+        moduleName !== commerceOwnershipServiceName &&
+        !certifiedCustomModules.has(moduleName)
     )
   ) {
     throw new MedusaError(
       MedusaError.Types.NOT_ALLOWED,
       "This Product link endpoint is not certified for shared Store placement"
     )
+  }
+
+  const commerceOwnershipIds = deduplicate(
+    commerceOwnershipServiceName
+      ? (productLinks.flatMap((link) =>
+          values(
+            link[commerceOwnershipServiceName]?.commerce_resource_ownership_id
+          )
+        ) as string[])
+      : []
+  )
+  if (commerceOwnershipIds.length) {
+    const ownerships =
+      await commerceOwnershipService.listCommerceResourceOwnerships(
+        {
+          id: commerceOwnershipIds,
+          store_id: sharedContext.storeId,
+        },
+        { select: ["id"] },
+        sharedContext
+      )
+    if (
+      arrayDifference(
+        commerceOwnershipIds,
+        ownerships.map((ownership) => ownership.id)
+      ).length
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Commerce ownership link endpoint does not belong to the active Store"
+      )
+    }
   }
 
   const priceSetIds = deduplicate(
@@ -259,6 +335,10 @@ async function assertStoreSafeFulfillmentLinks(
     (keys) => keys.includes("stock_location_id")
   )
   const stockLocationServiceName = stockLocationService?.__definition.key
+  const orderService = findModule(modulesMap, Modules.ORDER, (keys) =>
+    keys.includes("order_id")
+  )
+  const orderServiceName = orderService?.__definition.key
 
   for (const link of fulfillmentLinks) {
     const fulfillmentEndpoint = link[fulfillmentServiceName]
@@ -275,7 +355,11 @@ async function assertStoreSafeFulfillmentLinks(
       link[stockLocationServiceName]?.stock_location_id &&
       (fulfillmentEndpoint.fulfillment_set_id ||
         fulfillmentEndpoint.fulfillment_provider_id)
-    if (!productLink && !pricingLink && !stockLocationLink) {
+    const orderLink =
+      orderServiceName &&
+      link[orderServiceName]?.order_id &&
+      fulfillmentEndpoint.fulfillment_id
+    if (!productLink && !pricingLink && !stockLocationLink && !orderLink) {
       throw new MedusaError(
         MedusaError.Types.NOT_ALLOWED,
         "This Fulfillment link endpoint is not certified for shared Store placement"
@@ -389,8 +473,17 @@ async function assertStoreSafeInventoryLinks(
   const stock = findModule(modulesMap, Modules.STOCK_LOCATION, (keys) =>
     keys.includes("stock_location_id")
   )
+  const commerceOwnershipService = findModule(modulesMap, undefined, (keys) =>
+    keys.includes("commerce_resource_ownership_id")
+  )
+  const commerceOwnershipServiceName =
+    commerceOwnershipService?.__definition.key
   const allowed = new Set(
-    [product?.__definition.key, stock?.__definition.key].filter(Boolean)
+    [
+      product?.__definition.key,
+      stock?.__definition.key,
+      commerceOwnershipServiceName,
+    ].filter(Boolean)
   )
   if (
     inventoryLinks.some((link) =>
@@ -403,6 +496,38 @@ async function assertStoreSafeInventoryLinks(
       MedusaError.Types.NOT_ALLOWED,
       "This Inventory link endpoint is not certified for shared Store placement"
     )
+  }
+
+  const commerceOwnershipIds = deduplicate(
+    commerceOwnershipServiceName
+      ? (inventoryLinks.flatMap((link) =>
+          values(
+            link[commerceOwnershipServiceName]?.commerce_resource_ownership_id
+          )
+        ) as string[])
+      : []
+  )
+  if (commerceOwnershipIds.length) {
+    const ownerships =
+      await commerceOwnershipService.listCommerceResourceOwnerships(
+        {
+          id: commerceOwnershipIds,
+          store_id: sharedContext.storeId,
+        },
+        { select: ["id"] },
+        sharedContext
+      )
+    if (
+      arrayDifference(
+        commerceOwnershipIds,
+        ownerships.map((ownership) => ownership.id)
+      ).length
+    ) {
+      throw new MedusaError(
+        MedusaError.Types.NOT_ALLOWED,
+        "Commerce ownership link endpoint does not belong to the active Store"
+      )
+    }
   }
 }
 

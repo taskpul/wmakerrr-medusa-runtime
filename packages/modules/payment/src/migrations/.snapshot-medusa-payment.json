@@ -1569,6 +1569,22 @@
           "enumItems": [],
           "mappedType": "text"
         },
+        "store_id": {
+          "name": "store_id",
+          "type": "text",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'__medusa_dedicated__'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "text"
+        },
         "label": {
           "name": "label",
           "type": "text",

@@ -4,7 +4,7 @@ Commerce module for the store record: name, supported currencies and locales, an
 
 ## Using this package
 
-- Loaded by default through `defineConfig` (`@medusajs/medusa/store`). No module options, no providers.
+- Loaded by default through `defineConfig` (`@medusajs/medusa/store`). Controlled shared-cell deployments pass `store_isolation: { mode: "shared" }`; dedicated deployments may pass their fixed `store_id`.
 - The default store is created by `createDefaultsWorkflow` (`createDefaultStoreStep`) in core-flows. In apps, prefer `createStoresWorkflow`, `updateStoresWorkflow`, `deleteStoresWorkflow`.
 
 ```ts
@@ -21,7 +21,7 @@ const [store] = await storeModuleService.listStores(
 
 ### Data models (`src/models`)
 
-- `Store` (`store_`): `name` (default `"Medusa Store"`), `default_sales_channel_id`, `default_region_id`, `default_location_id`, `metadata`, `supported_currencies`, `supported_locales`. Deleting a store cascades to both child models.
+- `Store` (`store_`): immutable tenant `store_id`, `name` (default `"Medusa Store"`), `default_sales_channel_id`, `default_region_id`, `default_location_id`, `metadata`, `supported_currencies`, `supported_locales`. Deleting a store cascades to both child models.
 - `StoreCurrency` (`stocur_`): `currency_code`, `is_default`.
 - `StoreLocale` (`stloc_`): `locale_code` (BCP 47, e.g. `en-US`). Since 2.12.3.
 
@@ -54,3 +54,4 @@ yarn migration:create           # after any change in src/models
 - Create and update go through `upsertWithReplace` on `supported_currencies` and `supported_locales`: passing either array replaces the whole set, so include existing entries you want to keep.
 - When `supported_currencies` is passed, exactly one must have `is_default: true`, and codes must be unique; otherwise `INVALID_DATA`. Locale codes must be unique too.
 - Currency codes are lowercased and `name` is trimmed before saving.
+- Shared-cell operations fail closed without `Context.storeId`; Store, currency, and locale reads are protected by request-scoped RLS.

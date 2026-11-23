@@ -31,28 +31,28 @@
     "promotion": {
       "directStoreTables": 7,
       "parentDerivedTables": 3,
-      "requestRole": "medusa_promotion_request"
+      "requestRole": "medusa_store_request"
     },
     "customer": {
       "directStoreTables": 4,
       "parentDerivedTables": 0,
-      "requestRole": "medusa_customer_request"
+      "requestRole": "medusa_store_request"
     },
     "cart": {
       "directStoreTables": 9,
       "parentDerivedTables": 0,
-      "requestRole": "medusa_cart_request"
+      "requestRole": "medusa_store_request"
     },
     "payment": {
       "directStoreTables": 6,
       "parentDerivedTables": 1,
-      "requestRole": "medusa_payment_request",
+      "requestRole": "medusa_store_request",
       "globalReferenceTables": ["payment_provider", "refund_reason"]
     },
     "order": {
       "directStoreTables": 6,
       "parentDerivedTables": 17,
-      "requestRole": "medusa_order_request"
+      "requestRole": "medusa_store_request"
     },
     "apiKey": {
       "directStoreTables": 1,
@@ -61,11 +61,11 @@
     },
     "salesChannel": {
       "directStoreTables": 1,
-      "requestRole": "medusa_sales_channel_request"
+      "requestRole": "medusa_store_request"
     },
     "notification": {
       "directStoreTables": 1,
-      "requestRole": "medusa_notification_request"
+      "requestRole": "medusa_store_request"
     }
   },
   "sharedServices": [
